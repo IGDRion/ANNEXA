@@ -1,0 +1,6 @@
+name: bambu
+channels:
+    - bioconda
+dependencies:
+    - bioconductor-bambu
+    - bioconductor-bsgenome

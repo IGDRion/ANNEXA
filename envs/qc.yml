@@ -1,0 +1,10 @@
+name: qc
+channels:
+  - conda-forge
+dependencies:
+  - r
+  - r-tidyverse
+  - r-reshape2
+  - r-ggpubr
+  - r-ggridges
+  - r-rcolorbrewer

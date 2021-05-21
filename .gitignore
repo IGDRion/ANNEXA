@@ -1,0 +1,6 @@
+results/*
+work/*
+.nextflow*
+**/__pycache__/*
+/*.out
+/*.sh
