@@ -10,6 +10,7 @@ else { exit 1, "Reference Genome file not specified!" }
 params.outdir = "results"
 params.readCount = 5
 params.sampleNumber = 1
+params.withGeneCoverage = false
 
 def logHeader() {
     // Log colors ANSI codes
@@ -32,6 +33,7 @@ Reference Genome     : ${params.fa}
 Input Samplesheet    : ${params.input}
 Bambu read count     : ${params.readCount}
 Bambu sample number  : ${params.sampleNumber}
+Gene coverage        : ${params.withGeneCoverage}
 -${c_dim}----------------------------------------${c_reset}-
 """.stripIndent()
 }
@@ -202,67 +204,69 @@ process QC_EXTENDED_GTF {
   """
 }
 
-process PREPARE_RSEQC {
-  input:
-  file gtf from ch_final_rseq
+if (params.withGeneCoverage) {
+  process PREPARE_RSEQC {
+    input:
+    file gtf from ch_final_rseq
 
-  output:
-  file "*.filter.gtf" into ch_gtf_filter_rseq
+    output:
+    file "*.filter.gtf" into ch_gtf_filter_rseq
 
-  """
-  grep "FEELnc" $gtf | grep "protein_coding" > novel_mRNA.filter.gtf
-  grep "FEELnc" $gtf | grep "lncRNA" > novel_lncRNA.filter.gtf
-  grep -v "FEELnc" $gtf | grep "protein_coding" > known_mRNA.filter.gtf
-  grep -v "FEELnc" $gtf | grep "lncRNA" > known_lncRNA.filter.gtf
-  """
-}
+    """
+    grep "FEELnc" $gtf | grep "protein_coding" > novel_mRNA.filter.gtf
+    grep "FEELnc" $gtf | grep "lncRNA" > novel_lncRNA.filter.gtf
+    grep -v "FEELnc" $gtf | grep "protein_coding" > known_mRNA.filter.gtf
+    grep -v "FEELnc" $gtf | grep "lncRNA" > known_lncRNA.filter.gtf
+    """
+  }
 
-process CONVERT_TO_BED12 {
-  conda 'envs/rseqc.yml'
+  process CONVERT_TO_BED12 {
+    conda 'envs/rseqc.yml'
 
-  input:
-  file gtf from ch_gtf_filter_rseq.flatten()
+    input:
+    file gtf from ch_gtf_filter_rseq.flatten()
 
-  output:
-  file "${gtf.simpleName}.bed12" into ch_rseq_bed12
+    output:
+    file "${gtf.simpleName}.bed12" into ch_rseq_bed12
 
-  """
-  gtfToGenePred -genePredExt ${gtf} convert.genePred
-  genePredToBed convert.genePred ${gtf.simpleName}.bed12
-  """
-}
+    """
+    gtfToGenePred -genePredExt ${gtf} convert.genePred
+    genePredToBed convert.genePred ${gtf.simpleName}.bed12
+    """
+  }
 
-process CREATE_BAI {
-  conda 'envs/rseqc.yml'
+  process CREATE_BAI {
+    conda 'envs/rseqc.yml'
 
-  input:
-  file bam from ch_bam_bai
+    input:
+    file bam from ch_bam_bai
 
-  output:
-  file("*.bai") into ch_bam_bai_rseq 
+    output:
+    file("*.bai") into ch_bam_bai_rseq 
 
-  """
-  samtools index $bam
-  """
-}
+    """
+    samtools index $bam
+    """
+  }
 
-process RSEQC {
-  conda 'envs/rseqc.yml'
-  publishDir "$params.outdir/RSeQC", mode: 'copy'
+  process RSEQC {
+    conda 'envs/rseqc.yml'
+    publishDir "$params.outdir/RSeQC", mode: 'copy'
 
-  input:
-  file bed from ch_rseq_bed12
-  file "*" from ch_bam_bai_rseq.collect()
-  file "*" from ch_bam_rseq.collect()
+    input:
+    file bed from ch_rseq_bed12
+    file "*" from ch_bam_bai_rseq.collect()
+    file "*" from ch_bam_rseq.collect()
 
-  output:
-  file "${bed.simpleName}.geneBodyCoverage.curves.pdf"
-  file "${bed.simpleName}.geneBodyCoverage.txt"
+    output:
+    file "${bed.simpleName}.geneBodyCoverage.curves.pdf"
+    file "${bed.simpleName}.geneBodyCoverage.txt"
 
-  """
-  geneBody_coverage.py \
-    -i ./ \
-    -r ${bed} \
-    -o ${bed.simpleName}
-  """
+    """
+    geneBody_coverage.py \
+      -i ./ \
+      -r ${bed} \
+      -o ${bed.simpleName}
+    """
+  }
 }
