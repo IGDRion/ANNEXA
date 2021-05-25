@@ -43,7 +43,7 @@ Channel
     .fromPath(ch_input)
     .splitCsv(header:true, sep:',')
     .map { row -> file(row.sample) }
-    .set { ch_bam }
+    .into { ch_bam; ch_bam_rseq; ch_bam_bai }
 
 
 process BAMBU {
@@ -152,7 +152,7 @@ process FORMAT_NOVEL_KNOWN {
   file novel from ch_feelnc_combined
 
   output:
-  file("extented_annotations.gtf") into ch_final
+  file("extented_annotations.gtf") into (ch_final, ch_final_rseq)
 
   """
   cat $known $novel | GTF.py format > extented_annotations.gtf
@@ -199,5 +199,70 @@ process QC_EXTENDED_GTF {
     -c_tx ${counts_transcript} \
     -ref ${ref}
   qc.R
+  """
+}
+
+process PREPARE_RSEQC {
+  input:
+  file gtf from ch_final_rseq
+
+  output:
+  file "*.filter.gtf" into ch_gtf_filter_rseq
+
+  """
+  grep "FEELnc" $gtf | grep "protein_coding" > novel_mRNA.filter.gtf
+  grep "FEELnc" $gtf | grep "lncRNA" > novel_lncRNA.filter.gtf
+  grep -v "FEELnc" $gtf | grep "protein_coding" > known_mRNA.filter.gtf
+  grep -v "FEELnc" $gtf | grep "lncRNA" > known_lncRNA.filter.gtf
+  """
+}
+
+process CONVERT_TO_BED12 {
+  conda 'envs/rseqc.yml'
+
+  input:
+  file gtf from ch_gtf_filter_rseq.flatten()
+
+  output:
+  file "${gtf.simpleName}.bed12" into ch_rseq_bed12
+
+  """
+  gtfToGenePred -genePredExt ${gtf} convert.genePred
+  genePredToBed convert.genePred ${gtf.simpleName}.bed12
+  """
+}
+
+process CREATE_BAI {
+  conda 'envs/rseqc.yml'
+
+  input:
+  file bam from ch_bam_bai
+
+  output:
+  file("*.bai") into ch_bam_bai_rseq 
+
+  """
+  samtools index $bam
+  """
+}
+
+process RSEQC {
+  conda 'envs/rseqc.yml'
+  publishDir "$params.outdir/RSeQC", mode: 'copy'
+
+  input:
+  file bed from ch_rseq_bed12
+  file "*" from ch_bam_bai_rseq.collect()
+  file "*" from ch_bam_rseq.collect()
+
+  output:
+  file "${bed.simpleName}.geneBodyCoverage.curves.pdf"
+  file "${bed.simpleName}.geneBodyCoverage.txt"
+
+  """
+  geneBody_coverage.py \
+    -i ./ \
+    -r ${bed} \
+    -o ${bed.simpleName}
   """
 }

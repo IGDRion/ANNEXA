@@ -1,0 +1,8 @@
+name: rseq
+channels:
+        - bioconda
+dependencies:
+        - ucsc-gtftogenepred
+        - ucsc-genepredtobed
+        - rseqc=4.0.0
+        - samtools

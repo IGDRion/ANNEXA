@@ -45,4 +45,4 @@ nextflow run mlorthiois/ANNEXA \
 3. Final gtf
 4. DESeq2 normalization of gene counts
 5. QC on the final gtf with normalized gene counts
-
+6. Gene body coverage with RSeQC
