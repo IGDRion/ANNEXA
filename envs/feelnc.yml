@@ -1,5 +1,0 @@
-name: feelnc
-channels:
-    - bioconda
-dependencies:
-    - feelnc=0.2

@@ -4,3 +4,4 @@ work/*
 **/__pycache__/*
 /*.out
 /*.sh
+trace/*

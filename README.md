@@ -10,9 +10,7 @@ Just use the following command (change gtf, fa with your files).
 nextflow run mlorthiois/ANNEXA \
     --input input.csv \
     --gtf /path/to/ref.gtf \
-    --fa /path/to/ref.fa \
-    --sampleNumber 1 \
-    --readCount 5
+    --fa /path/to/ref.fa
 ```
 
 Here, input parameter takes file with BAM files and condition (separated by `,`) (See example below)

@@ -7,11 +7,6 @@ else { exit 1, "Reference Annotation file not specified!" }
 if (params.fa) { ch_fa = file(params.fa, checkIfExists: true) }
 else { exit 1, "Reference Genome file not specified!" }
 
-params.outdir = "results"
-params.readCount = 5
-params.sampleNumber = 1
-params.withGeneCoverage = false
-
 def logHeader() {
     // Log colors ANSI codes
     c_dim = "\033[2m";
@@ -52,9 +47,9 @@ process BAMBU {
   publishDir "$params.outdir/bambu", mode: 'copy'
   cpus 8
   memory '40GB'
-  conda 'envs/bambu.yml'
 
   input:
+  // Collect parallel bam channel into 1
   file '*.bam' from ch_bam.collect()
   file ref from ch_ref
   file fa from ch_fa
@@ -92,7 +87,6 @@ process SPLIT_BAMBU {
 
 process FEELNC {
     publishDir "$params.outdir", mode: 'copy', saveAs: { filename -> "feelnc/${filename.split('/')[-1]}" }
-    conda 'envs/feelnc.yml'
     memory '16 GB'
 
     input:
@@ -163,7 +157,6 @@ process FORMAT_NOVEL_KNOWN {
 
 process NORMALIZE_GENE_COUNTS {
   publishDir "$params.outdir/DESeq2", mode: 'copy'
-  conda 'envs/deseq.yml'
 
   input:
   file gene_counts from ch_bambu_gene
@@ -180,7 +173,6 @@ process NORMALIZE_GENE_COUNTS {
   
 
 process QC_EXTENDED_GTF {
-  conda 'envs/qc.yml'
   publishDir "$params.outdir/qc", mode: 'copy'
 
   input:
@@ -221,9 +213,8 @@ if (params.withGeneCoverage) {
   }
 
   process CONVERT_TO_BED12 {
-    conda 'envs/rseqc.yml'
-
     input:
+    // Split 4 files in 1 channel into 4 parallel channels
     file gtf from ch_gtf_filter_rseq.flatten()
 
     output:
@@ -236,8 +227,6 @@ if (params.withGeneCoverage) {
   }
 
   process CREATE_BAI {
-    conda 'envs/rseqc.yml'
-
     input:
     file bam from ch_bam_bai
 
@@ -250,11 +239,11 @@ if (params.withGeneCoverage) {
   }
 
   process RSEQC {
-    conda 'envs/rseqc.yml'
     publishDir "$params.outdir/RSeQC", mode: 'copy'
 
     input:
     file bed from ch_rseq_bed12
+    // Collect parallel bam and bai channels inside 1
     file "*" from ch_bam_bai_rseq.collect()
     file "*" from ch_bam_rseq.collect()
 
