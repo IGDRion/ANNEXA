@@ -39,7 +39,8 @@ log.info logHeader()
 Channel
     .fromPath(ch_input)
     .splitCsv(header:true, sep:',')
-    .map { row -> file(row.sample) }
+    // If in test profile, precede bam path with base directory
+    .map { row -> workflow.profile.contains('test') ? file("${baseDir}/${row.sample}") : file(row.sample)}
     .into { ch_bam; ch_bam_rseq; ch_bam_bai }
 
 
@@ -50,7 +51,7 @@ process BAMBU {
 
   input:
   // Collect parallel bam channel into 1
-  file '*.bam' from ch_bam.collect()
+  file '*' from ch_bam.collect()
   file ref from ch_ref
   file fa from ch_fa
 
