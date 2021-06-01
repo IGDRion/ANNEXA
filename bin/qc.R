@@ -5,7 +5,7 @@ library(ggpubr)
 library(ggridges)
 library(RColorBrewer)
 
-brew = c("#069A9E", "#BCE3E9", "#CD9D03", "#EADEB4")
+brew = c("#008387", "#a0d3db", "#ad8500", "#d9cb98")
 palette = c("#00AFBB", "#FC4E07", "#E7B800")
 
 theme_set(
@@ -37,9 +37,10 @@ GeomSplitViolin <- ggproto(
         else
           xmaxv), if (grp %% 2 == 1)
             y
-        else-y)
+        else
+          - y)
     newdata <-
-      rbind(newdata[1,], newdata, newdata[nrow(newdata),], newdata[1,])
+      rbind(newdata[1, ], newdata, newdata[nrow(newdata), ], newdata[1, ])
     newdata[c(1, nrow(newdata) - 1, nrow(newdata)), "x"] <-
       round(newdata[1, "x"])
     
@@ -106,7 +107,7 @@ gene$gene_biotype[gene$gene_biotype == "protein_coding"] = "mRNA"
 
 # Length
 med_length = gene %>%
-  group_by(discovery) %>%
+  group_by(discovery, gene_biotype) %>%
   summarize(median = median(length), gene_biotype = gene_biotype)
 
 len = gene %>%
@@ -116,8 +117,8 @@ len = gene %>%
                xintercept = median,
                color = paste(gene_biotype, discovery)
              ),
-             linetype = "dashed") +
-  geom_density(alpha = 0.6) +
+             size = 1) +
+  geom_density(alpha = 0.8) +
   scale_x_log10(
     breaks = scales::trans_breaks("log10", function(x)
       10 ^ x),
@@ -139,7 +140,7 @@ iso = gene %>%
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
-  facet_grid( ~ gene_biotype) +
+  facet_grid(~ gene_biotype) +
   scale_fill_manual(values = palette)
 
 # Nombre de gène chaque catégorie
@@ -255,7 +256,7 @@ transcript = transcript %>%
 
 # Length distrib
 med_length_tx = transcript %>%
-  group_by(discovery) %>%
+  group_by(discovery, transcript_biotype) %>%
   summarize(median = median(length), transcript_biotype = transcript_biotype)
 
 tx_len = transcript %>%
@@ -265,7 +266,7 @@ tx_len = transcript %>%
                xintercept = median,
                color = paste(transcript_biotype, discovery)
              ),
-             linetype = "dashed") +
+             size = 1) +
   geom_density(alpha = 0.7) +
   scale_x_log10(
     breaks = scales::trans_breaks("log10", function(x)
@@ -287,7 +288,7 @@ tx_ex = transcript %>%
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
-  facet_grid( ~ transcript_biotype) +
+  facet_grid(~ transcript_biotype) +
   scale_fill_manual(values = palette)
 
 # Count
@@ -388,7 +389,7 @@ exon$exon_biotype[exon$exon_biotype == "protein_coding"] = "mRNA"
 
 # Length distrib
 med_length_ex = exon %>%
-  group_by(discovery) %>%
+  group_by(discovery, exon_biotype) %>%
   summarize(median = median(length), exon_biotype = exon_biotype)
 
 ex_len = exon %>%
@@ -398,7 +399,7 @@ ex_len = exon %>%
                xintercept = median,
                color = paste(exon_biotype, discovery)
              ),
-             linetype = "dashed") +
+             size = 1) +
   geom_density(alpha = 0.7) +
   scale_x_log10(
     breaks = scales::trans_breaks("log10", function(x)
