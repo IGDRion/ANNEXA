@@ -164,7 +164,8 @@ process NORMALIZE_GENE_COUNTS {
   file input from ch_input
 
   output:
-  file "normalization.pdf" optional true into ch_norm_pdf
+  file "PCA.pdf" optional true into ch_pca_pdf
+  file "heatmaps.pdf" optional true into ch_heatmaps_pdf
   file "counts_gene.normalized.vsd.csv" into ch_norm_gene
 
   """
