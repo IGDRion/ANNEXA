@@ -55,3 +55,7 @@ nextflow run mlorthiois/ANNEXA \
 4. DESeq2 normalization of gene counts
 5. QC on the final gtf with normalized gene counts
 6. Gene body coverage with RSeQC
+
+## Limitations
+
+Only works for Ensembl based gtf annotation. Support for RefSeq (NCBI) based annotation, which presents several differences in GTF tags, is planned for the future.

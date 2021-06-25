@@ -8,7 +8,7 @@ if (params.fa) { ch_fa = file(params.fa, checkIfExists: true) }
 else { exit 1, "Reference Genome file not specified!" }
 
 // Prevent typo
-if (params.resume) exit 1, "Maybe you want to use -profile instead of --profile?"
+if (params.profile) exit 1, "Maybe you want to use -profile instead of --profile?"
 
 def logHeader() {
     // Log colors ANSI codes
