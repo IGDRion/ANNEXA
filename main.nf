@@ -243,7 +243,7 @@ if (params.withGeneCoverage) {
     """
   }
 
-  process RSEQC {
+  process GENE_BODY_COVERAGE {
     publishDir "$params.outdir/RSeQC", mode: 'copy'
 
     input:
