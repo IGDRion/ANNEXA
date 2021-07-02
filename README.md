@@ -61,11 +61,11 @@ At the end of the pipeline, depending on the quality report, you may want to fil
 
 - The **structure of the genes** (mono-isoform and/or mono-exonic): The script allows you to filter the annotation according to whether a new gene is mono-isoform or mono-exonic. For this, the `--filterStruct` option takes as argument `Y` or `N` for each structure (isoform then exon) if you want to filter or not the structure, and the `|` (or) or `&` (and) operator.
 
-Let's say you want to remove new genes that are mono-isoform AND mono-exon, use `--filterStruct "Y&Y"`. If you want to filter the genes that are mono-isoform OR mono-exonic, use `--filterStruct "Y|Y"`. If now you want to filter only mono-isoforms (mono-exonics), use `--filterStruct "Y&N"` (`--filterStruct "N&Y"` respectively). 
+  Let's say you want to remove new genes that are mono-isoform AND mono-exon, use `--filterStruct "Y&Y"`. If you want to filter the genes that are mono-isoform OR mono-exonic, use `--filterStruct "Y|Y"`. If now you want to filter only mono-isoforms (mono-exonics), use `--filterStruct "Y&N"` (`--filterStruct "N&Y"` respectively). 
 
-- The **quantification aspect of the genes** : The script also allows you to filter the annotation according to a quantitative criterion. In the same way as for structures, the --filterQuant option takes as argument a number or "NA" for the minimum number of reads to keep the gene, and the number of samples expressing that gene.
+- The **quantification aspect of the genes** : The script also allows you to filter the annotation according to a quantitative criterion. In the same way as for structures, the `--filterQuant` option takes as argument a number or `NA` for the minimum number of reads to keep the gene, and the number of samples expressing that gene.
 
-Let's say you want to remove new genes validated by less than 50 reads AND present in less than 5 samples, use --filterQuant "50&7". If you want to filter out genes validated by less than 50 reads OR present in less than 5 samples, use --filterStruct "50|5". If you now only want to filter genes validated by less than 50 reads (or only in less than 5 samples), use --filterStruct "50&NA" (or "NA&5" respectively)
+  Let's say you want to remove new genes validated by less than 50 reads AND present in less than 5 samples, use `--filterQuant "50&7"`. If you want to filter out genes validated by less than 50 reads OR present in less than 5 samples, use `--filterQuant "50|5"`. If you now only want to filter genes validated by less than 50 reads (or only in less than 5 samples), use `--filterQuant "50&NA"` (or `--filterQuant "NA&5"` respectively)
 
 
 ### Use case
@@ -80,10 +80,10 @@ conda activate work/conda/*/
 pip install pandas
 ```
 
-2. Now, I want to remove mono-exonic genes and genes that are not validates by at least 30 reads and not present in 6 samples :
+2. Now, I want to remove mono-exonic genes and genes that are not validates by at least 30 reads and not present in 6 samples. I use the script `filter_gtf.py` stored in the bin subfolder of ANNEXA :
 
 ```sh
-./filter_gtf.py \
+./bin/filter_gtf.py \
   --gtf results/final/extented_annotations.gtf \
   --gene_stats results/qc/gene.stats \
   --tx_stats results/qc/transcript.stats \
