@@ -1,0 +1,3 @@
+examples/popsi_19.bam
+examples/CML10_19.bam
+examples/twiny_19.bam

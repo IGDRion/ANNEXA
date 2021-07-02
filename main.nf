@@ -26,12 +26,10 @@ ${c_green}    ___    _   ___   _________  __ ___
                                        ${c_reset}
 -${c_dim}----------------------------------------${c_reset}-
 ${c_purple}github.com/mlorthiois/ANNEXA${c_reset}
-Reference Annotation : ${params.gtf}
-Reference Genome     : ${params.fa}
-Input Samplesheet    : ${params.input}
-Bambu read count     : ${params.readCount}
-Bambu sample number  : ${params.sampleNumber}
-Gene coverage        : ${params.withGeneCoverage}
+Reference Annotation: ${params.gtf}
+Reference Genome    : ${params.fa}
+Input Samplesheet   : ${params.input}
+Gene coverage       : ${params.withGeneCoverage}
 -${c_dim}----------------------------------------${c_reset}-
 """.stripIndent()
 }
@@ -39,13 +37,24 @@ Gene coverage        : ${params.withGeneCoverage}
 log.info logHeader()
 
 ///////////////////////////////////////////////////////////////////////////
+// Create channels from samples.txt, each bam independently
 Channel
-    .fromPath(ch_input)
-    .splitCsv(header:true, sep:',')
-    // If in test profile, precede bam path with base directory
-    .map { row -> workflow.profile.contains('test') ? file("${baseDir}/${row.sample}") : file(row.sample)}
-    .into { ch_bam; ch_bam_rseq; ch_bam_bai }
+  .fromPath( ch_input )
+  .splitCsv()
+  .map { it -> workflow.profile.contains('test') ? file("${baseDir}/${it[0]}", checkIfExists: true) : file(it[0], checkIfExists: true) }
+  .into { ch_bam; ch_bam_rseq; ch_bam_bai }
 
+process FORMAT_INPUT_GTF {
+  input:
+  file gtf from ch_ref
+
+  output:
+  file 'input.formatted.gtf' into ch_format_ref
+
+  """
+  format_gtf.py ${gtf} > input.formatted.gtf
+  """
+}
 
 process BAMBU {
   publishDir "$params.outdir/bambu", mode: 'copy'
@@ -55,7 +64,7 @@ process BAMBU {
   input:
   // Collect parallel bam channel into 1
   file '*' from ch_bam.collect()
-  file ref from ch_ref
+  file ref from ch_format_ref
   file fa from ch_fa
 
   output:
@@ -67,13 +76,12 @@ process BAMBU {
   bambu_counts.R \
     --tag=. \
     --ncore=8 \
-    --sampleNumber=${params.sampleNumber} \
-    --readCount=${params.readCount} \
     --annotation=${ref} \
     --fasta=${fa} \
     *.bam
   """
 }
+
 
 process SPLIT_BAMBU {
   input:
@@ -94,7 +102,7 @@ process FEELNC {
     memory '16 GB'
 
     input:
-    file ref from ch_ref
+    file ref from ch_format_ref
     file fa from ch_fa
     file gtf from ch_novel
 
@@ -118,7 +126,7 @@ process FEELNC {
 
 process RESTORE_ATTRIBUTES_FROM_REF {
   input:
-  file ref from ch_ref
+  file ref from ch_format_ref
   file known from ch_known
 
   output:
@@ -152,39 +160,20 @@ process FORMAT_NOVEL_KNOWN {
   file novel from ch_feelnc_combined
 
   output:
-  file("extented_annotations.gtf") into (ch_final, ch_final_rseq)
+  file("extended_annotations.gtf") into (ch_final, ch_final_rseq)
 
   """
-  cat $known $novel | GTF.py format > extented_annotations.gtf
-  """
-}
-
-process NORMALIZE_GENE_COUNTS {
-  publishDir "$params.outdir/DESeq2", mode: 'copy'
-
-  input:
-  file gene_counts from ch_bambu_gene
-  file input from ch_input
-
-  output:
-  file "PCA.pdf" optional true into ch_pca_pdf
-  file "heatmaps.pdf" optional true into ch_heatmaps_pdf
-  file "counts_gene.normalized.vsd.csv" into ch_norm_gene
-
-  """
-  deseq_normalization.R ${input} ${gene_counts}
+  cat $known $novel | GTF.py format > extended_annotations.gtf
   """
 }
-  
 
 process QC_EXTENDED_GTF {
   publishDir "$params.outdir/qc", mode: 'copy'
 
   input:
   file gtf from ch_final
-  file ref from ch_ref
-  file counts_gene from ch_norm_gene
-  file counts_transcript from ch_bambu_tx
+  file ref from ch_format_ref
+  file counts_gene from ch_bambu_gene
 
   output:
   file "gene.stats" into ch_gene_stats
@@ -195,7 +184,6 @@ process QC_EXTENDED_GTF {
   """
   qc_gtf.py -gtf ${gtf} \
     -c_gene ${counts_gene} \
-    -c_tx ${counts_transcript} \
     -ref ${ref}
   qc.R
   """

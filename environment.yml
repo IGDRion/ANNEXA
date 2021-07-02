@@ -3,10 +3,10 @@ channels:
     - conda-forge
 dependencies:
     - r-base=4.0
+    - pandas=1.2
 
     - bioconda::bioconductor-bambu=1.0.2
     - bioconda::bioconductor-bsgenome
-    - bioconda::bioconductor-deseq2=1.30
     - bioconda::feelnc=0.2
     - bioconda::ucsc-gtftogenepred=377
     - bioconda::ucsc-genepredtobed=377
@@ -19,3 +19,5 @@ dependencies:
     - r-reshape2=1.4
     - r-ggpubr=0.4
     - r-ggridges=0.5
+    - r-viridis=0.6
+

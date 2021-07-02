@@ -4,6 +4,9 @@ library(reshape2)
 library(ggpubr)
 library(ggridges)
 library(RColorBrewer)
+library(grid)
+library(gridExtra)
+library(viridis)
 
 brew = c("#008387", "#a0d3db", "#ad8500", "#d9cb98")
 palette = c("#00AFBB", "#FC4E07", "#E7B800")
@@ -16,93 +19,21 @@ theme_set(
       panel.grid.minor = element_blank(),
       strip.background = element_blank(),
       panel.border = element_rect(colour = "black", fill = NA),
-      strip.text = element_text(face = "bold")
-    )
-)
-
-GeomSplitViolin <- ggproto(
-  "GeomSplitViolin",
-  GeomViolin,
-  draw_group = function(self, data, ..., draw_quantiles = NULL) {
-    data <-
-      transform(
-        data,
-        xminv = x - violinwidth * (x - xmin),
-        xmaxv = x + violinwidth * (xmax - x)
-      )
-    grp <- data[1, "group"]
-    newdata <-
-      plyr::arrange(transform(data, x = if (grp %% 2 == 1)
-        xminv
-        else
-          xmaxv), if (grp %% 2 == 1)
-            y
-        else
-          - y)
-    newdata <-
-      rbind(newdata[1, ], newdata, newdata[nrow(newdata), ], newdata[1, ])
-    newdata[c(1, nrow(newdata) - 1, nrow(newdata)), "x"] <-
-      round(newdata[1, "x"])
-    
-    if (length(draw_quantiles) > 0 &
-        !scales::zero_range(range(data$y))) {
-      stopifnot(all(draw_quantiles >= 0), all(draw_quantiles <=
-                                                1))
-      quantiles <-
-        ggplot2:::create_quantile_segment_frame(data, draw_quantiles)
-      aesthetics <-
-        data[rep(1, nrow(quantiles)), setdiff(names(data), c("x", "y")), drop = FALSE]
-      aesthetics$alpha <-
-        rep(1, nrow(quantiles))
-      both <- cbind(quantiles, aesthetics)
-      quantile_grob <-
-        GeomPath$draw_panel(both, ...)
-      ggplot2:::ggname("geom_split_violin",
-                       grid::grobTree(GeomPolygon$draw_panel(newdata, ...), quantile_grob))
-    }
-    else {
-      ggplot2:::ggname("geom_split_violin",
-                       GeomPolygon$draw_panel(newdata, ...))
-    }
-  }
-)
-
-geom_split_violin <-
-  function(mapping = NULL,
-           data = NULL,
-           stat = "ydensity",
-           position = "identity",
-           ...,
-           draw_quantiles = NULL,
-           trim = TRUE,
-           scale = "area",
-           na.rm = FALSE,
-           show.legend = NA,
-           inherit.aes = TRUE) {
-    layer(
-      data = data,
-      mapping = mapping,
-      stat = stat,
-      geom = GeomSplitViolin,
-      position = position,
-      show.legend = show.legend,
-      inherit.aes = inherit.aes,
-      params = list(
-        trim = trim,
-        scale = scale,
-        draw_quantiles = draw_quantiles,
-        na.rm = na.rm,
-        ...
+      strip.text = element_text(face = "bold"),
+      plot.margin = unit(c(1, 1, 1, 0.5), "cm"),
+      plot.title = element_text(
+        color = "black",
+        size = 18,
+        face = "bold",
+        hjust = 0.5
       )
     )
-  }
-
+)
 
 #############################################################################
 # GENE
 #############################################################################
 gene = read.csv("gene.stats", header = T)
-min_norm = min(gene[length(gene)])
 gene$gene_biotype[gene$gene_biotype == "protein_coding"] = "mRNA"
 
 # Length
@@ -112,6 +43,7 @@ med_length = gene %>%
 
 len = gene %>%
   ggplot(aes(x = length, fill = paste(gene_biotype, discovery))) +
+  ggtitle("Gene length distribution") +
   geom_vline(data = med_length,
              aes(
                xintercept = median,
@@ -129,22 +61,26 @@ len = gene %>%
   scale_fill_manual(values = brew) +
   scale_color_manual(values = brew) +
   guides(color = FALSE) +
-  guides(fill = guide_legend("Source"))
-
+  guides(fill = guide_legend("Source")) +
+  xlab("Gene length (nt)")
 
 # Nb isoformes
 iso = gene %>%
   mutate(isoformes = ifelse(nb_transcripts == 1, "1", "2+")) %>%
   ggplot(aes(x = discovery, fill = isoformes)) +
+  ggtitle("Proportion of mono versus multi-isoform genes") +
   geom_bar(position = "fill",
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
   facet_grid(~ gene_biotype) +
-  scale_fill_manual(values = palette)
+  scale_fill_manual(values = palette) +
+  theme(axis.title.x = element_blank())
+
 
 # Nombre de gène chaque catégorie
 count = ggplot(data = gene, aes(x = gene_biotype, fill = paste(gene_biotype, discovery))) +
+  ggtitle("Number of genes") +
   geom_bar(colour = "black",
            alpha = 0.8,
            position = "dodge") +
@@ -156,55 +92,92 @@ count = ggplot(data = gene, aes(x = gene_biotype, fill = paste(gene_biotype, dis
     vjust = -0.2,
     position = position_dodge(width = 0.9)
   ) +
-  xlab("Biotype") + ylab("Number of gene")
+  ylab("Number of gene") +
+  theme(axis.title.x = element_blank())
 
-# Quantif in ridge plot
-gene_quant = gene %>%
-  select(c(2, 7:dim(gene)[2])) %>%
-  melt() %>%
-  filter(value > min_norm) %>%
-  mutate(variable = gsub("\\..*", "", variable)) %>%
+# Distribution of gene counts in ridge plot
+gene_counts = gene %>%
+  filter(validate_by >= 5) %>%
   ggplot() +
+  ggtitle("Distribution of gene counts") +
   geom_density_ridges2(aes(
-    x = value,
-    y = variable,
+    x = validate_by,
+    y = discovery,
     fill = paste(gene_biotype, discovery)
   ), alpha = 0.7) +
   theme(legend.position = "top") +
   facet_grid(gene_biotype ~ .) +
   scale_fill_manual(values = brew) +
   guides(fill = guide_legend("Source")) +
-  xlab("Normalized Gene expression") + ylab("Sample")
+  scale_x_log10() +
+  xlab("Gene counts") +
+  theme(axis.title.y = element_blank()) +
+  scale_x_log10(
+    breaks = scales::trans_breaks("log10", function(x)
+      10 ^ x),
+    labels = scales::trans_format("log10", scales::math_format(10 ^
+                                                                 .x))
+  )
 
-# Quantif in split violin plot
-gene_quant_violin = gene %>%
-  select(c(2, 7:dim(gene)[2])) %>%
-  melt() %>%
-  filter(value > min_norm) %>%
-  mutate(variable = gsub("\\..*", "", variable)) %>%
+# Hist of gene validate by X samples
+gene_validate = gene %>%
+  filter(presents_in_sample > 0) %>%
+  ggplot(aes(presents_in_sample, fill = paste(gene_biotype, discovery))) +
+  ggtitle("Number of genes according to his\nnumber of samples with more than 1 count") +
+  geom_bar(color = "black", position = position_dodge()) +
+  facet_grid(gene_biotype ~ .) +
+  scale_y_log10() +
+  scale_fill_manual(values = brew) +
+  guides(fill = guide_legend("Source")) +
+  xlab("Number of samples") +
+  ylab("Number of genes") +
+  geom_text(
+    stat = 'count',
+    aes(label = ..count..),
+    vjust = -0.2,
+    position = position_dodge(width = 0.9)
+  )
+
+# Distribution counts by sample
+gene_counts_sample = gene %>%
+  filter(presents_in_sample > 0 & validate_by >= 5) %>%
   ggplot(aes(
-    x = variable,
-    y = value,
+    x = validate_by,
+    y = factor(presents_in_sample),
     fill = paste(gene_biotype, discovery)
   )) +
-  geom_split_violin(trim = T, alpha = 0.7) +
-  stat_summary(
-    fun = median,
-    fun.min = median,
-    fun.max = median,
-    geom = "crossbar",
-    width = .5,
-    size = .25,
-    position = position_dodge(width = .5),
-    show.legend = F
-  ) +
+  ggtitle("Gene counts separated by number of samples\nwith at least 1 count") +
+  geom_density_ridges2(alpha = 0.6) +
+  scale_x_log10() +
   facet_grid(gene_biotype ~ .) +
-  ylab("Normalized Gene Expression") +
-  xlab("Sample") +
-  guides(fill = guide_legend("Source")) +
-  coord_flip() +
   scale_fill_manual(values = brew) +
-  theme(legend.position = "top")
+  scale_color_manual(values = brew) +
+  guides(color = FALSE) +
+  guides(fill = guide_legend("Source")) +
+  xlab("Gene counts") +
+  ylab("Number of samples") +
+  scale_x_log10(
+    breaks = scales::trans_breaks("log10", function(x)
+      10 ^ x),
+    labels = scales::trans_format("log10", scales::math_format(10 ^
+                                                                 .x))
+  )
+
+# Heatmap Nb_isoforms and samples
+gene_tx_samples = gene %>%
+  filter(discovery == "novel") %$%
+  as.data.frame(table(.$presents_in_sample, .$nb_transcripts)) %>%
+  ggplot(aes(
+    x = Var1,
+    y = Var2,
+    fill = log(Freq + 1)
+  )) +
+  guides(fill=FALSE) +
+  ggtitle("Number of novel genes (log) based on isoform\nnumber and number of samples with at least 1 count") +
+  geom_tile() +
+  labs(x = "Number of samples with at least 1 count", y = "Number of isoforms", fill =
+         "log(count)") +
+  scale_fill_viridis()
 
 # 5'-3' extensions count
 gene_ext = gene %>%
@@ -212,20 +185,29 @@ gene_ext = gene %>%
   mutate(ext = ifelse(ext_5 > 0 & ext_3 > 0, "5'-3'",
                       ifelse(ext_5 > 0, "5'", "3'"))) %>%
   ggplot(aes(x = gene_biotype, fill = ext)) +
-  geom_bar(position = "stack",
-           colour = "black",
-           alpha = 0.8) +
+  ggtitle("Number of 5' and 3' gene extensions") +
+  geom_bar(colour = "black",
+           alpha = 0.8,
+           position = position_dodge()) +
   scale_fill_manual(values = palette) +
-  theme(legend.position = "top")
+  theme(legend.position = "top") +
+  theme(axis.title.x = element_blank()) +
+  labs(fill = "Gene extension", y = "Count") +
+  scale_y_log10() +
+  annotation_logticks(sides = "l")
+
 
 # 5'-3' extensions distribution
+labels = c("5'", "3'")
+names(labels) = c("ext_5", "ext_3")
 gene_ext_dist = gene %>%
   filter(ext_5 > 0 | ext_3 > 0) %>%
   select(c("ext_5", "ext_3", "gene_biotype", "discovery")) %>%
   melt() %>%
   ggplot(aes(x = value, fill = paste(gene_biotype, discovery))) +
+  ggtitle("Distribution of 5' and 3' gene extensions\n(at genomic level)") +
   geom_density(alpha = 0.5) +
-  facet_grid(variable ~ .) +
+  facet_grid(variable ~ ., labeller = labeller(variable = labels)) +
   scale_x_log10(
     breaks = scales::trans_breaks("log10", function(x)
       10 ^ x),
@@ -234,37 +216,48 @@ gene_ext_dist = gene %>%
   ) +
   theme(legend.position = "top") +
   guides(fill = guide_legend("Source")) +
-  xlab("Length of extension (nt)") + ylab("Density") +
+  xlab("Length of gene extension (nt)") + ylab("Density") +
   scale_fill_manual(values = c(brew[1], brew[3]))
+
 
 #############################################################################
 # TRANSCRIPT
 #############################################################################
 transcript = read.csv("transcript.stats", header = T)
-transcript$transcript_biotype[transcript$transcript_biotype == "protein_coding"] = "mRNA"
-lncRNA_biotypes = c("retained_intron", "lncRNA", "antisense", "non-coding")
+lncRNA_biotypes = c("retained_intron",
+                    "lncRNA",
+                    "antisense",
+                    "non-coding",
+                    "lnc_RNA")
+mRNA_biotypes = c("protein_coding", "mRNA")
 
 transcript = transcript %>%
-  mutate(
-    transcript_biotype = if_else(
-      transcript_biotype %in% lncRNA_biotypes,
-      "lncRNA",
+  mutate(transcript_biotype = if_else(
+    transcript_biotype %in% lncRNA_biotypes,
+    "lncRNA",
+    if_else(
+      transcript_biotype %in% mRNA_biotypes,
+      "mRNA",
       transcript_biotype
     )
-  ) %>%
+  )) %>%
   filter(transcript_biotype %in% c("mRNA", "lncRNA"))
 
 # Length distrib
 med_length_tx = transcript %>%
-  group_by(discovery, transcript_biotype) %>%
+  group_by(tx_discovery, transcript_biotype) %>%
   summarize(median = median(length), transcript_biotype = transcript_biotype)
 
 tx_len = transcript %>%
-  ggplot(aes(x = length, fill = paste(transcript_biotype, discovery))) +
+  ggplot(aes(
+    x = length,
+    fill = paste(transcript_biotype, tx_discovery)
+  )) +
+  ggtitle("Transcript length distribution") +
   geom_vline(data = med_length_tx,
              aes(
                xintercept = median,
-               color = paste(transcript_biotype, discovery)
+               color = paste(transcript_biotype, tx_discovery)
              ),
              size = 1) +
   geom_density(alpha = 0.7) +
@@ -278,25 +271,29 @@ tx_len = transcript %>%
   guides(fill = guide_legend("Source")) +
   scale_fill_manual(values = brew) +
   scale_color_manual(values = brew) +
-  guides(color = FALSE)
+  guides(color = FALSE) +
+  xlab("Transcript length (nt)")
 
 # Mono vs multiexonique
 tx_ex = transcript %>%
   mutate(exons = ifelse(nb_exons == 1, "1", "2+")) %>%
-  ggplot(aes(x = discovery, fill = exons)) +
+  ggplot(aes(x = tx_discovery, fill = exons)) +
+  ggtitle("Proportion of mono versus multi exonic transcripts") +
   geom_bar(position = "fill",
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
   facet_grid(~ transcript_biotype) +
-  scale_fill_manual(values = palette)
+  scale_fill_manual(values = palette) +
+  theme(axis.title.x = element_blank())
 
 # Count
 tx_count = transcript %>%
   ggplot(aes(
     x = transcript_biotype,
-    fill = paste(transcript_biotype, discovery, "in", gene_discovery, "gene")
+    fill = paste(transcript_biotype, tx_discovery, "in", gene_discovery, "gene")
   )) +
+  ggtitle("Number of transcripts") +
   geom_bar(colour = "black",
            alpha = 0.8,
            position = "dodge") +
@@ -318,68 +315,8 @@ tx_count = transcript %>%
     vjust = -0.2,
     position = position_dodge(width = 0.9)
   ) +
-  theme(legend.title = element_text(size = 10)) +
-  xlab("Transcript Biotype") + ylab("Number of transcripts")
-
-# Quantif ridge plot
-tx_quant = transcript %>%
-  select(c(3, 6:dim(transcript)[2])) %>%
-  melt() %>%
-  filter(value >= 1) %>%
-  mutate(variable = gsub("\\..*", "", variable)) %>%
-  ggplot() +
-  geom_density_ridges2(aes(
-    x = value,
-    y = variable,
-    fill = paste(transcript_biotype, discovery)
-  ), alpha = 0.6) +
-  theme(legend.position = "top") +
-  scale_x_log10(
-    breaks = scales::trans_breaks("log10", function(x)
-      10 ^ x),
-    labels = scales::trans_format("log10", scales::math_format(10 ^
-                                                                 .x))
-  ) +
-  facet_grid(transcript_biotype ~ .) +
-  scale_fill_manual(values = brew) +
-  guides(fill = guide_legend("Source")) +
-  xlab("Transcript expression") + ylab("Sample")
-
-# Quantif split violin plot
-tx_quant_violin = transcript %>%
-  select(c(3, 6:dim(transcript)[2])) %>%
-  melt() %>%
-  filter(value >= 1) %>%
-  mutate(variable = gsub("\\..*", "", variable)) %>%
-  ggplot(aes(
-    x = variable,
-    y = value,
-    fill = paste(transcript_biotype, discovery)
-  )) +
-  geom_split_violin(trim = T, alpha = 0.7) +
-  stat_summary(
-    fun = median,
-    fun.min = median,
-    fun.max = median,
-    geom = "crossbar",
-    width = .5,
-    size = .25,
-    position = position_dodge(width = .5),
-    show.legend = F
-  ) +
-  facet_grid(transcript_biotype ~ .) +
-  scale_y_log10(
-    breaks = scales::trans_breaks("log10", function(x)
-      10 ^ x),
-    labels = scales::trans_format("log10", scales::math_format(10 ^
-                                                                 .x))
-  ) +
-  ylab("Transcript Expression") +
-  xlab("Sample") +
-  coord_flip() +
-  theme(legend.position = "top") +
-  guides(fill = guide_legend("Source")) +
-  scale_fill_manual(values = brew)
+  theme(legend.title = element_text(size = 10), axis.title.x = element_blank()) +
+  ylab("Number of transcripts")
 
 #############################################################################
 # EXON
@@ -394,6 +331,7 @@ med_length_ex = exon %>%
 
 ex_len = exon %>%
   ggplot(aes(x = length, fill = paste(exon_biotype, discovery))) +
+  ggtitle("Exon length distribution") +
   geom_vline(data = med_length_ex,
              aes(
                xintercept = median,
@@ -411,9 +349,11 @@ ex_len = exon %>%
   scale_fill_manual(values = brew) +
   scale_color_manual(values = brew) +
   guides(color = FALSE) +
-  guides(fill = guide_legend("Source"))
+  guides(fill = guide_legend("Source")) +
+  xlab("Exon length (nt)")
 
 ex_count = ggplot(data = exon, aes(x = exon_biotype, fill = paste(exon_biotype, discovery))) +
+  ggtitle("Number of exons") +
   geom_bar(colour = "black",
            alpha = 0.8,
            position = "dodge") +
@@ -434,97 +374,52 @@ ex_count = ggplot(data = exon, aes(x = exon_biotype, fill = paste(exon_biotype, 
   ) +
   guides(color = FALSE) +
   guides(fill = guide_legend("Source")) +
-  theme(legend.position = "top")
+  theme(legend.position = "top") +
+  theme(axis.title.x = element_blank())
 
 #############################################################################
 # PDF
 #############################################################################
-pdf("qc_gtf.pdf", width = 11, height = 8)
-ggarrange(
-  len,
-  ggarrange(
-    iso,
-    count,
-    ncol = 2,
-    labels = c("B", "C"),
-    legend = "left",
-    common.legend = TRUE
-  ),
-  nrow = 2,
-  labels = "A",
-  legend = "top"      # Étiquette du line plot
-) %>%
-  annotate_figure(top = text_grob("Gene",
-                                  face = "bold",
-                                  size = 18))
-ggarrange(
-  tx_len,
-  ggarrange(
-    tx_ex,
-    tx_count,
-    ncol = 2,
-    labels = c("B", "C"),
-    legend = "left",
-    common.legend = F
-  ),
-  nrow = 2,
-  labels = "A",
-  legend = "top"      # Étiquette du line plot
-) %>%
-  annotate_figure(top = text_grob("Transcript",
-                                  face = "bold",
-                                  size = 18))
+pdf("qc_gtf.pdf", width = 7, height = 7)
+grid.newpage()
+cover <- textGrob("ANNEXA report",
+                  gp = gpar(fontsize = 40,
+                            col = "black"))
+grid.draw(cover)
 
-ggarrange(
-  ex_len,
-  ggarrange(
-    ex_count,
-    ggplot() + theme_void(),
-    ncol = 2,
-    labels = "B",
-    legend = "left",
-    common.legend = F
-  ),
-  nrow = 2,
-  labels = "A",
-  legend = "top"      # Étiquette du line plot
-) %>%
-  annotate_figure(top = text_grob("Exon",
-                                  face = "bold",
-                                  size = 18))
+# Gene
+grid.arrange(textGrob(
+  "Gene Characterization",
+  gp = gpar(fontface = "italic", fontsize = 20),
+  vjust = 0
+))
+count
+len
+iso
+gene_counts
+gene_validate
+gene_counts_sample
+gene_tx_samples
+gene_ext
+gene_ext_dist
 
-gene_quant %>%
-  annotate_figure(top = text_grob("Normalized Gene expression",
-                                  face = "bold",
-                                  size = 18))
-gene_quant_violin %>%
-  annotate_figure(top = text_grob("Normalized Gene expression",
-                                  face = "bold",
-                                  size = 18))
-tx_quant %>%
-  annotate_figure(top = text_grob("Transcript expression",
-                                  face = "bold",
-                                  size = 18))
-tx_quant_violin %>%
-  annotate_figure(top = text_grob("Transcript expression",
-                                  face = "bold",
-                                  size = 18))
-ggarrange(
-  gene_ext_dist,
-  ggarrange(
-    gene_ext,
-    ggplot() + theme_void(),
-    ncol = 2,
-    labels = "B",
-    legend = "left",
-    common.legend = F
-  ),
-  nrow = 2,
-  labels = "A",
-  legend = "top"
-) %>%
-  annotate_figure(top = text_grob("Gene extensions",
-                                  face = "bold",
-                                  size = 18))
+# Transcripts
+grid.arrange(textGrob(
+  "Transcript Characterization",
+  gp = gpar(fontface = "italic", fontsize = 20),
+  vjust = 0
+))
+tx_count
+tx_len
+tx_ex
+
+# Exons
+grid.arrange(textGrob(
+  "Exon Characterization",
+  gp = gpar(fontface = "italic", fontsize = 20),
+  vjust = 0
+))
+ex_len
+ex_count
 
 dev.off()

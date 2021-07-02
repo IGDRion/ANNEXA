@@ -1,2 +1,2 @@
-grep "gene\." $1 | grep -P "\texon\t" > novel.gtf
-grep -v "gene\." $1 | grep -P "\texon\t" > known.gtf
+grep "gene\." $1 | awk '$3=="exon"' > novel.gtf
+grep -v "gene\." $1 | awk '$3=="exon"' > known.gtf
