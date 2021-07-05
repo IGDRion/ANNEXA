@@ -1,4 +1,4 @@
-name: annexa
+name: base
 channels:
     - conda-forge
 dependencies:

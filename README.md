@@ -14,13 +14,14 @@ More specifically, ANNEXA works by using only three parameter files (a reference
 
 ```sh
 nextflow run mlorthiois/ANNEXA \
-    -profile test
+    -profile test,conda
 ```
 
 3. Run ANNEXA on your own data (change input, gtf, fa with path of your files).
 
 ```sh
 nextflow run mlorthiois/ANNEXA \
+    --profile conda \
     --input samples.txt \
     --gtf /path/to/ref.gtf \
     --fa /path/to/ref.fa
@@ -37,13 +38,16 @@ The input parameter takes a file listing the bams to analyze (see example below)
 ### Options
 
 ```
---profile test    : Run annexa on toy dataset
---profile slurm   : Run annexa on slurm executor
---input           : Path to file listing paths to bam files
---fa              : Path to reference genome
---gtf             : Path to reference annotation
---withGeneCoverage: Run RSeQC (can be long depending on annotation and bam sizes). False by default
---maxCpu          : max cpu threads used by ANNEXA. 8 by default
+--profile test       : Run annexa on toy dataset
+--profile slurm      : Run annexa on slurm executor
+--profile singularity: Run annexa in singularity container
+--profile conda      : Run annexa in conda environment
+--profile docker     : Run annexa in docker container
+--input              : Path to file listing paths to bam files
+--fa                 : Path to reference genome
+--gtf                : Path to reference annotation
+--withGeneCoverage   : Run RSeQC (can be long depending on annotation and bam sizes). False by default
+--maxCpu             : max cpu threads used by ANNEXA. 8 by default
 ```
 
 ## Pipeline summary
