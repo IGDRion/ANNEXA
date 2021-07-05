@@ -16,7 +16,7 @@ args = parser.parse_args()
 # Parse gtf classed as protein_coding by FEELnc
 gene_ids = {}
 # Add transcript_biotype = protein_coding
-for record in GTF.parse(args.mRNA, by_line=True):
+for record in GTF.parse_by_line(args.mRNA):
     record.source = "FEELnc"
     record["transcript_biotype"] = "protein_coding"
     record["gene_biotype"] = "protein_coding"
@@ -30,7 +30,7 @@ for record in GTF.parse(args.mRNA, by_line=True):
 # Parse gtf classed as lncRNA by FEELnc
 lncRNAs = {}
 # If gene_id also found in protein_coding => protein_coding else lncRNA
-for record in GTF.parse(args.lncRNA, by_line=True):
+for record in GTF.parse_by_line(args.lncRNA):
     record.source = "FEELnc"
     if record["gene_id"] in gene_ids:
         record["transcript_biotype"] = "protein_coding"

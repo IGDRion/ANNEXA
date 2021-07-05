@@ -29,7 +29,7 @@ def parse_gene_counts(file):
 
 def get_ref_length(file):
     ref = {}
-    for record in GTF.parse(file, by_line=True):
+    for record in GTF.parse_by_line(file):
         if record.feature == "gene":
             ref[record["gene_id"]] = {"start": record.start, "end": record.end}
     return ref

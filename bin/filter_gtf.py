@@ -29,36 +29,28 @@ def filter_by_quantif(g_stats, minCount, minSample, operator):
 
 
 def filter_by_struct(g_stats, t_stats, isoform, exon, operator):
-    # For each row: extract gene_id and search if this gene_id has at least 1 transcript with 2+ exons
-    def check_mono_exons(row):
-        gene_id = row["gene_id"]
-        # If no row with more than 1 exon : True
-        return (
-            len(novel_m[(novel_m["gene_id"] == gene_id) & (novel_m["nb_exons"] > 1)])
-            < 1
-        )
-
+    if not isoform and not exon:
+        return []
+    
     m = g_stats.merge(t_stats, left_on="gene_id", right_on="gene_id")
     novel_m = m[m["discovery"] == "novel"]
-
+    
     # Filters
     mono_isoform_filter = novel_m["nb_transcripts"] == 1
-
+    mono_exon_filter = (novel_m.nb_exons == 1).groupby(novel_m['gene_id']).transform('all')
+    
     if not exon:
         genes = novel_m[mono_isoform_filter]
-
+    
     elif not isoform:
-        # Only filter exon if selected because takes time
-        mono_exon_filter = novel_m.apply(check_mono_exons, axis=1)
         genes = novel_m[mono_exon_filter]
-
+    
     else:
-        mono_exon_filter = novel_m.apply(check_mono_exons, axis=1)
         if operator == "or":
             genes = novel_m[mono_exon_filter | mono_isoform_filter]
         else:
             genes = novel_m[mono_exon_filter & mono_isoform_filter]
-
+        
     return genes.gene_id.unique().tolist()
 
 
