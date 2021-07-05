@@ -43,6 +43,7 @@ The input parameter takes a file listing the bams to analyze (see example below)
 --fa              : Path to reference genome
 --gtf             : Path to reference annotation
 --withGeneCoverage: Run RSeQC (can be long depending on annotation and bam sizes). False by default
+--maxCpu          : max cpu threads used by ANNEXA. 8 by default
 ```
 
 ## Pipeline summary

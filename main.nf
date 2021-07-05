@@ -7,6 +7,8 @@ else { exit 1, "Reference Annotation file not specified!" }
 if (params.fa) { ch_fa = file(params.fa, checkIfExists: true) }
 else { exit 1, "Reference Genome file not specified!" }
 
+params.maxCpu = 8
+
 // Prevent typo
 if (params.profile) exit 1, "Maybe you want to use -profile instead of --profile?"
 
@@ -58,7 +60,7 @@ process FORMAT_INPUT_GTF {
 
 process BAMBU {
   publishDir "$params.outdir/bambu", mode: 'copy'
-  cpus 8
+  cpus params.maxCpu
   memory '40GB'
 
   input:
@@ -75,7 +77,7 @@ process BAMBU {
   """
   bambu_counts.R \
     --tag=. \
-    --ncore=8 \
+    --ncore=${params.maxCpu} \
     --annotation=${ref} \
     --fasta=${fa} \
     *.bam
