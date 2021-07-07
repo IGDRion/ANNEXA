@@ -75,7 +75,7 @@ At the end of the pipeline, depending on the quality report, you may want to fil
 
 ### Use case
 
-1. This script needs `pandas` to work. Pandas is included in the conda environment of ANNEXA, I first need to activate this environment or install python:
+1. This script needs `pandas` to work. Pandas is included in the conda environment of ANNEXA, you first need to activate this environment or install python:
 
 ```sh
 # Method 1: Activate conda environment of ANNEXA
@@ -85,7 +85,7 @@ conda activate work/conda/*/
 pip install pandas
 ```
 
-2. Now, I want to remove mono-exonic genes and genes that are not validates by at least 30 reads and not present in 6 samples. I use the script `filter_gtf.py` stored in the bin subfolder of ANNEXA :
+2. Now, if you want to remove mono-exonic genes and genes that are not validates by at least 30 reads and not present in 6 samples. Use the script `filter_gtf.py` stored in the bin subfolder of ANNEXA :
 
 ```sh
 ./bin/filter_gtf.py \
@@ -120,7 +120,7 @@ optional arguments:
 
 ## Troubleshooting
 
-GTF parsing can be hard, and ANNEXA need some informations from the input annotation. The first step is to check if the input annotation contains all the information needed.
+GTF parsing can be hard, and ANNEXA needs some informations from the input annotation. The first step is to check if the input annotation contains all the information needed.
 
 For example, your GTF should contains all the 3 levels gene -> transcript -> exon, with the attributes gene_id and transcript correctly annotated. Your gene line also have to contains a gene_biotype attributes.
 
