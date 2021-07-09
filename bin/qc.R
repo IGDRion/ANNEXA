@@ -243,6 +243,7 @@ transcript = transcript %>%
   )) %>%
   filter(transcript_biotype %in% c("mRNA", "lncRNA"))
 
+dim(transcript)
 # Length distrib
 med_length_tx = transcript %>%
   group_by(tx_discovery, transcript_biotype) %>%
@@ -322,7 +323,17 @@ tx_count = transcript %>%
 # EXON
 #############################################################################
 exon = read.csv("exon.stats", header = T)
-exon$exon_biotype[exon$exon_biotype == "protein_coding"] = "mRNA"
+exon = exon %>%
+  mutate(exon_biotype = if_else(
+    exon_biotype %in% lncRNA_biotypes,
+    "lncRNA",
+    if_else(
+      exon_biotype %in% mRNA_biotypes,
+      "mRNA",
+      exon_biotype
+    )
+  )) %>%
+  filter(exon_biotype %in% c("mRNA", "lncRNA"))
 
 # Length distrib
 med_length_ex = exon %>%
