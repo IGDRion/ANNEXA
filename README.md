@@ -2,9 +2,23 @@
 
 ## Introduction
 
-**ANNEXA** is an all-in-one reproductible pipeline, written in the [Nextflow](https://nextflow.io), which allows users to analyze LR-RNAseq sequences from Oxford Nanopore Technologies (ONT), and to reconstruct and quantify known and novel genes and isoforms. 
+**ANNEXA** is an all-in-one reproductible pipeline, written in the [Nextflow](https://nextflow.io), which allows users to analyze LR-RNAseq sequences from Oxford Nanopore Technologies (ONT), and to reconstruct and quantify known and novel genes and isoforms.
 
-More specifically, ANNEXA works by using only three parameter files (a reference genome, a reference annotation and mapping files) and provides users with an extended annotation distinguishing between novel protein-coding (mRNA) versus long non-coding RNAs (lncRNA) genes. All known and novel gene/transcript models are further characterized through multiple features (length, number of spliced transcripts, normalized expression levels,...) available as graphical outputs.
+## Pipeline summary
+
+![Metro map](./assets/metro_map.png)
+
+ANNEXA works by using only three parameter files (a reference genome, a reference annotation and mapping files) and provides users with an extended annotation distinguishing between novel protein-coding (mRNA) versus long non-coding RNAs (lncRNA) genes. All known and novel gene/transcript models are further characterized through multiple features (length, number of spliced transcripts, normalized expression levels,...) available as graphical outputs.
+
+1. Check if the input annotation contains all the information needed.
+2. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu).
+3. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc).
+4. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
+5. Filter novel transcripts based on [bambu](https://github.com/GoekeLab/bambu) and/or [TransforKmers](https://github.com/mlorthiois/transforkmers) Novel Discovery Rates.
+6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/mlorthiois/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
+7. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
+
+This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
 
 ## Usage
 
@@ -21,7 +35,7 @@ nextflow run mlorthiois/ANNEXA \
 
 ```sh
 nextflow run mlorthiois/ANNEXA \
-    --profile conda \
+    -profile {test,docker,singularity,conda,slurm} \
     --input samples.txt \
     --gtf /path/to/ref.gtf \
     --fa /path/to/ref.fa
@@ -38,89 +52,41 @@ The input parameter takes a file listing the bams to analyze (see example below)
 ### Options
 
 ```
---profile test       : Run annexa on toy dataset
---profile slurm      : Run annexa on slurm executor
---profile singularity: Run annexa in singularity container
---profile conda      : Run annexa in conda environment
---profile docker     : Run annexa in docker container
---input              : Path to file listing paths to bam files
---fa                 : Path to reference genome
---gtf                : Path to reference annotation
---withGeneCoverage   : Run RSeQC (can be long depending on annotation and bam sizes). False by default
---maxCpu             : max cpu threads used by ANNEXA. 8 by default
+Required:
+--input             : Path to file listing paths to bam files.
+--fa                : Path to reference genome.
+--gtf               : Path to reference annotation.
+
+
+Optional:
+-profile test       : Run annexa on toy dataset.
+-profile slurm      : Run annexa on slurm executor.
+-profile singularity: Run annexa in singularity container.
+-profile conda      : Run annexa in conda environment.
+-profile docker     : Run annexa in docker container.
+
+--filter            : Perform or not the filtering step. false by default.
+--tfkmers_tokenizer : Path to TransforKmers tokenizer. Required if filter activated.
+--tfkmers_model     : Path to TransforKmers model. Required if filter activated.
+--bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
+--tfkmers_threshold : TransforKmers NDR threshold below which new transcripts are retained.
+--operation         : Operation to retained novel transcripts. "union" retain tx validated by either bambu or transforkmers, "intersection" retain tx validated by both.
+
+--withGeneCoverage  : Run RSeQC (can be long depending on annotation and bam sizes). False by default.
+
+--maxCpu            : max cpu threads used by ANNEXA. 8 by default.
+--maxMemory         : max memory used by ANNEXA. 40GB by default.
 ```
 
-## Pipeline summary
+> If the filter argument is set to `true`, TransforKmers model and tokenizer paths have to be given. They can be either downloaded from the [TransforKmers official repository](https://github.com/mlorthiois/TransforKmers) or trained in advance by yourself on your own data.
 
-This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
+## Automatic filtering step
 
-1. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu)
-2. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc)
-3. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
-4. Perform a quality control of the extended annotation (see [example](https://github.com/mlorthiois/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
-5. Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py)
+By activating the filtering step (`--filter true`), ANNEXA proposes to filter the generated extended annotation according to 2 methods:
 
-## Filtering extended annotation
+1. By using the NDR proposed by [bambu](https://github.com/GoekeLab/bambu). This threshold includes several information such as sequence profile, structure (mono-exonic, etc) and quantification (number of samples, expression). Each transcript with an NDR below the classification threshold will be retained by ANNEXA.
+2. By analysing the TSS of each new transcript using the [TransforKmers](https://github.com/mlorthiois/TransforKmers) (deep-learning) tool. Each TSS validated below a certain threshold will be retained.
 
-At the end of the pipeline, depending on the quality report, you may want to filter some new genes. For this, ANNEXA provides a script that allows you to filter the annotation according to 2 criteria: 
+The filtered annotation can be the "union" of these 2 tools, i.e. all the transcripts validated by one or two of these tools; or the "intersection", i.e. the transcripts by these 2 tools.
 
-- The **structure of the genes** (mono-isoform and/or mono-exonic): The script allows you to filter the annotation according to whether a new gene is mono-isoform or mono-exonic. For this, the `--filterStruct` option takes as argument `Y` or `N` for each structure (isoform then exon) if you want to filter or not the structure, and the `|` (or) or `&` (and) operator.
-
-  Let's say you want to remove new genes that are mono-isoform AND mono-exon, use `--filterStruct "Y&Y"`. If you want to filter the genes that are mono-isoform OR mono-exonic, use `--filterStruct "Y|Y"`. If now you want to filter only mono-isoforms (mono-exonics), use `--filterStruct "Y&N"` (`--filterStruct "N&Y"` respectively). 
-
-- The **quantification aspect of the genes** : The script also allows you to filter the annotation according to a quantitative criterion. In the same way as for structures, the `--filterQuant` option takes as argument a number or `NA` for the minimum number of reads to keep the gene, and the number of samples expressing that gene.
-
-  Let's say you want to remove new genes validated by less than 50 reads AND present in less than 5 samples, use `--filterQuant "50&7"`. If you want to filter out genes validated by less than 50 reads OR present in less than 5 samples, use `--filterQuant "50|5"`. If you now only want to filter genes validated by less than 50 reads (or only in less than 5 samples), use `--filterQuant "50&NA"` (or `--filterQuant "NA&5"` respectively)
-
-
-### Use case
-
-1. This script needs `pandas` to work. Pandas is included in the conda environment of ANNEXA, you first need to activate this environment or install python:
-
-```sh
-# Method 1: Activate conda environment of ANNEXA
-conda activate work/conda/*/
-
-# Method 2: Install pandas
-pip install pandas
-```
-
-2. Now, if you want to remove mono-exonic genes and genes that are not validates by at least 30 reads and not present in 6 samples. Use the script `filter_gtf.py` stored in the bin subfolder of ANNEXA :
-
-```sh
-./bin/filter_gtf.py \
-  --gtf results/final/extented_annotations.gtf \
-  --gene_stats results/qc/gene.stats \
-  --tx_stats results/qc/transcript.stats \
-  --filterQuant="30&6" \
-  --filterStruct "N&Y"
-```
-
-Help page:
-
-```
-usage: filter_gtf.py [-h] --gtf GTF --gene_stats GENE_STATS --tx_stats TX_STATS
-                     [--filterStruct {Y&Y,Y|Y,Y&N,Y|N,N&Y,N|Y,N|N}] [--filterQuant FILTERQUANT] [-o OUTPUT]
-
-Filter your extended GTF generated by ANNEXA. See https://github.com/mlorthiois/annexa for more informations
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --gtf GTF             Path to extended_annotations.gtf generated by ANNEXA
-  --gene_stats GENE_STATS
-                        Path to gene.stats generated by ANNEXA
-  --tx_stats TX_STATS   Path to transcript.stats generated by ANNEXA
-  --filterStruct {Y&Y,Y|Y,Y&N,Y|N,N&Y,N|Y,N|N}
-                        Filter or not mono-isoform and/or mono-exonic genes.
-  --filterQuant FILTERQUANT
-                        Filter or not genes with less than X read counts and/or present in less than X examples.
-  -o OUTPUT, --output OUTPUT
-                        Directs the filtered gtf to file with the name of your choice
-```
-
-## Troubleshooting
-
-GTF parsing can be hard, and ANNEXA needs some informations from the input annotation. The first step is to check if the input annotation contains all the information needed.
-
-For example, your GTF should contains all the 3 levels gene -> transcript -> exon, with the attributes gene_id and transcript correctly annotated. Your gene line also have to contains a gene_biotype attributes.
-
+At the end, the QC steps are performed both on the full and filtered extended annotations.

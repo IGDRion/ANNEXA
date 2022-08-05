@@ -1,22 +1,25 @@
 #! /usr/bin/env python3
 from GTF import GTF
 
-# Parse gene_counts from bambu in a dict, ex for line:
-# ENSG0000003    25   16   3   0
-# { "ENSG00000003": {
-#     "counts": 44,
-#     "validates" : 3
-#   }
-# }
+
 def parse_gene_counts(file):
+    """
+    Parse gene_counts from bambu in a dict, ex for line:
+    ENSG0000003    25   16   3   0
+    { "ENSG00000003": {
+        "counts": 44,
+        "validates" : 3
+      }
+    }
+    """
     genes = {}
-    samples = file.readline()  # Skip header
+    file.readline()  # Skip header
 
     for line in file:
         line = line.rstrip().split("\t")
-        int_line = [int(count) for count in line[1:]]
+        int_line = [float(count) for count in line[1:]]
 
-        # Compute sum of all sample counts
+        # Total expression over samples
         sum_counts = sum(int_line)
 
         # Number of samples which has counts != 0
@@ -29,9 +32,8 @@ def parse_gene_counts(file):
 
 def get_ref_length(file):
     ref = {}
-    for record in GTF.parse_by_line(file):
-        if record.feature == "gene":
-            ref[record["gene_id"]] = {"start": record.start, "end": record.end}
+    for gene in GTF.parse(file):
+        ref[gene["gene_id"]] = {"start": gene.start, "end": gene.end}
     return ref
 
 
@@ -41,22 +43,26 @@ def qc_gtf(gtf, gene_counts, ref):
 
     # CSV headers
     gene_str = f"gene_id,gene_biotype,nb_transcripts,length,ext_5,ext_3,discovery,validate_by,presents_in_sample\n"
-    transcript_str = f"transcript_id,gene_id,transcript_biotype,nb_exons,length,gene_discovery,tx_discovery\n"
+    transcript_str = (
+        f"transcript_id,gene_id,transcript_biotype,nb_exons,length,gene_discovery,tx_discovery\n"
+    )
     exon_str = "exon_biotype,length,discovery\n"
 
+    biotypes = set(("protein_coding", "lncRNA", "lnc_RNA"))
     for gene in GTF.parse(gtf).values():
-        # Only stats for protein_coding and lncRNA gene
-        if gene["gene_biotype"] not in ("protein_coding", "lncRNA"):
+        if gene["gene_biotype"] not in biotypes:
             continue
 
         g_id = gene["gene_id"]
         g_biotype = gene["gene_biotype"]
         g_status = "novel" if g_id.startswith("gene.") else "known"
         g_count = gene_counts[g_id]["counts"]  # Counts in all samples
-        g_samples = gene_counts[g_id]["validates"]  # Find in x samples
+        g_samples = gene_counts[g_id]["validates"]  # Found in x samples
         g_nb_tx = len(gene.transcripts)  # Number of isoforms
 
         # Compute genomic extension with start/end in ref
+        ext_5 = 0
+        ext_3 = 0
         if not g_id.startswith("gene."):
             if gene.strand == "+":
                 ext_5 = ref_start_end[gene["gene_id"]]["start"] - gene.start
@@ -67,10 +73,7 @@ def qc_gtf(gtf, gene_counts, ref):
 
         # Gene length = longest transcript e.g with longest sum of exon length
         length = max(
-            [
-                sum([len(exon) for exon in transcript.exons])
-                for transcript in gene.transcripts
-            ]
+            [sum([len(exon) for exon in transcript.exons]) for transcript in gene.transcripts]
         )
 
         # Create a csv row
@@ -84,7 +87,9 @@ def qc_gtf(gtf, gene_counts, ref):
             tx_length = sum([len(exon) for exon in transcript.exons])
 
             # Create csv row
-            transcript_str += f"{tx_id},{g_id},{tx_biotype},{tx_nb_exons},{tx_length},{g_status},{tx_status}\n"
+            transcript_str += (
+                f"{tx_id},{g_id},{tx_biotype},{tx_nb_exons},{tx_length},{g_status},{tx_status}\n"
+            )
 
             for exon in transcript.children:
                 ex_length = len(exon)
@@ -116,12 +121,18 @@ if __name__ == "__main__":
         type=argparse.FileType("r"),
         required=True,
     )
+    parser.add_argument(
+        "-prefix",
+        help="Output prefix.",
+        type=str,
+        required=True,
+    )
     args = parser.parse_args()
 
     gene, transcript, exon = qc_gtf(args.gtf, args.c_gene, args.ref)
-    with open("gene.stats", "w") as fd:
+    with open(f"{args.prefix}.gene.stats", "w") as fd:
         fd.write(gene)
-    with open("transcript.stats", "w") as fd:
+    with open(f"{args.prefix}.transcript.stats", "w") as fd:
         fd.write(transcript)
-    with open("exon.stats", "w") as fd:
+    with open(f"{args.prefix}.exon.stats", "w") as fd:
         fd.write(exon)

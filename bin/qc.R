@@ -31,9 +31,15 @@ theme_set(
 )
 
 #############################################################################
+# CLI Args
+#############################################################################
+args = commandArgs(trailingOnly=TRUE)
+prefix = args[1]
+
+#############################################################################
 # GENE
 #############################################################################
-gene = read.csv("gene.stats", header = T)
+gene = read.csv(paste0(prefix,".gene.stats"), header = T)
 gene$gene_biotype[gene$gene_biotype == "protein_coding"] = "mRNA"
 
 # Length
@@ -223,7 +229,7 @@ gene_ext_dist = gene %>%
 #############################################################################
 # TRANSCRIPT
 #############################################################################
-transcript = read.csv("transcript.stats", header = T)
+transcript = read.csv(paste0(prefix,".transcript.stats"), header = T)
 lncRNA_biotypes = c("retained_intron",
                     "lncRNA",
                     "antisense",
@@ -322,7 +328,7 @@ tx_count = transcript %>%
 #############################################################################
 # EXON
 #############################################################################
-exon = read.csv("exon.stats", header = T)
+exon = read.csv(paste0(prefix,".exon.stats"), header = T)
 exon = exon %>%
   mutate(exon_biotype = if_else(
     exon_biotype %in% lncRNA_biotypes,
@@ -391,7 +397,7 @@ ex_count = ggplot(data = exon, aes(x = exon_biotype, fill = paste(exon_biotype, 
 #############################################################################
 # PDF
 #############################################################################
-pdf("qc_gtf.pdf", width = 7, height = 7)
+pdf(paste0(prefix, ".annexa.qc.pdf"), width = 7, height = 7)
 grid.newpage()
 cover <- textGrob("ANNEXA report",
                   gp = gpar(fontsize = 40,
