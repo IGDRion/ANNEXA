@@ -15,7 +15,7 @@ ANNEXA works by using only three parameter files (a reference genome, a referenc
 3. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc).
 4. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
 5. Filter novel transcripts based on [bambu](https://github.com/GoekeLab/bambu) and/or [TransforKmers](https://github.com/mlorthiois/transforkmers) Novel Discovery Rates.
-6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/mlorthiois/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
+6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
 7. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
 
 This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
@@ -27,14 +27,14 @@ This pipeline has been tested with reference annotation from Ensembl and NCBI-Re
 2. Test the pipeline on a small dataset
 
 ```sh
-nextflow run mlorthiois/ANNEXA \
+nextflow run IGDRion/ANNEXA \
     -profile test,conda
 ```
 
 3. Run ANNEXA on your own data (change input, gtf, fa with path of your files).
 
 ```sh
-nextflow run mlorthiois/ANNEXA \
+nextflow run IGDRion/ANNEXA \
     -profile {test,docker,singularity,conda,slurm} \
     --input samples.txt \
     --gtf /path/to/ref.gtf \

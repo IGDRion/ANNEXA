@@ -13,7 +13,7 @@ ${c_green}    ___    _   ___   _________  __ ___
 /_/  |_/_/ |_/_/ |_/_____//_/|_/_/  |_|
                                        ${c_reset}
 -${c_dim}-------------------------------------${c_reset}-
-${c_purple}github.com/mlorthiois/ANNEXA${c_reset}
+${c_purple}github.com/igdrion/ANNEXA${c_reset}
 Reference Annotation: ${params.gtf}
 Reference Genome    : ${params.fa}
 Input Samplesheet   : ${params.input}

@@ -1,6 +1,6 @@
 process PREDICT {
   conda (params.enable_conda ? "$baseDir/environment.yml" : null)
-  container "mlorthiois/annexa:${workflow.revision? workflow.revision: "main"}"
+  container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
   publishDir "$params.outdir/transforkmers", mode: 'copy'
 
   cpus params.maxCpu
