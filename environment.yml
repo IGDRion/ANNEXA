@@ -16,4 +16,4 @@ dependencies:
 
   - pip
   - pip:
-      - git+https://github.com/mlorthiois/transforkmers.git
+      - git+https://github.com/igdrion/transforkmers.git
