@@ -50,3 +50,14 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Singularity
+        uses: eWaterCycle/setup-singularity@v7
+        with:
+          singularity-version: 3.8.3
+
+      - name: test
+        run: env
+
+      - name: Build a singularity container from docker image
+        run: sudo singularity build my_container.sif docker-daemon://${{ env.IMAGE_NAME}}:${{ steps.meta.output.tags }}
