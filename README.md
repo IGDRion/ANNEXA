@@ -80,7 +80,7 @@ Optional:
 
 > If the filter argument is set to `true`, TransforKmers model and tokenizer paths have to be given. They can be either downloaded from the [TransforKmers official repository](https://github.com/mlorthiois/TransforKmers) or trained in advance by yourself on your own data.
 
-## Automatic filtering step
+### Filtering step
 
 By activating the filtering step (`--filter`), ANNEXA proposes to filter the generated extended annotation according to 2 methods:
 
