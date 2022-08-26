@@ -94,6 +94,6 @@ By activating the filtering step (`--filter`), ANNEXA proposes to filter the gen
 
 To use them, extract the zip, and point `--tfkmers_model` and `--tfkmers_tokenizer` to the subdirectories.
 
-The filtered annotation can be the "union" of these 2 tools, i.e. all the transcripts validated by one or two of these tools; or the "intersection", i.e. the transcripts by these 2 tools.
+The filtered annotation can be the `union` of these 2 tools, _i.e._ all the transcripts validated by one or both of these tools; or the `intersection`, _i.e._ the transcripts validated by both tools.
 
 At the end, the QC steps are performed both on the full and filtered extended annotations.
