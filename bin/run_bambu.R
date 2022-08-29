@@ -32,7 +32,9 @@ se     <- bambu(
   annotations = grlist,
   genome = genomeSequence,
   ncore = ncore,
-  opt.discovery = list(min.readCount = 5, max.txNDR = 1)
+  opt.discovery = list(min.readCount = 5,
+                       max.txNDR = 1,
+                       min.txScore.singleExon = 0)
 )
 
 # Extract NDR
