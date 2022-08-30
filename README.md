@@ -90,7 +90,7 @@ By activating the filtering step (`--filter`), ANNEXA proposes to filter the gen
 
 - A [human specific
   model](https://genostack-api-swift.genouest.org/v1/AUTH_07c8a078861e436ba41c4416a821e5d0/transforkmers/hsa_5prime_bert_6-512.zip?temp_url_sig=59e4bd439f42fc2bb8953e78eae82306466917d2&temp_url_expires=2661501621)
-- A [dog specific model](https://genostack-api-swift.genouest.org/v1/AUTH_07c8a078861e436ba41c4416a821e5d0/transforkmers/dog_5prime_bert_6-512.zip?temp_url_sig=c456a38387ac6dbf1006360fe82f0659ba0dc9af&temp_url_expires=2661501414)
+- A [dog specific model](https://genostack-api-swift.genouest.org/v1/AUTH_07c8a078861e436ba41c4416a821e5d0/transforkmers/hsa_5prime_bert_6-512.zip?temp_url_sig=8bbbf4316166426f8284af7af40825ea76508b7a&temp_url_expires=2661843707)
 
 To use them, extract the zip, and point `--tfkmers_model` and `--tfkmers_tokenizer` to the subdirectories.
 
