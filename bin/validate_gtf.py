@@ -28,14 +28,14 @@ if __name__ == "__main__":
 
         #######################################################
         # Replace if gene_id starts with "gene." to avoid conflicts with bambu
-        g_id = record["gene_id"]
-        if g_id.startswith("gene."):
-            record["gene_id"] = g_id.replace("gene", "known_gene")
-
+        # g_id = record["gene_id"]
+        # if g_id.startswith("gene."):
+        #     record["gene_id"] = g_id.replace("gene", "gene_known")
+        #
         # Replace if transcript_id starts with "tx." to avoid conflicts with bambu
-        t_id = record["transcript_id"]
-        if t_id.startswith("tx."):
-            record["transcript_id"] = t_id.replace("tx", "known_tx")
+        # t_id = record["transcript_id"]
+        # if t_id.startswith("tx."):
+        #     record["transcript_id"] = t_id.replace("tx", "transcript_known")
 
         #######################################################
         # Check if gene_biotype in each transcripts and exons
