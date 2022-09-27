@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ANNEXA** is an all-in-one reproductible pipeline, written in the [Nextflow](https://nextflow.io), which allows users to analyze LR-RNAseq sequences from Oxford Nanopore Technologies (ONT), and to reconstruct and quantify known and novel genes and isoforms.
+**ANNEXA** is an all-in-one reproductible pipeline, written in the [Nextflow](https://nextflow.io), which allows users to analyze LR-RNAseq data (Long-Read RNASeq), and to reconstruct and quantify known and novel genes and isoforms.
 
 ## Pipeline summary
 
@@ -41,7 +41,7 @@ nextflow run IGDRion/ANNEXA \
     --fa /path/to/ref.fa
 ```
 
-The input parameter takes a file listing the bams to analyze (see example below)
+The input parameter takes a file listing the `bam` path files to analyze (see example below)
 
 ```
 /path/to/1.bam
