@@ -15,7 +15,7 @@ ANNEXA works by using only three parameter files (a reference genome, a referenc
 3. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc).
 4. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
 5. Filter novel transcripts based on [bambu](https://github.com/GoekeLab/bambu) and/or [TransforKmers](https://github.com/mlorthiois/transforkmers) Novel Discovery Rates.
-6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/mlorthiois/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
+6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
 7. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
 
 This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
@@ -27,14 +27,14 @@ This pipeline has been tested with reference annotation from Ensembl and NCBI-Re
 2. Test the pipeline on a small dataset
 
 ```sh
-nextflow run mlorthiois/ANNEXA \
+nextflow run IGDRion/ANNEXA \
     -profile test,conda
 ```
 
 3. Run ANNEXA on your own data (change input, gtf, fa with path of your files).
 
 ```sh
-nextflow run mlorthiois/ANNEXA \
+nextflow run IGDRion/ANNEXA \
     -profile {test,docker,singularity,conda,slurm} \
     --input samples.txt \
     --gtf /path/to/ref.gtf \
@@ -80,13 +80,20 @@ Optional:
 
 > If the filter argument is set to `true`, TransforKmers model and tokenizer paths have to be given. They can be either downloaded from the [TransforKmers official repository](https://github.com/mlorthiois/TransforKmers) or trained in advance by yourself on your own data.
 
-## Automatic filtering step
+### Filtering step
 
-By activating the filtering step (`--filter true`), ANNEXA proposes to filter the generated extended annotation according to 2 methods:
+By activating the filtering step (`--filter`), ANNEXA proposes to filter the generated extended annotation according to 2 methods:
 
 1. By using the NDR proposed by [bambu](https://github.com/GoekeLab/bambu). This threshold includes several information such as sequence profile, structure (mono-exonic, etc) and quantification (number of samples, expression). Each transcript with an NDR below the classification threshold will be retained by ANNEXA.
-2. By analysing the TSS of each new transcript using the [TransforKmers](https://github.com/mlorthiois/TransforKmers) (deep-learning) tool. Each TSS validated below a certain threshold will be retained.
 
-The filtered annotation can be the "union" of these 2 tools, i.e. all the transcripts validated by one or two of these tools; or the "intersection", i.e. the transcripts by these 2 tools.
+2. By analysing the TSS of each new transcript using the [TransforKmers](https://github.com/mlorthiois/TransforKmers) (deep-learning) tool. Each TSS validated below a certain threshold will be retained. We already provide 2 trained models for filtering TSS with TransforKmers.
+
+- A [human specific
+  model](https://genostack-api-swift.genouest.org/v1/AUTH_07c8a078861e436ba41c4416a821e5d0/transforkmers/hsa_5prime_bert_6-512.zip?temp_url_sig=59e4bd439f42fc2bb8953e78eae82306466917d2&temp_url_expires=2661501621)
+- A [dog specific model](https://genostack-api-swift.genouest.org/v1/AUTH_07c8a078861e436ba41c4416a821e5d0/transforkmers/dog_5prime_bert_6-512.zip?temp_url_sig=a5378b6f2cc9ffc10b8f5d4fa6e535070d22f845&temp_url_expires=2661844043)
+
+To use them, extract the zip, and point `--tfkmers_model` and `--tfkmers_tokenizer` to the subdirectories.
+
+The filtered annotation can be the `union` of these 2 tools, _i.e._ all the transcripts validated by one or both of these tools; or the `intersection`, _i.e._ the transcripts validated by both tools.
 
 At the end, the QC steps are performed both on the full and filtered extended annotations.
