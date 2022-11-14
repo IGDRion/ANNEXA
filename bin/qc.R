@@ -230,8 +230,7 @@ gene_ext_dist = gene %>%
 # TRANSCRIPT
 #############################################################################
 transcript = read.csv(paste0(prefix,".transcript.stats"), header = T)
-lncRNA_biotypes = c("retained_intron",
-                    "lncRNA",
+lncRNA_biotypes = c("lncRNA",
                     "antisense",
                     "non-coding",
                     "lnc_RNA")
