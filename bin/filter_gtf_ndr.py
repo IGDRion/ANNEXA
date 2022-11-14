@@ -9,7 +9,7 @@ def parse_bambu(line):
 
 def parse_tfkmers(line):
     ids = line[0].split("::")
-    return ids[0], ids[1], line[2]
+    return ids[0], ids[1], line[1]
 
 
 def parse_ndr(csv, origin, th) -> Set[str]:
