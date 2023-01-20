@@ -30,6 +30,11 @@ process FEELNC_CODPOT {
       -l known_lncRNA.gtf \
       --numtx=3000,3000 \
       -o new
+  
+  # consider new noORF transcripts as new lncRNA
+  if [ -e feelnc_codpot_out/new.noORF.gtf ]; then
+    cat feelnc_codpot_out/new.noORF.gtf >> feelnc_codpot_out/new.lncRNA.gtf
+  fi
   """
 }
 
