@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python3 
 from typing import Set
 from GTF import GTF
 
@@ -39,7 +39,7 @@ def filter_count_matrix(file, transcripts, wr):
     print(next(file), file=wr)
     for line in file:
         line_splitted = line.split("\t")
-        if line_splitted[0].startswith("tx.") and line_splitted[0] not in transcripts:
+        if line_splitted[0].startswith("BambuTx") and line_splitted[0] not in transcripts:
             continue
         print(line.rstrip(), file=wr)
 
