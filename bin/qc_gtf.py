@@ -48,7 +48,7 @@ def qc_gtf(gtf, gene_counts, ref):
     )
     exon_str = "exon_biotype,length,discovery\n"
 
-    biotypes = set(("protein_coding", "lncRNA", "lnc_RNA"))
+    biotypes = set(("protein_coding", "lncRNA", "lnc_RNA", "ncRNA"))
     for gene in GTF.parse(gtf).values():
         if gene["gene_biotype"] not in biotypes:
             continue

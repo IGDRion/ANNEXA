@@ -233,7 +233,8 @@ transcript = read.csv(paste0(prefix,".transcript.stats"), header = T)
 lncRNA_biotypes = c("lncRNA",
                     "antisense",
                     "non-coding",
-                    "lnc_RNA")
+                    "lnc_RNA",
+                    "ncRNA")
 mRNA_biotypes = c("protein_coding", "mRNA")
 
 transcript = transcript %>%
