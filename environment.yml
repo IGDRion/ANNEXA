@@ -21,4 +21,4 @@ dependencies:
   - pip:
       - git+https://github.com/igdrion/transforkmers.git
       - accelerate==0.24.1
-      - transformers==4.35.2
+      - transformers==4.31.0
