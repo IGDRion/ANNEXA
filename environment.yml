@@ -6,6 +6,8 @@ dependencies:
   - pytorch::pytorch=1.12.0
   - pytorch::cpuonly
 
+  - conda-forge::procps-ng
+
   - conda-forge::r-base=4.1
   - conda-forge::r-rcolorbrewer
   - conda-forge::r-tidyverse=1.3.2
