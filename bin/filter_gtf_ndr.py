@@ -26,7 +26,7 @@ def parse_ndr(csv, origin, th) -> Set[str]:
         elif origin == "tfkmers":
             line = parse_tfkmers(line)
 
-        _, tx_id, ndr = line
+        tx_id, _, ndr = line
         ndr = float(ndr)
 
         if ndr < th:
