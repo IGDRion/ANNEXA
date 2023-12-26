@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python3 
 from GTF import GTF
 
 
@@ -48,14 +48,14 @@ def qc_gtf(gtf, gene_counts, ref):
     )
     exon_str = "exon_biotype,length,discovery\n"
 
-    biotypes = set(("protein_coding", "lncRNA", "lnc_RNA"))
+    biotypes = set(("protein_coding", "lncRNA", "lnc_RNA", "ncRNA"))
     for gene in GTF.parse(gtf).values():
         if gene["gene_biotype"] not in biotypes:
             continue
 
         g_id = gene["gene_id"]
         g_biotype = gene["gene_biotype"]
-        g_status = "novel" if g_id.startswith("gene.") else "known"
+        g_status = "novel" if g_id.startswith(('BambuGene','unstranded.Gene')) else "known"
         g_count = gene_counts[g_id]["counts"]  # Counts in all samples
         g_samples = gene_counts[g_id]["validates"]  # Found in x samples
         g_nb_tx = len(gene.transcripts)  # Number of isoforms
@@ -63,7 +63,7 @@ def qc_gtf(gtf, gene_counts, ref):
         # Compute genomic extension with start/end in ref
         ext_5 = 0
         ext_3 = 0
-        if not g_id.startswith("gene."):
+        if not g_id.startswith(('BambuGene','unstranded.Gene')):
             if gene.strand == "+":
                 ext_5 = ref_start_end[gene["gene_id"]]["start"] - gene.start
                 ext_3 = gene.end - ref_start_end[gene["gene_id"]]["end"]
@@ -82,7 +82,7 @@ def qc_gtf(gtf, gene_counts, ref):
         for transcript in gene.transcripts:
             tx_id = transcript["transcript_id"]
             tx_biotype = transcript["transcript_biotype"]
-            tx_status = "novel" if tx_id.startswith("tx.") else "known"
+            tx_status = "novel" if tx_id.startswith("BambuTx") else "known"
             tx_nb_exons = len(transcript.exons)
             tx_length = sum([len(exon) for exon in transcript.exons])
 

@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python3 
 from typing import Set
 from GTF import GTF
 
@@ -9,7 +9,7 @@ def parse_bambu(line):
 
 def parse_tfkmers(line):
     ids = line[0].split("::")
-    return ids[0], ids[1], line[1]
+    return ids[1], ids[0], line[1]
 
 
 def parse_ndr(csv, origin, th) -> Set[str]:
@@ -26,7 +26,7 @@ def parse_ndr(csv, origin, th) -> Set[str]:
         elif origin == "tfkmers":
             line = parse_tfkmers(line)
 
-        _, tx_id, ndr = line
+        tx_id, _, ndr = line
         ndr = float(ndr)
 
         if ndr < th:
@@ -39,7 +39,7 @@ def filter_count_matrix(file, transcripts, wr):
     print(next(file), file=wr)
     for line in file:
         line_splitted = line.split("\t")
-        if line_splitted[0].startswith("tx.") and line_splitted[0] not in transcripts:
+        if line_splitted[0].startswith("BambuTx") and line_splitted[0].lower() not in transcripts:
             continue
         print(line.rstrip(), file=wr)
 

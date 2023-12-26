@@ -8,8 +8,8 @@ process BAMBU_SPLIT_RESULTS {
 
   shell:
   '''
-  grep "tx\\." !{extended_annotation} | awk '$3=="exon"' > novel.gtf
-  grep "gene\\." novel.gtf > novel_genes.gtf
-  grep -v "gene\\." novel.gtf > novel_isoforms.gtf
+  grep "BambuTx" !{extended_annotation} | awk '$3=="exon"' > novel.gtf
+  grep -e "BambuGene" -e "unstranded.Gene" novel.gtf > novel_genes.gtf
+  grep -v -e "BambuGene" -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
   '''
 }

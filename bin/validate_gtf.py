@@ -46,7 +46,7 @@ if __name__ == "__main__":
         # Check for RefSeq gene_biotype format
         if g_biotype == "mRNA":
             g_biotype = "protein_coding"
-        if g_biotype == "lnc_RNA":
+        if g_biotype == "lnc_RNA" or g_biotype == "ncRNA":
             g_biotype = "lncRNA"
         record["gene_biotype"] = g_biotype
 
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         # Check for RefSeq transcript_biotype format
         if t_biotype == "mRNA":
             t_biotype = "protein_coding"
-        elif t_biotype == "lnc_RNA":
+        elif t_biotype == "lnc_RNA" or t_biotype == "ncRNA":
             t_biotype = "lncRNA"
         record["transcript_biotype"] = t_biotype
 
