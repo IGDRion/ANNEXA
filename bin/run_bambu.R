@@ -14,7 +14,13 @@ genomeseq      <- strsplit(grep('--fasta*', args, value = TRUE), split = '=')[[1
 genomeSequence <- Rsamtools::FaFile(genomeseq)
 Rsamtools::indexFa(genomeseq)
 annot_gtf      <- strsplit(grep('--annotation*', args, value = TRUE), split = '=')[[1]][[2]]
-readlist       <- args[5:length(args)]
+bambu_strand   <- strsplit(grep('--bambu_strand*', args, value = TRUE), split = '=')[[1]][[2]]
+if (bambu_strand=="true"){
+  bambu_strand=TRUE
+} else {
+  bambu_strand=FALSE
+}
+readlist       <- args[6:length(args)]
 
 print("BAMs:")
 readlist
@@ -30,6 +36,7 @@ se     <- bambu(
   ncore = ncore,
   verbose = TRUE,
   NDR = 1,
+  stranded = bambu_strand,
   opt.discovery = list(min.txScore.singleExon = 0)
 )
 

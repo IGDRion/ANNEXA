@@ -25,6 +25,7 @@ process BAMBU {
     --ncore=${params.maxCpu} \
     --annotation=${ref} \
     --fasta=${fa} \
+    --bambu_strand=${params.bambu_strand} \
     *.bam
 
   sed -i 's/*/./g' extended_annotations.gtf
