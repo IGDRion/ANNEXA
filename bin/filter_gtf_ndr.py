@@ -1,5 +1,6 @@
-#! /usr/bin/env python3 
-from typing import Set
+#! /usr/bin/env python3
+from typing import Dict, Set, Tuple
+
 from GTF import GTF
 
 
@@ -9,37 +10,47 @@ def parse_bambu(line):
 
 def parse_tfkmers(line):
     ids = line[0].split("::")
-    return ids[1], ids[0], line[1]
+    return ids[1], ids[0], line[1], ids[2]
 
 
-def parse_ndr(csv, origin, th) -> Set[str]:
+def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, str]]:
     s = set()
+    strand_dict = dict()
 
     # Skip header
     next(csv)
 
+    strand = None
     for line in csv:
         line = line.split(",")
 
         if origin == "bambu":
-            line = parse_bambu(line)
+            tx_id, _, ndr = parse_bambu(line)
         elif origin == "tfkmers":
-            line = parse_tfkmers(line)
+            tx_id, _, ndr, strand = parse_tfkmers(line)
+        else:
+            exit("Unknown method")
 
-        tx_id, _, ndr = line
         ndr = float(ndr)
 
         if ndr < th:
             s.add(tx_id.lower())
 
-    return s
+            # Extract strand from sequence name to restrand GTF records
+            if origin == "tfkmers":
+                strand_dict[tx_id] = strand
+
+    return s, strand_dict
 
 
 def filter_count_matrix(file, transcripts, wr):
     print(next(file), file=wr)
     for line in file:
         line_splitted = line.split("\t")
-        if line_splitted[0].startswith("BambuTx") and line_splitted[0].lower() not in transcripts:
+        if (
+            line_splitted[0].startswith("BambuTx")
+            and line_splitted[0].lower() not in transcripts
+        ):
             continue
         print(line.rstrip(), file=wr)
 
@@ -99,8 +110,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ###################################################
-    filter_bambu = parse_ndr(args.bambu, "bambu", args.bambu_threshold)
-    filter_tfkmers = parse_ndr(args.tfkmers, "tfkmers", args.tfkmers_threshold)
+    filter_bambu, _ = parse_ndr(args.bambu, "bambu", args.bambu_threshold)
+    filter_tfkmers, strand_dict = parse_ndr(
+        args.tfkmers, "tfkmers", args.tfkmers_threshold
+    )
 
     if args.operation == "union":
         filter = filter_bambu | filter_tfkmers
@@ -110,6 +123,7 @@ if __name__ == "__main__":
     with open("unformat.novel.filter.gtf", "w") as wr:
         for record in GTF.parse_by_line(args.gtf):
             if "transcript_id" in record and record["transcript_id"].lower() in filter:
+                record.strand = strand_dict[record["transcript_id"]]
                 print(record, file=wr)
 
     with open("counts_transcript.filter.txt", "w") as wr:
