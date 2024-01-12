@@ -15,26 +15,42 @@ def get_tss_interval(transcript, length):
     return start, end
 
 
+def get_interval_record(tx, length):
+    start, end = get_tss_interval(tx, length)
+    if start > 0:
+        return (
+            tx.seqname,
+            start - 1,
+            end,
+            f"{tx['gene_id']}::{tx['transcript_id']}::{tx.strand}",
+            tx.score,
+            tx.strand,
+        )
+    else:
+        print(
+            f"{tx['transcript_id']} skipped: Start Coordinate detected < 0.",
+            file=sys.stderr,
+        )
+    return None
+
+
 def get_intervals(transcripts, length):
     intervals = []
     for transcript in transcripts:
-        start, end = get_tss_interval(transcript, length)
-        if start > 0:
-            intervals.append(
-                (
-                    transcript.seqname,
-                    start - 1,
-                    end,
-                    f"{transcript['gene_id']}::{transcript['transcript_id']}",
-                    transcript.score,
-                    transcript.strand,
-                )
-            )
+        # If defined strand, test only TSS
+        if transcript.strand in ("+", "-"):
+            interval_record = get_interval_record(transcript, length)
+            if interval_record is not None:
+                intervals.append(interval_record)
+
+        # If undefined strand, simulate and test both extremities
         else:
-            print(
-                f"{transcript['transcript_id']} skipped: Start Coordinate detected < 0.",
-                file=sys.stderr,
-            )
+            for strand in ("+", "-"):
+                transcript.strand = strand
+                interval_record = get_interval_record(transcript, length)
+                if interval_record is not None:
+                    intervals.append(interval_record)
+
     return intervals
 
 
