@@ -122,8 +122,9 @@ if __name__ == "__main__":
 
     with open("unformat.novel.filter.gtf", "w") as wr:
         for record in GTF.parse_by_line(args.gtf):
-            if "transcript_id" in record and record["transcript_id"].lower() in filter:
-                record.strand = strand_dict[record["transcript_id"]]
+            tx_id = record["transcript_id"].lower()
+            if "transcript_id" in record and tx_id in filter:
+                record.strand = strand_dict[tx_id]
                 print(record, file=wr)
 
     with open("counts_transcript.filter.txt", "w") as wr:
