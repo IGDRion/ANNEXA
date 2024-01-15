@@ -1,16 +1,19 @@
 #! /usr/bin/env python3
 from typing import Dict, Set, Tuple
+from collections import namedtuple
 
 from GTF import GTF
 
-
-def parse_bambu(line):
-    return tuple(line)
+TranscriptProb = namedtuple("TranscriptProb", ["gene_id", "tx_id", "ndr"])
 
 
-def parse_tfkmers(line):
+def parse_bambu(line) -> TranscriptProb:
+    return TranscriptProb(line[1], line[0].lower(), float(line[2]))
+
+
+def parse_tfkmers(line) -> Tuple[TranscriptProb, str]:
     ids = line[0].split("::")
-    return ids[1], ids[0], line[1], ids[2]
+    return TranscriptProb(ids[0], ids[1].lower(), float(line[1])), ids[2]
 
 
 def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, str]]:
@@ -25,20 +28,18 @@ def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, str]]:
         line = line.split(",")
 
         if origin == "bambu":
-            tx_id, _, ndr = parse_bambu(line)
+            tx_prob = parse_bambu(line)
         elif origin == "tfkmers":
-            tx_id, _, ndr, strand = parse_tfkmers(line)
+            tx_prob, strand = parse_tfkmers(line)
         else:
             exit("Unknown method")
 
-        ndr = float(ndr)
-
-        if ndr < th:
-            s.add(tx_id.lower())
+        if tx_prob.ndr < th:
+            s.add(tx_prob.tx_id)
 
             # Extract strand from sequence name to restrand GTF records
             if origin == "tfkmers":
-                strand_dict[tx_id] = strand
+                strand_dict[tx_prob.tx_id] = strand
 
     return s, strand_dict
 
@@ -124,8 +125,13 @@ if __name__ == "__main__":
         for record in GTF.parse_by_line(args.gtf):
             if "transcript_id" in record:
                 tx_id = record["transcript_id"].lower()
+
                 if tx_id in filter:
-                    record.strand = strand_dict[tx_id]
+                    # If operation == "union", tx_id can be OK in bambu
+                    # but not in TFKmers. So strand not defined
+                    if tx_id in strand_dict:
+                        record.strand = strand_dict[tx_id]
+
                     print(record, file=wr)
 
     with open("counts_transcript.filter.txt", "w") as wr:
