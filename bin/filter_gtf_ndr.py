@@ -16,7 +16,10 @@ def parse_tfkmers(line) -> Tuple[TranscriptProb, str]:
     return TranscriptProb(ids[0], ids[1].lower(), float(line[1])), ids[2]
 
 
-def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, str]]:
+StrandRecord = namedtuple("StrandRecord", ["ndr", "strand"])
+
+
+def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, StrandRecord]]:
     s = set()
     strand_dict = dict()
 
@@ -39,7 +42,12 @@ def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, str]]:
 
             # Extract strand from sequence name to restrand GTF records
             if origin == "tfkmers":
-                strand_dict[tx_prob.tx_id] = strand
+                # If both extremities are tested, keep only lower extremity prob
+                if (
+                    tx_prob.tx_id not in strand_dict
+                    or tx_prob.ndr < strand_dict[tx_prob.tx_id].ndr
+                ):
+                    strand_dict[tx_prob.tx_id] = StrandRecord(tx_prob.ndr, strand)
 
     return s, strand_dict
 
@@ -130,7 +138,7 @@ if __name__ == "__main__":
                     # If operation == "union", tx_id can be OK in bambu
                     # but not in TFKmers. So strand not defined
                     if tx_id in strand_dict:
-                        record.strand = strand_dict[tx_id]
+                        record.strand = strand_dict[tx_id].strand
 
                     print(record, file=wr)
 
