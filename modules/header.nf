@@ -24,6 +24,7 @@ Tfkmers Tokenizer   : ${params.tfkmers_tokenizer}
 Tfkmers Threshold   : ${params.tfkmers_threshold}
 Bambu Threshold     : ${params.bambu_threshold}
 Filtering operation : ${params.operation}
+Stranded            : ${params.bambu_strand}
 -${c_dim}-------------------------------------${c_reset}-
 """.stripIndent()
 }

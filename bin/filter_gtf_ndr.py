@@ -1,45 +1,65 @@
-#! /usr/bin/env python3 
-from typing import Set
+#! /usr/bin/env python3
+from typing import Dict, Set, Tuple
+from collections import namedtuple
+
 from GTF import GTF
 
-
-def parse_bambu(line):
-    return tuple(line)
+TranscriptProb = namedtuple("TranscriptProb", ["gene_id", "tx_id", "ndr"])
 
 
-def parse_tfkmers(line):
+def parse_bambu(line) -> TranscriptProb:
+    return TranscriptProb(line[1], line[0].lower(), float(line[2]))
+
+
+def parse_tfkmers(line) -> Tuple[TranscriptProb, str]:
     ids = line[0].split("::")
-    return ids[1], ids[0], line[1]
+    return TranscriptProb(ids[0], ids[1].lower(), float(line[1])), ids[2]
 
 
-def parse_ndr(csv, origin, th) -> Set[str]:
+StrandRecord = namedtuple("StrandRecord", ["ndr", "strand"])
+
+
+def parse_ndr(csv, origin, th) -> Tuple[Set[str], Dict[str, StrandRecord]]:
     s = set()
+    strand_dict = dict()
 
     # Skip header
     next(csv)
 
+    strand = None
     for line in csv:
         line = line.split(",")
 
         if origin == "bambu":
-            line = parse_bambu(line)
+            tx_prob = parse_bambu(line)
         elif origin == "tfkmers":
-            line = parse_tfkmers(line)
+            tx_prob, strand = parse_tfkmers(line)
+        else:
+            exit("Unknown method")
 
-        tx_id, _, ndr = line
-        ndr = float(ndr)
+        if tx_prob.ndr < th:
+            s.add(tx_prob.tx_id)
 
-        if ndr < th:
-            s.add(tx_id.lower())
+            # Extract strand from sequence name to restrand GTF records
+            if origin == "tfkmers":
+                # If both extremities are tested, keep only lower extremity prob
+                if (
+                    tx_prob.tx_id not in strand_dict
+                    or tx_prob.ndr < strand_dict[tx_prob.tx_id].ndr
+                ):
+                    strand_dict[tx_prob.tx_id] = StrandRecord(tx_prob.ndr, strand)
 
-    return s
+    return s, strand_dict
 
 
 def filter_count_matrix(file, transcripts, wr):
     print(next(file), file=wr)
     for line in file:
         line_splitted = line.split("\t")
-        if line_splitted[0].startswith("BambuTx") and line_splitted[0].lower() not in transcripts:
+        if (
+            line_splitted[0].startswith("BambuTx")
+            and line_splitted[0].lower() not in transcripts
+        ):
             continue
         print(line.rstrip(), file=wr)
 
@@ -99,8 +119,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ###################################################
-    filter_bambu = parse_ndr(args.bambu, "bambu", args.bambu_threshold)
-    filter_tfkmers = parse_ndr(args.tfkmers, "tfkmers", args.tfkmers_threshold)
+    filter_bambu, _ = parse_ndr(args.bambu, "bambu", args.bambu_threshold)
+    filter_tfkmers, strand_dict = parse_ndr(
+        args.tfkmers, "tfkmers", args.tfkmers_threshold
+    )
 
     if args.operation == "union":
         filter = filter_bambu | filter_tfkmers
@@ -109,8 +131,16 @@ if __name__ == "__main__":
 
     with open("unformat.novel.filter.gtf", "w") as wr:
         for record in GTF.parse_by_line(args.gtf):
-            if "transcript_id" in record and record["transcript_id"].lower() in filter:
-                print(record, file=wr)
+            if "transcript_id" in record:
+                tx_id = record["transcript_id"].lower()
+
+                if tx_id in filter:
+                    # If operation == "union", tx_id can be OK in bambu
+                    # but not in TFKmers. So strand not defined
+                    if tx_id in strand_dict:
+                        record.strand = strand_dict[tx_id].strand
+
+                    print(record, file=wr)
 
     with open("counts_transcript.filter.txt", "w") as wr:
         filter_count_matrix(args.counts_tx, filter, wr)
