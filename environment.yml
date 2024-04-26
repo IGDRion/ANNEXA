@@ -17,6 +17,9 @@ dependencies:
 
   - conda-forge::procps-ng
 
+  - conda-forge::mkl=2024.0.0
+  - conda-forge::einops==0.6.1
+
   - pip
   - pip:
       - git+https://github.com/igdrion/transforkmers.git
