@@ -3,9 +3,7 @@ dependencies:
   - conda-forge::git
 
   - conda-forge::python=3.10.4
-  - pytorch::pytorch=1.12.0
-  - pytorch::cpuonly
-  
+
   - conda-forge::r-base=4.1
   - conda-forge::r-rcolorbrewer
   - conda-forge::r-tidyverse=1.3.2
@@ -16,10 +14,11 @@ dependencies:
   - conda-forge::r-viridis
 
   - conda-forge::procps-ng
-  - conda-forge::mkl==2024.0
-  
+
   - pip
   - pip:
       - git+https://github.com/igdrion/transforkmers.git
       - transformers==4.27.2
       - tokenizers==0.13.2
+      - torch==1.12.0
+      - mkl==2024.0
