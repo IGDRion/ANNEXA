@@ -14,7 +14,8 @@ dependencies:
   - conda-forge::r-viridis
 
   - conda-forge::procps-ng
-
+  - conda-forge::mkl==2024.0
+  
   - pip
   - pip:
       - git+https://github.com/igdrion/transforkmers.git
