@@ -14,17 +14,18 @@ ${c_green}    ___    _   ___   _________  __ ___
                                        ${c_reset}
 -${c_dim}-------------------------------------${c_reset}-
 ${c_purple}github.com/igdrion/ANNEXA${c_reset}
-Reference Annotation: ${params.gtf}
-Reference Genome    : ${params.fa}
-Input Samplesheet   : ${params.input}
+Reference Annotation  : ${params.gtf}
+Reference Genome      : ${params.fa}
+Input Samplesheet     : ${params.input}
 ---
-Filtering           : ${params.filter}
-Tfkmers Model       : ${params.tfkmers_model}
-Tfkmers Tokenizer   : ${params.tfkmers_tokenizer}
-Tfkmers Threshold   : ${params.tfkmers_threshold}
-Bambu Threshold     : ${params.bambu_threshold}
-Filtering operation : ${params.operation}
-Stranded            : ${params.bambu_strand}
+Transcript discovery  : ${params.tx_discovery}
+Filtering             : ${params.filter}
+Tfkmers Model         : ${params.tfkmers_model}
+Tfkmers Tokenizer     : ${params.tfkmers_tokenizer}
+Tfkmers Threshold     : ${params.tfkmers_threshold}
+Bambu Threshold       : ${params.bambu_threshold}
+Filtering operation   : ${params.operation}
+Stranded              : ${params.bambu_strand}
 -${c_dim}-------------------------------------${c_reset}-
 """.stripIndent()
 }

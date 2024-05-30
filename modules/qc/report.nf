@@ -19,7 +19,8 @@ process REPORT {
   qc_gtf.py -gtf ${gtf} \
     -c_gene ${counts_gene} \
     -ref ${ref} \
-    -prefix ${prefix}
+    -prefix ${prefix} \
+    -tx_discovery ${params.tx_discovery}
   qc.R ${prefix}
   """
 }

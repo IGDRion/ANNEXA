@@ -26,7 +26,8 @@ process FILTER {
     --bambu ${bambu_ndr} \
     --tfkmers-threshold ${params.tfkmers_threshold} \
     --bambu-threshold ${params.bambu_threshold} \
-    --operation ${params.operation}
+    --operation ${params.operation} \
+    --tx_discovery ${params.tx_discovery}
 
   GTF.py format -i unformat.novel.filter.gtf > novel.filter.gtf
   """
