@@ -30,7 +30,7 @@ process GFFCOMPARE {
 
     awk 'BEGIN{
         while(getline<"gffcmp.tracking">0){
-            if ($4 !="u"){
+            if ($4 !="u" && $4 !="r"){
                 split($3,gn,"|");
                 split($5,tx,"|"); 
                 final["\\""tx[2]"\\";"]="\\""gn[1]"\\";"
