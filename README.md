@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ANNEXA** is an all-in-one reproductible pipeline, written in the [Nextflow](https://nextflow.io), which allows users to analyze LR-RNAseq data (Long-Read RNASeq), and to reconstruct and quantify known and novel genes and isoforms.
+**ANNEXA** is an all-in-one reproductible pipeline, written using the [Nextflow](https://nextflow.io) workflow system, which allows users to analyze LR-RNAseq data (Long-Read RNASeq), and to reconstruct and quantify known and novel genes and isoforms.
 
 ## Pipeline summary
 
@@ -11,12 +11,13 @@
 ANNEXA works by using only three parameter files (a reference genome, a reference annotation and mapping files) and provides users with an extended annotation distinguishing between novel protein-coding (mRNA) versus long non-coding RNAs (lncRNA) genes. All known and novel gene/transcript models are further characterized through multiple features (length, number of spliced transcripts, normalized expression levels,...) available as graphical outputs.
 
 1. Check if the input annotation contains all the information needed.
-2. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu).
+2. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu) or [StringTie](https://github.com/gpertea/stringtie).
 3. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc).
 4. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
-5. Filter novel transcripts based on [bambu NDR (Novel Discovery Rates)](https://github.com/GoekeLab/bambu) and/or [TransforKmers TSS validation](https://github.com/IGDRion/transforkmers) to assess fulllength transcripts.
-6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
-7. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
+5. Predict the CDS of novel protein-coding transcripts with [Transdecoder](https://github.com/TransDecoder/TransDecoder).
+6. Filter novel transcripts based on [bambu NDR (Novel Discovery Rates)](https://github.com/GoekeLab/bambu) and/or [TransforKmers TSS validation](https://github.com/IGDRion/transforkmers) to assess fulllength transcripts.
+7. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
+8. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
 
 This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
 
@@ -65,6 +66,7 @@ Optional:
 -profile conda      : Run annexa in conda environment.
 -profile docker     : Run annexa in docker container.
 
+--tx_discovery      : Specify which transcriptome reconstruction tool to use. Options: "bambu" (default) or "stringtie2".
 --filter            : Perform or not the filtering step. false by default.
 --tfkmers_tokenizer : Path to TransforKmers tokenizer. Required if filter activated.
 --tfkmers_model     : Path to TransforKmers model. Required if filter activated.
