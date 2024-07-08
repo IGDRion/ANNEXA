@@ -34,17 +34,13 @@ nextflow.enable.dsl=2
 include { VALIDATE_INPUT_GTF             } from './modules/input/validate.nf'
 include { INDEX_BAM                      } from './modules/index_bam.nf'
 include { BAMBU                          } from './modules/bambu/bambu.nf'
-include { STRINGTIE_ASSEMBLE             } from './modules/stringtie/stringtie_assemble.nf'
-include { STRINGTIE_MERGE                } from './modules/stringtie/stringtie_merge.nf'
-include { STRINGTIE_QUANTIFY             } from './modules/stringtie/stringtie_quant.nf'
-include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
+include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
-include { SUBREAD_FEATURECOUNTS          } from './modules/subread/subread_featurecounts.nf'
-include { MERGE_COUNTS                   } from './modules/merge_stringtie_quant.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
 include { RESTORE_BIOTYPE                } from './modules/restore_biotypes.nf'
 include { MERGE_NOVEL                    } from './modules/merge_novel.nf'
+include { TRANSDECODER                   } from './modules/transdecoder/transdecoder_workflow.nf'
 include { TFKMERS                        } from './modules/transforkmers/workflow.nf'
 include { QC as QC_FULL; QC as QC_FILTER } from './modules/qc/workflow.nf'
 
@@ -71,13 +67,8 @@ workflow {
     SPLIT_EXTENDED_ANNOTATION(BAMBU.out.bambu_gtf)
   }
   else if (params.tx_discovery == "stringtie2") {
-    STRINGTIE_ASSEMBLE(samples, VALIDATE_INPUT_GTF.out)
-    STRINGTIE_MERGE(STRINGTIE_ASSEMBLE.out.stringtie_assemble_gtf.collect(), VALIDATE_INPUT_GTF.out)
-    STRINGTIE_QUANTIFY(samples, STRINGTIE_MERGE.out.stringtie_merged_gtf)
-    GFFCOMPARE(VALIDATE_INPUT_GTF.out, ref_fa, STRINGTIE_MERGE.out.stringtie_merged_gtf)
-    SUBREAD_FEATURECOUNTS(samples, GFFCOMPARE.out.stringtie_gtf)
-    MERGE_COUNTS(SUBREAD_FEATURECOUNTS.out.gene_counts.collect(), SUBREAD_FEATURECOUNTS.out.tx_counts.collect())
-    SPLIT_EXTENDED_ANNOTATION(GFFCOMPARE.out.stringtie_gtf)
+    STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
+    SPLIT_EXTENDED_ANNOTATION(STRINGTIE.out.extended_annotation)
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -94,9 +85,9 @@ workflow {
     ch_ndr = BAMBU.out.ndr
   }
   else if (params.tx_discovery == "stringtie2") {
-    ch_gene_counts = MERGE_COUNTS.out.gene_counts
-    ch_tx_counts = MERGE_COUNTS.out.tx_counts
-    ch_ndr = MERGE_COUNTS.out.ndr
+    ch_gene_counts = STRINGTIE.out.gene_counts
+    ch_tx_counts = STRINGTIE.out.tx_counts
+    ch_ndr = STRINGTIE.out.ndr
   }
 
   QC_FULL(samples, 
@@ -107,10 +98,15 @@ workflow {
           "full")
 
   ///////////////////////////////////////////////////////////////////////////
+  // PREDICT CDS ON NOVEL TRANSCRIPTS AND MERGE WITH NOVEL ANNOTATION
+  ///////////////////////////////////////////////////////////////////////////
+  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
+
+  ///////////////////////////////////////////////////////////////////////////
   // FILTER NEW TRANSCRIPTS, AND QC ON FILTERED ANNOTATION
   ///////////////////////////////////////////////////////////////////////////
   if(params.filter) {
-    TFKMERS(MERGE_NOVEL.out, 
+    TFKMERS(TRANSDECODER.out.cds_gtf, 
             ref_fa, 
             ch_ndr, 
             tokenizer, 
