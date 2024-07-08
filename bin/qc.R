@@ -35,6 +35,7 @@ theme_set(
 #############################################################################
 args = commandArgs(trailingOnly=TRUE)
 prefix = args[1]
+ANNEXA_version = args[2]
 
 #############################################################################
 # GENE
@@ -398,11 +399,16 @@ ex_count = ggplot(data = exon, aes(x = exon_biotype, fill = paste(exon_biotype, 
 # PDF
 #############################################################################
 pdf(paste0(prefix, ".annexa.qc.pdf"), width = 7, height = 7)
-grid.newpage()
 cover <- textGrob("ANNEXA report",
                   gp = gpar(fontsize = 40,
                             col = "black"))
-grid.draw(cover)
+        
+sub_cover_text <- paste(print(Sys.Date()), paste("ANNEXA version:", ANNEXA_version), sep = "\n")
+sub_cover <- textGrob(sub_cover_text,
+                  gp = gpar(fontsize = 20,
+                            col = "black"))
+
+grid.arrange(cover, sub_cover)
 
 # Gene
 grid.arrange(textGrob(

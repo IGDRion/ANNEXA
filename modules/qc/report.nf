@@ -14,13 +14,15 @@ process REPORT {
   file "${prefix}.transcript.stats"
   file "${prefix}.exon.stats"
   file "${prefix}.annexa.qc.pdf"
+  path "missing_genes.txt", optional: true
 
+  script:
   """
   qc_gtf.py -gtf ${gtf} \
     -c_gene ${counts_gene} \
     -ref ${ref} \
     -prefix ${prefix} \
     -tx_discovery ${params.tx_discovery}
-  qc.R ${prefix}
+  qc.R ${prefix} ${workflow.manifest.version}
   """
 }
