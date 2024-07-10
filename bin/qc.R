@@ -7,12 +7,13 @@ library(RColorBrewer)
 library(grid)
 library(gridExtra)
 library(viridis)
+library(ggpattern)
 
 brew = c("#008387", "#a0d3db", "#ad8500", "#d9cb98")
 palette = c("#00AFBB", "#FC4E07", "#E7B800")
 
 theme_set(
-  theme_pubr() +
+  theme_pubr(base_size = 15) +
     theme(
       panel.grid.major = element_blank(),
       axis.line.y = element_blank(),
@@ -74,16 +75,17 @@ len = gene %>%
 # Nb isoformes
 iso = gene %>%
   mutate(isoformes = ifelse(nb_transcripts == 1, "1", "2+")) %>%
-  ggplot(aes(x = discovery, fill = isoformes)) +
+  ggplot(aes(x = discovery, fill = interaction(discovery,gene_biotype), pattern = isoformes)) +
   ggtitle("Proportion of mono versus multi-isoform genes") +
-  geom_bar(position = "fill",
+  geom_bar_pattern(position = "fill",
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
   facet_grid(~ gene_biotype) +
-  scale_fill_manual(values = palette) +
+  scale_fill_manual(values = brew) +
+  scale_pattern_manual(values = c("1" = "stripe", "2+" = "none")) +
+  guides(fill = "none", pattern = guide_legend(title = "Isoforms")) +
   theme(axis.title.x = element_blank())
-
 
 # Nombre de gène chaque catégorie
 count = ggplot(data = gene, aes(x = gene_biotype, fill = paste(gene_biotype, discovery))) +
@@ -170,39 +172,27 @@ gene_counts_sample = gene %>%
                                                                  .x))
   )
 
-# Heatmap Nb_isoforms and samples
-gene_tx_samples = gene %>%
-  filter(discovery == "novel") %$%
-  as.data.frame(table(.$presents_in_sample, .$nb_transcripts)) %>%
-  ggplot(aes(
-    x = Var1,
-    y = Var2,
-    fill = log(Freq + 1)
-  )) +
-  guides(fill=FALSE) +
-  ggtitle("Number of novel genes (log) based on isoform\nnumber and number of samples with at least 1 count") +
-  geom_tile() +
-  labs(x = "Number of samples with at least 1 count", y = "Number of isoforms", fill =
-         "log(count)") +
-  scale_fill_viridis()
-
 # 5'-3' extensions count
 gene_ext = gene %>%
   filter(ext_5 > 0 | ext_3 > 0) %>%
   mutate(ext = ifelse(ext_5 > 0 & ext_3 > 0, "5'-3'",
                       ifelse(ext_5 > 0, "5'", "3'"))) %>%
-  ggplot(aes(x = gene_biotype, fill = ext)) +
+  ggplot(aes(x = gene_biotype, fill = gene_biotype, pattern = ext, pattern_angle = ext)) +
   ggtitle("Number of 5' and 3' gene extensions") +
-  geom_bar(colour = "black",
+  geom_bar_pattern(colour = "black",
            alpha = 0.8,
            position = position_dodge()) +
-  scale_fill_manual(values = palette) +
+  scale_fill_manual(values = brew[c(2,4)]) +
+  scale_pattern_manual(values = c("stripe","stripe","crosshatch")) +
+  scale_pattern_angle_manual(values = c(45, -45, 45)) +
   theme(legend.position = "top") +
   theme(axis.title.x = element_blank()) +
-  labs(fill = "Gene extension", y = "Count") +
+  labs(y = "Count") +
+  guides(fill = "none",
+         pattern = guide_legend(title = "Gene extension"),
+         pattern_angle = guide_legend(title = "Gene extension")) +
   scale_y_log10() +
   annotation_logticks(sides = "l")
-
 
 # 5'-3' extensions distribution
 labels = c("5'", "3'")
@@ -285,14 +275,16 @@ tx_len = transcript %>%
 # Mono vs multiexonique
 tx_ex = transcript %>%
   mutate(exons = ifelse(nb_exons == 1, "1", "2+")) %>%
-  ggplot(aes(x = tx_discovery, fill = exons)) +
+  ggplot(aes(x = tx_discovery, fill = interaction(tx_discovery, transcript_biotype), pattern = exons)) +
   ggtitle("Proportion of mono versus multi exonic transcripts") +
-  geom_bar(position = "fill",
+  geom_bar_pattern(position = "fill",
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
   facet_grid(~ transcript_biotype) +
-  scale_fill_manual(values = palette) +
+  scale_fill_manual(values = brew) +
+  scale_pattern_manual(values = c("1" = "stripe", "2+" = "none")) +
+  guides(fill = "none", pattern = guide_legend(title = "Exons")) +
   theme(axis.title.x = element_blank())
 
 # Count
@@ -422,7 +414,6 @@ iso
 gene_counts
 gene_validate
 gene_counts_sample
-gene_tx_samples
 gene_ext
 gene_ext_dist
 

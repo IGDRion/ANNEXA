@@ -14,7 +14,7 @@ ANNEXA works by using only three parameter files (a reference genome, a referenc
 2. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu) or [StringTie](https://github.com/gpertea/stringtie).
 3. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc).
 4. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
-5. Predict the CDS of novel protein-coding transcripts with [Transdecoder](https://github.com/TransDecoder/TransDecoder).
+5. Predict the CDS of novel protein-coding transcripts with [TransDecoder](https://github.com/TransDecoder/TransDecoder).
 6. Filter novel transcripts based on [bambu NDR (Novel Discovery Rates)](https://github.com/GoekeLab/bambu) and/or [TransforKmers TSS validation](https://github.com/IGDRion/transforkmers) to assess fulllength transcripts.
 7. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
 8. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
