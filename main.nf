@@ -35,6 +35,8 @@ include { VALIDATE_INPUT_GTF             } from './modules/input/validate.nf'
 include { INDEX_BAM                      } from './modules/index_bam.nf'
 include { BAMBU                          } from './modules/bambu/bambu.nf'
 include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
+include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
+include { ADD_CLASS_CODE                 } from './modules/add_class_code.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
@@ -64,13 +66,15 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   if(params.tx_discovery == "bambu") {
     BAMBU(samples.collect(), VALIDATE_INPUT_GTF.out, ref_fa)
-    SPLIT_EXTENDED_ANNOTATION(BAMBU.out.bambu_gtf)
+    GFFCOMPARE(input_gtf, ref_fa, BAMBU.out.bambu_gtf)
+    ADD_CLASS_CODE(GFFCOMPARE.out.class_code_gtf, BAMBU.out.bambu_gtf)
   }
   else if (params.tx_discovery == "stringtie2") {
     STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
-    SPLIT_EXTENDED_ANNOTATION(STRINGTIE.out.extended_annotation)
+    ADD_CLASS_CODE(STRINGTIE.out.class_code_gtf, STRINGTIE.out.stringtie_gtf)
   }
 
+  SPLIT_EXTENDED_ANNOTATION(ADD_CLASS_CODE.out.extended_annotation_class_code)
   ///////////////////////////////////////////////////////////////////////////
   // EXTRACT AND CLASSIFY NEW TRANSCRIPTS, AND PERFORM QC
   ///////////////////////////////////////////////////////////////////////////

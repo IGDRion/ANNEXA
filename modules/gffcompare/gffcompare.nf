@@ -13,19 +13,29 @@ process GFFCOMPARE {
     path merged_gtf
 
     output:
-    path("*.annotated.gtf"), emit: annotated_gtf
+    path("*.annotated.gtf"), emit: class_code_gtf
     path("*.loci")         , emit: loci
     path("*.stats")        , emit: stats
     path("*.tracking")     , emit: tracking
-    path("extended_annotations.gtf"), emit: stringtie_gtf
+    path("extended_annotations.gtf"), emit: stringtie_gtf, optional: true
 
     shell:
+    if (params.tx_discovery == "bambu")
+    '''
+    gffcompare \
+    -r !{reference_gtf} \
+    -s !{fasta} \
+    !{merged_gtf}
+    '''
+
+    else if (params.tx_discovery == "stringtie2")
     '''
     gffcompare \
     -r !{reference_gtf} \
     -s !{fasta} \
     !{merged_gtf}
 
+    # Add information for stringtie2 process
     # Reformat the output of gffcompare to correctly match novel isoforms to known genes
     # Takes the transcript_id identified by Stringtie and assigns it to reference gene_id
 
