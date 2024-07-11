@@ -3,7 +3,7 @@ include { STRINGTIE_MERGE                } from './stringtie_merge.nf'
 include { STRINGTIE_QUANTIFY             } from './stringtie_quant.nf'
 include { GFFCOMPARE                     } from '../gffcompare/gffcompare.nf'
 include { SUBREAD_FEATURECOUNTS          } from '../subread/subread_featurecounts.nf'
-include { MERGE_COUNTS                   } from '../merge_stringtie_quant.nf'
+include { MERGE_COUNTS                   } from './stringtie_merge_counts.nf'
 
 workflow STRINGTIE {
     take:
@@ -38,7 +38,8 @@ workflow STRINGTIE {
         SUBREAD_FEATURECOUNTS.out.tx_counts.collect())
 
     emit:
-    extended_annotation = GFFCOMPARE.out.stringtie_gtf
+    stringtie_gtf = GFFCOMPARE.out.stringtie_gtf
+    class_code_gtf = GFFCOMPARE.out.class_code_gtf
     gene_counts = MERGE_COUNTS.out.gene_counts
     tx_counts = MERGE_COUNTS.out.tx_counts
     ndr = MERGE_COUNTS.out.ndr
