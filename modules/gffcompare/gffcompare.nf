@@ -3,7 +3,7 @@ process GFFCOMPARE {
   container "${ workflow.containerEngine == 'singularity' ?
       'https://depot.galaxyproject.org/singularity/gffcompare:0.12.6--h9f5acd7_0' :
       'biocontainers/gffcompare:0.12.6--h9f5acd7_0' }"
-  publishDir "$params.outdir/stringtie2", mode: 'copy', pattern: 'extended_annotations.gtf'
+  publishDir "$params.outdir/stringtie2", pattern: 'extended_annotations.gtf', mode: 'copy', optional: true
   cpus params.maxCpu
 
   input:
@@ -62,5 +62,8 @@ process GFFCOMPARE {
         print $0
     } else {print $0}
     }' extended_annotations_preaclean.gtf | gtf2gtf_cleanall.sh > extended_annotations.gtf
+
+    # Remove header lines (command and version)
+    sed -i 1,2d extended_annotations.gtf
     '''
 }

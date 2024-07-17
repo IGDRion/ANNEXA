@@ -66,15 +66,14 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   if(params.tx_discovery == "bambu") {
     BAMBU(samples.collect(), VALIDATE_INPUT_GTF.out, ref_fa)
-    GFFCOMPARE(input_gtf, ref_fa, BAMBU.out.bambu_gtf)
-    ADD_CLASS_CODE(GFFCOMPARE.out.class_code_gtf, BAMBU.out.bambu_gtf)
+    GFFCOMPARE(VALIDATE_INPUT_GTF.out, ref_fa, BAMBU.out.bambu_gtf)
+    SPLIT_EXTENDED_ANNOTATION(BAMBU.out.bambu_gtf)
   }
   else if (params.tx_discovery == "stringtie2") {
     STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
-    ADD_CLASS_CODE(STRINGTIE.out.class_code_gtf, STRINGTIE.out.stringtie_gtf)
+    SPLIT_EXTENDED_ANNOTATION(STRINGTIE.out.stringtie_gtf)
   }
 
-  SPLIT_EXTENDED_ANNOTATION(ADD_CLASS_CODE.out.extended_annotation_class_code)
   ///////////////////////////////////////////////////////////////////////////
   // EXTRACT AND CLASSIFY NEW TRANSCRIPTS, AND PERFORM QC
   ///////////////////////////////////////////////////////////////////////////
@@ -83,34 +82,38 @@ workflow {
   RESTORE_BIOTYPE(VALIDATE_INPUT_GTF.out, SPLIT_EXTENDED_ANNOTATION.out.novel_isoforms)
   MERGE_NOVEL(FEELNC_FORMAT.out, RESTORE_BIOTYPE.out)
 
-  if(params.tx_discovery == "bambu") {
-    ch_gene_counts = BAMBU.out.gene_counts
-    ch_tx_counts = BAMBU.out.tx_counts
-    ch_ndr = BAMBU.out.ndr
-  }
-  else if (params.tx_discovery == "stringtie2") {
-    ch_gene_counts = STRINGTIE.out.gene_counts
-    ch_tx_counts = STRINGTIE.out.tx_counts
-    ch_ndr = STRINGTIE.out.ndr
-  }
-
-  QC_FULL(samples, 
-          INDEX_BAM.out, 
-          MERGE_NOVEL.out, 
-          VALIDATE_INPUT_GTF.out, 
-          ch_gene_counts,
-          "full")
-
   ///////////////////////////////////////////////////////////////////////////
   // PREDICT CDS ON NOVEL TRANSCRIPTS AND MERGE WITH NOVEL ANNOTATION
   ///////////////////////////////////////////////////////////////////////////
   TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
 
+  if(params.tx_discovery == "bambu") {
+    ch_gene_counts = BAMBU.out.gene_counts
+    ch_tx_counts = BAMBU.out.tx_counts
+    ch_ndr = BAMBU.out.ndr
+    class_code = GFFCOMPARE.out.class_code_gtf
+  }
+  else if (params.tx_discovery == "stringtie2") {
+    ch_gene_counts = STRINGTIE.out.gene_counts
+    ch_tx_counts = STRINGTIE.out.tx_counts
+    ch_ndr = STRINGTIE.out.ndr
+    class_code = STRINGTIE.out.class_code_gtf
+  }
+
+  QC_FULL(samples, 
+          INDEX_BAM.out, 
+          TRANSDECODER.out, 
+          VALIDATE_INPUT_GTF.out, 
+          ch_gene_counts,
+          class_code, 
+          "full")
+
+
   ///////////////////////////////////////////////////////////////////////////
   // FILTER NEW TRANSCRIPTS, AND QC ON FILTERED ANNOTATION
   ///////////////////////////////////////////////////////////////////////////
   if(params.filter) {
-    TFKMERS(TRANSDECODER.out.cds_gtf, 
+    TFKMERS(TRANSDECODER.out, 
             ref_fa, 
             ch_ndr, 
             tokenizer, 
@@ -120,7 +123,8 @@ workflow {
               INDEX_BAM.out, 
               TFKMERS.out.gtf, 
               VALIDATE_INPUT_GTF.out, 
-              ch_gene_counts, 
+              ch_gene_counts,
+              class_code, 
               "filter")
   }
 }

@@ -3,7 +3,6 @@ process FORMAT_TRANSDECODER {
   container "${ workflow.containerEngine == 'singularity' ? 
                 'https://depot.galaxyproject.org/singularity/python:3.10.4' : 
                 'quay.io/biocontainers/python:3.10.4' }"
-  publishDir "$params.outdir/final", mode: 'copy'
 
   input:
   path td_gff

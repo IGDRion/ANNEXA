@@ -16,4 +16,4 @@ file2 <- readGFF(extended_annotation)
 
 file2$class_code <- file1$class_code[match(paste(file2$transcript_id, file2$type), paste(file1$transcript_id, file1$type))]
 
-export(file2, 'extended_annotation_class_code.gtf')
+export(file2, extended_annotation)
