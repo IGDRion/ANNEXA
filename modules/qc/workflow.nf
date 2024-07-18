@@ -23,8 +23,6 @@ workflow QC {
       origin
     )
 
-    ADD_CLASS_CODE(class_code, MERGE_ANNOTATIONS.out)
-
     if (params.withGeneCoverage) {
       RSEQC(
         bam,

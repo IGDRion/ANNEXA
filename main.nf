@@ -45,6 +45,7 @@ include { MERGE_NOVEL                    } from './modules/merge_novel.nf'
 include { TRANSDECODER                   } from './modules/transdecoder/transdecoder_workflow.nf'
 include { TFKMERS                        } from './modules/transforkmers/workflow.nf'
 include { QC as QC_FULL; QC as QC_FILTER } from './modules/qc/workflow.nf'
+include { ADD_CLASS_CODE                 } from './modules/add_class_code.nf'
 
 workflow {
   ///////////////////////////////////////////////////////////////////////////
@@ -75,17 +76,12 @@ workflow {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  // EXTRACT AND CLASSIFY NEW TRANSCRIPTS, AND PERFORM QC
+  // EXTRACT AND CLASSIFY NEW TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
   FEELNC_CODPOT(VALIDATE_INPUT_GTF.out, ref_fa, SPLIT_EXTENDED_ANNOTATION.out.novel_genes)
   FEELNC_FORMAT(FEELNC_CODPOT.out.mRNA, FEELNC_CODPOT.out.lncRNA)
   RESTORE_BIOTYPE(VALIDATE_INPUT_GTF.out, SPLIT_EXTENDED_ANNOTATION.out.novel_isoforms)
   MERGE_NOVEL(FEELNC_FORMAT.out, RESTORE_BIOTYPE.out)
-
-  ///////////////////////////////////////////////////////////////////////////
-  // PREDICT CDS ON NOVEL TRANSCRIPTS AND MERGE WITH NOVEL ANNOTATION
-  ///////////////////////////////////////////////////////////////////////////
-  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
 
   if(params.tx_discovery == "bambu") {
     ch_gene_counts = BAMBU.out.gene_counts
@@ -100,6 +96,14 @@ workflow {
     class_code = STRINGTIE.out.class_code_gtf
   }
 
+  ///////////////////////////////////////////////////////////////////////////
+  // PREDICT CDS ON NOVEL TRANSCRIPTS
+  ///////////////////////////////////////////////////////////////////////////
+  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa, class_code)
+
+  ///////////////////////////////////////////////////////////////////////////
+  // PERFORM QC ON FULL ANNOTATION
+  ///////////////////////////////////////////////////////////////////////////
   QC_FULL(samples, 
           INDEX_BAM.out, 
           TRANSDECODER.out, 
@@ -107,7 +111,6 @@ workflow {
           ch_gene_counts,
           class_code, 
           "full")
-
 
   ///////////////////////////////////////////////////////////////////////////
   // FILTER NEW TRANSCRIPTS, AND QC ON FILTERED ANNOTATION
@@ -118,7 +121,8 @@ workflow {
             ch_ndr, 
             tokenizer, 
             model, 
-            ch_tx_counts)
+            ch_tx_counts,
+            class_code)
     QC_FILTER(samples,
               INDEX_BAM.out, 
               TFKMERS.out.gtf, 
@@ -127,4 +131,10 @@ workflow {
               class_code, 
               "filter")
   }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // ADD GFFCOMPARE CLASS CODES TO FINAL GTFS
+  ///////////////////////////////////////////////////////////////////////////
+  final_gtf = channel.fromPath('$params.outdir/final/*.gtf')
+  ADD_CLASS_CODE(class_code, final_gtf.collect())
 }

@@ -3,8 +3,8 @@ process GTFSORT {
     container "${ workflow.containerEngine == 'singularity' ?
         'https://depot.galaxyproject.org/singularity/gtfsort:0.2.2--h4ac6f70_0':
         'biocontainers/gtfsort:0.2.2--h4ac6f70_0' }"
-    publishDir "$params.outdir/transdecoder", mode: 'copy', pattern: 'novel_tx_CDS.gtf'
-    //publishDir "$params.outdir/${params.tx_discovery}", mode: 'copy', saveAs: 'extended_annotations.gtf', overwrite: true
+    publishDir "$params.outdir/transdecoder", mode: 'copy', pattern: 'novel.full.gtf'
+    publishDir "$params.outdir/final", mode: 'copy', pattern: 'novel.full.gtf', saveAs: {filename -> 'novel.full.gtf'}, overwrite: true
     cpus params.maxCpu
     memory params.maxMemory
 
@@ -13,7 +13,7 @@ process GTFSORT {
     path exon_cds
 
     output:
-    path "novel_tx_CDS.gtf", emit: gtf
+    path "novel.full.gtf", emit: gtf
 
     script:
     """
@@ -24,7 +24,7 @@ process GTFSORT {
 
     gtfsort \
         -i merged.gtf \
-        -o novel_tx_CDS.gtf \
+        -o novel.full.gtf \
         -t ${params.maxCpu}
     """
 }

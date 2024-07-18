@@ -2,6 +2,7 @@ include { EXTRACT_TSS_REGIONS   } from './extract_regions.nf'
 include { EXTRACT_TSS_SEQUENCES } from './extract_sequences.nf'
 include { PREDICT               } from './predict.nf'
 include { FILTER                } from './filter.nf'
+include { ADD_CLASS_CODE        } from '../add_class_code.nf'
 
 workflow TFKMERS {
   take:
@@ -11,6 +12,7 @@ workflow TFKMERS {
     tokenizer
     model
     counts_tx
+    class_code
 
   main:
     EXTRACT_TSS_REGIONS(
@@ -34,6 +36,8 @@ workflow TFKMERS {
       PREDICT.out,
       bambu_ndr
     )
+
+    ADD_CLASS_CODE(class_code, FILTER.out.gtf)
 
   emit:
     gtf = FILTER.out.gtf

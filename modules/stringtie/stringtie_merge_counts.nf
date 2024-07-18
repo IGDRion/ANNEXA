@@ -24,6 +24,8 @@ process MERGE_COUNTS {
   | grep -v -e "^$"  \
   | awk -v OFS='\\t' '{$1=$1}1' > counts_transcript.txt
 
+  sed -i '1s/^Geneid/transcript_id/' counts_transcript.txt
+
   # Create empty NDR file for TFKMERS to have same workflow as bambu in filtering step 
   # (placeholder, not used)
   touch empty.ndr

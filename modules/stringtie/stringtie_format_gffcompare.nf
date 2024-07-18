@@ -1,12 +1,12 @@
 process FORMAT_GFFCOMPARE {
+  publishDir "$params.outdir/stringtie2", pattern: 'extended_annotations.gtf', mode: 'copy'
 
   input:
-  path extended_annotations
   path merged_gtf
   path tracking_file
 
   output:
-  
+  path("extended_annotations.gtf"), emit: stringtie_gtf
 
   shell:
   '''
@@ -15,7 +15,7 @@ process FORMAT_GFFCOMPARE {
   # Takes the transcript_id identified by Stringtie and assigns it to reference gene_id
 
   awk 'BEGIN{
-      while(getline<"gffcmp.tracking">0){
+      while(getline<"!{tracking_file}">0){
           if ($4 !="u" && $4 !="r"){
               split($3,gn,"|");
               split($5,tx,"|"); 

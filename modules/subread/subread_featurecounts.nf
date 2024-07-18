@@ -5,6 +5,7 @@ process SUBREAD_FEATURECOUNTS {
         'https://depot.galaxyproject.org/singularity/subread:2.0.1--hed695b0_0' :
         'quay.io/biocontainers/subread:2.0.1--hed695b0_0' }"
     cpus params.maxCpu
+    tag 'bam'
 
     input:
     path bam
