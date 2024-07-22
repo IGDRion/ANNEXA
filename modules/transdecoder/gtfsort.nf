@@ -16,10 +16,7 @@ process GTFSORT {
     path "novel.full.gtf", emit: gtf
 
     script:
-    """
-    #Add CDS to novel gtf only (final output in /results/transdecoder)
-    
-    # Merge
+    """    
     cat ${fixed_novel} ${exon_cds} > merged.gtf
 
     gtfsort \

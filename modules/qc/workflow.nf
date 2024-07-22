@@ -1,7 +1,6 @@
 include { MERGE_ANNOTATIONS } from './merge_known_novel.nf'
 include { REPORT            } from './report.nf'
 include { RSEQC             } from '../rseqc/workflow.nf'
-include { ADD_CLASS_CODE    } from '../add_class_code.nf'
 
 workflow QC {
   take:
@@ -10,7 +9,6 @@ workflow QC {
     novel_gtf
     ref_gtf
     counts_gene
-    class_code
     origin
 
   main:
@@ -32,4 +30,7 @@ workflow QC {
         origin
       )
     }
+
+    emit:
+      gtf = MERGE_ANNOTATIONS.out.gtf
 }

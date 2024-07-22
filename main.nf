@@ -36,7 +36,6 @@ include { INDEX_BAM                      } from './modules/index_bam.nf'
 include { BAMBU                          } from './modules/bambu/bambu.nf'
 include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
 include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
-include { ADD_CLASS_CODE                 } from './modules/add_class_code.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
@@ -99,7 +98,7 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   // PREDICT CDS ON NOVEL TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
-  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa, class_code)
+  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
 
   ///////////////////////////////////////////////////////////////////////////
   // PERFORM QC ON FULL ANNOTATION
@@ -109,7 +108,6 @@ workflow {
           TRANSDECODER.out, 
           VALIDATE_INPUT_GTF.out, 
           ch_gene_counts,
-          class_code, 
           "full")
 
   ///////////////////////////////////////////////////////////////////////////
@@ -121,20 +119,21 @@ workflow {
             ch_ndr, 
             tokenizer, 
             model, 
-            ch_tx_counts,
-            class_code)
+            ch_tx_counts)
     QC_FILTER(samples,
               INDEX_BAM.out, 
               TFKMERS.out.gtf, 
               VALIDATE_INPUT_GTF.out, 
               ch_gene_counts,
-              class_code, 
               "filter")
   }
 
   ///////////////////////////////////////////////////////////////////////////
   // ADD GFFCOMPARE CLASS CODES TO FINAL GTFS
   ///////////////////////////////////////////////////////////////////////////
-  final_gtf = channel.fromPath('$params.outdir/final/*.gtf')
-  ADD_CLASS_CODE(class_code, final_gtf.collect())
+  final_gtf = channel.of(TRANSDECODER.out, QC_FULL.out)
+  if (params.filter){
+  final_gtf = channel.of(TRANSDECODER.out.gtf, TFKMERS.out.gtf, QC_FULL.out.gtf, QC_FILTER.out.gtf)
+  }
+  ADD_CLASS_CODE(class_code, final_gtf)
 }
