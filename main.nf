@@ -131,9 +131,9 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   // ADD GFFCOMPARE CLASS CODES TO FINAL GTFS
   ///////////////////////////////////////////////////////////////////////////
-  final_gtf = channel.of(TRANSDECODER.out, QC_FULL.out)
+  final_gtf = TRANSDECODER.out.gtf.mix(QC_FULL.out.gtf)
   if (params.filter){
-  final_gtf = channel.of(TRANSDECODER.out.gtf, TFKMERS.out.gtf, QC_FULL.out.gtf, QC_FILTER.out.gtf)
+  final_gtf = TRANSDECODER.out.gtf.mix(QC_FULL.out.gtf,TFKMERS.out.gtf, QC_FULL.out.gtf, QC_FILTER.out.gtf)
   }
   ADD_CLASS_CODE(class_code, final_gtf)
 }
