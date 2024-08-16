@@ -1,7 +1,7 @@
 process ADD_CLASS_CODE {
   conda (params.enable_conda ? "$baseDir/environment.yml" : null)
   container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
-  publishDir "$params.outdir/final", mode: 'copy', overwrite: true
+  publishDir "$params.outdir/final", mode: 'copy', saveAs: {filename -> "${gtf}"}, overwrite: true
   tag "$gtf"
 
   input:
@@ -9,12 +9,12 @@ process ADD_CLASS_CODE {
   file gtf
 
   output:
-  file gtf
+  path "class_code.${gtf}"
 
   script:
-  """
-  class_code.R ${class_code_gtf} ${gtf}
+  """  
+  class_code.R ${class_code_gtf} ${gtf} "class_code.${gtf}"
   ## Remove header created by gtfsort
-  sed -i 1,3d ${gtf}
+  sed -i 1,3d "class_code.${gtf}"
   """
 }

@@ -16,6 +16,11 @@ if __name__ == "__main__":
     #######################################################
 
     for record in GTF.parse_by_line(args.gtf):
+        if record.feature =="transcript":
+            if "gene_biotype" in record:
+                g_biotype = record["gene_biotype"]
+            elif "gene_type" in record:
+                g_biotype = record["gene_type"]
         if record.feature == "gene" or record.feature == "transcript":
             continue
 
@@ -39,9 +44,8 @@ if __name__ == "__main__":
 
         #######################################################
         # Check if gene_biotype in each transcripts and exons
-        if not "gene_biotype" in record:
-            record["gene_biotype"] = "NA"
-        g_biotype = record["gene_biotype"]
+        if not "gene_biotype" in record and "gene_type" not in record:
+            record["gene_biotype"] = g_biotype
 
         # Check for RefSeq gene_biotype format
         if g_biotype == "mRNA":
