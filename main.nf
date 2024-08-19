@@ -36,7 +36,6 @@ include { INDEX_BAM                      } from './modules/index_bam.nf'
 include { BAMBU                          } from './modules/bambu/bambu.nf'
 include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
 include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
-include { ADD_CLASS_CODE                 } from './modules/add_class_code.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
@@ -45,6 +44,7 @@ include { MERGE_NOVEL                    } from './modules/merge_novel.nf'
 include { TRANSDECODER                   } from './modules/transdecoder/transdecoder_workflow.nf'
 include { TFKMERS                        } from './modules/transforkmers/workflow.nf'
 include { QC as QC_FULL; QC as QC_FILTER } from './modules/qc/workflow.nf'
+include { ADD_CLASS_CODE                 } from './modules/add_class_code.nf'
 
 workflow {
   ///////////////////////////////////////////////////////////////////////////
@@ -66,17 +66,16 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   if(params.tx_discovery == "bambu") {
     BAMBU(samples.collect(), VALIDATE_INPUT_GTF.out, ref_fa)
-    GFFCOMPARE(input_gtf, ref_fa, BAMBU.out.bambu_gtf)
-    ADD_CLASS_CODE(GFFCOMPARE.out.class_code_gtf, BAMBU.out.bambu_gtf)
+    GFFCOMPARE(VALIDATE_INPUT_GTF.out, ref_fa, BAMBU.out.bambu_gtf)
+    SPLIT_EXTENDED_ANNOTATION(BAMBU.out.bambu_gtf)
   }
   else if (params.tx_discovery == "stringtie2") {
     STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
-    ADD_CLASS_CODE(STRINGTIE.out.class_code_gtf, STRINGTIE.out.stringtie_gtf)
+    SPLIT_EXTENDED_ANNOTATION(STRINGTIE.out.stringtie_gtf)
   }
 
-  SPLIT_EXTENDED_ANNOTATION(ADD_CLASS_CODE.out.extended_annotation_class_code)
   ///////////////////////////////////////////////////////////////////////////
-  // EXTRACT AND CLASSIFY NEW TRANSCRIPTS, AND PERFORM QC
+  // EXTRACT AND CLASSIFY NEW TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
   FEELNC_CODPOT(VALIDATE_INPUT_GTF.out, ref_fa, SPLIT_EXTENDED_ANNOTATION.out.novel_genes)
   FEELNC_FORMAT(FEELNC_CODPOT.out.mRNA, FEELNC_CODPOT.out.lncRNA)
@@ -87,30 +86,35 @@ workflow {
     ch_gene_counts = BAMBU.out.gene_counts
     ch_tx_counts = BAMBU.out.tx_counts
     ch_ndr = BAMBU.out.ndr
+    class_code = GFFCOMPARE.out.class_code_gtf
   }
   else if (params.tx_discovery == "stringtie2") {
     ch_gene_counts = STRINGTIE.out.gene_counts
     ch_tx_counts = STRINGTIE.out.tx_counts
     ch_ndr = STRINGTIE.out.ndr
+    class_code = STRINGTIE.out.class_code_gtf
   }
 
+  ///////////////////////////////////////////////////////////////////////////
+  // PREDICT CDS ON NOVEL TRANSCRIPTS
+  ///////////////////////////////////////////////////////////////////////////
+  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
+
+  ///////////////////////////////////////////////////////////////////////////
+  // PERFORM QC ON FULL ANNOTATION
+  ///////////////////////////////////////////////////////////////////////////
   QC_FULL(samples, 
           INDEX_BAM.out, 
-          MERGE_NOVEL.out, 
+          TRANSDECODER.out, 
           VALIDATE_INPUT_GTF.out, 
           ch_gene_counts,
           "full")
 
   ///////////////////////////////////////////////////////////////////////////
-  // PREDICT CDS ON NOVEL TRANSCRIPTS AND MERGE WITH NOVEL ANNOTATION
-  ///////////////////////////////////////////////////////////////////////////
-  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
-
-  ///////////////////////////////////////////////////////////////////////////
   // FILTER NEW TRANSCRIPTS, AND QC ON FILTERED ANNOTATION
   ///////////////////////////////////////////////////////////////////////////
   if(params.filter) {
-    TFKMERS(TRANSDECODER.out.cds_gtf, 
+    TFKMERS(TRANSDECODER.out, 
             ref_fa, 
             ch_ndr, 
             tokenizer, 
@@ -120,7 +124,16 @@ workflow {
               INDEX_BAM.out, 
               TFKMERS.out.gtf, 
               VALIDATE_INPUT_GTF.out, 
-              ch_gene_counts, 
+              ch_gene_counts,
               "filter")
   }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // ADD GFFCOMPARE CLASS CODES TO FINAL GTFS
+  ///////////////////////////////////////////////////////////////////////////
+  final_gtf = TRANSDECODER.out.gtf.mix(QC_FULL.out.gtf)
+  if (params.filter){
+  final_gtf = TRANSDECODER.out.gtf.mix(QC_FULL.out.gtf,TFKMERS.out.gtf,QC_FILTER.out.gtf)
+  }
+  ADD_CLASS_CODE(class_code, final_gtf)
 }

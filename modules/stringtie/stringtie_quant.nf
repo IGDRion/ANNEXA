@@ -4,18 +4,14 @@ process STRINGTIE_QUANTIFY {
                 'https://depot.galaxyproject.org/singularity/stringtie%3A2.2.3--h43eeafb_0' :
                 'quay.io/biocontainers/stringtie:2.2.3--h43eeafb_0'}"
   cpus params.maxCpu
+  tag 'bam'
 
   input:
-  path '*'
+  path bam
   path merged_gtf
 
   output:
   path 'stringtie_quant.gtf', emit: stringtie_quant_qtf
-  path 'e_data.ctab'
-  path 'e2t.ctab'
-  path 'i_data.ctab'
-  path 'i2t.ctab'
-  path 't_data.ctab'
 
   script:
   """
@@ -25,6 +21,6 @@ process STRINGTIE_QUANTIFY {
     -p ${params.maxCpu} \
     -G ${merged_gtf} \
     -o stringtie_quant.gtf \
-    *.bam
+    ${bam}
   """
 }

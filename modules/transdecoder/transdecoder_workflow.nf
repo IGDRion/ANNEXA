@@ -1,7 +1,7 @@
 include { TRANSDECODER_PREDICT  } from './transdecoder_predict.nf'
 include { FORMAT_TRANSDECODER   } from './format_transdecoder.nf'
 include { AGAT_CONVERTSPGFF2GTF } from './convert_to_gtf.nf'
-include { GTFSORT               } from './merge_and_sort.nf'
+include { GTFSORT               } from './gtfsort.nf'
 
 workflow TRANSDECODER {
     take:
@@ -25,5 +25,5 @@ workflow TRANSDECODER {
         FORMAT_TRANSDECODER.out.fixed_novel)
 
     emit:
-    cds_gtf = GTFSORT.out.gtf
+    gtf = GTFSORT.out.gtf
 }

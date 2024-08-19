@@ -3,6 +3,7 @@ process TRANSDECODER_PREDICT {
     container "${ workflow.containerEngine == 'singularity' ?
         'https://depot.galaxyproject.org/singularity/transdecoder:5.5.0--pl5262hdfd78af_4' :
         'quay.io/comp-bio-aging/transdecoder' }"
+    publishDir "$params.outdir/transdecoder", mode: 'copy'
     cpus params.maxCpu
     memory params.maxMemory
     
@@ -12,6 +13,11 @@ process TRANSDECODER_PREDICT {
 
     output:
     path 'novel.fasta.transdecoder.genome.gff3', emit: gff3
+    path "novel.fasta.transdecoder.pep"
+    path "novel.fasta.transdecoder.cds"
+    path "novel.fasta.transdecoder.bed"
+    path "novel.fasta.transdecoder.gff3"
+    path 'novel.fasta.transdecoder_dir'
 
     script:
     """
