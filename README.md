@@ -78,6 +78,8 @@ Optional:
 
 --maxCpu            : max cpu threads used by ANNEXA. 8 by default.
 --maxMemory         : max memory used by ANNEXA. 40GB by default.
+
+-with-report        : Create an HTML execution report with metrics such as resource usage for each workflow process
 ```
 
 > If the filter argument is set to `true`, TransforKmers model and tokenizer paths have to be given. They can be either downloaded from the [TransforKmers official repository](https://github.com/IGDRion/TransforKmers) or trained in advance by yourself on your own data.
