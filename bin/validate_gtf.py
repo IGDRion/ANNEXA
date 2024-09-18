@@ -16,11 +16,10 @@ if __name__ == "__main__":
     #######################################################
 
     for record in GTF.parse_by_line(args.gtf):
-        if record.feature =="transcript":
-            if "gene_biotype" in record:
-                g_biotype = record["gene_biotype"]
-            elif "gene_type" in record:
-                g_biotype = record["gene_type"]
+        if "gene_biotype" in record:
+            g_biotype = record["gene_biotype"]
+        elif "gene_type" in record:
+            g_biotype = record["gene_type"]
         if record.feature == "gene" or record.feature == "transcript":
             continue
 

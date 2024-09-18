@@ -68,6 +68,7 @@ Optional:
 
 --tx_discovery      : Specify which transcriptome reconstruction tool to use. Options: "bambu" (default) or "stringtie2".
 --filter            : Perform or not the filtering step. false by default.
+--prefilter_ndr     : While using ANNEXA with bambu, prefilter before the filtering step. false by default.
 --tfkmers_tokenizer : Path to TransforKmers tokenizer. Required if filter activated.
 --tfkmers_model     : Path to TransforKmers model. Required if filter activated.
 --bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
@@ -79,7 +80,7 @@ Optional:
 --maxCpu            : max cpu threads used by ANNEXA. 8 by default.
 --maxMemory         : max memory used by ANNEXA. 40GB by default.
 
--with-report        : Create an HTML execution report with metrics such as resource usage for each workflow process
+-with-report        : Create an HTML execution report with metrics such as resource usage for each workflow process.
 ```
 
 > If the filter argument is set to `true`, TransforKmers model and tokenizer paths have to be given. They can be either downloaded from the [TransforKmers official repository](https://github.com/IGDRion/TransforKmers) or trained in advance by yourself on your own data.
@@ -101,3 +102,5 @@ To use them, extract the zip, and point `--tfkmers_model` and `--tfkmers_tokeniz
 The filtered annotation can be the `union` of these 2 tools, _i.e._ all the transcripts validated by one or both of these tools; or the `intersection`, _i.e._ the transcripts validated by both tools (the latter being the default).
 
 At the end, the QC steps are performed both on the full and filtered extended annotations.
+
+### Prefiltering
