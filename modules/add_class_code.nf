@@ -14,7 +14,11 @@ process ADD_CLASS_CODE {
   script:
   """  
   class_code.R ${class_code_gtf} ${gtf} "class_code.${gtf}"
-  ## Remove header created by gtfsort
+
+  # Remove header created by gtfsort
   sed -i 1,3d "class_code.${gtf}"
+
+  # Add semicolon at end of tx lines
+  sed -i '/transcript_id/s/class_code "[^"]*"$/&;/' "class_code.${gtf}"
   """
 }
