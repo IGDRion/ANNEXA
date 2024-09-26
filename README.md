@@ -75,7 +75,7 @@ Main options:
 
 Bambu options:
 --bambu_strand      : Run bambu with stranded data. true by default.
---prefilter_ndr     : While using ANNEXA with bambu, prefilter before the filtering step. false by default.
+--prefilter_ndr     : When using ANNEXA with bambu, prefilter before the filtering step. false by default.
 --bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
 
 

@@ -1,6 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////
 // PARSE ARGS
 ///////////////////////////////////////////////////////////////////////////
+
+// Help Message
 include { paramsHelp } from 'plugin/nf-schema'
 include { helpHeader           } from './modules/header.nf'
 if (params.help) {
@@ -34,6 +36,13 @@ if (params.filter) {
 
 include { logHeader           } from './modules/header.nf'
 log.info logHeader(params)
+
+if (params.tx_discovery == "bambu"){
+  log.warn """You are using Bambu as the transcript discovery tool. Please note that Bambu takes into account strandedness by default.
+  Bambu using strandedness: ${params.bambu_strand}. Please verifiy that it corresponds to your sequencing protocol.
+  You can change strandedness mode using the --bambu_strand parameter (options: true or false).
+  """
+}
 
 ///////////////////////////////////////////////////////////////////////////
 // WORKFLOW

@@ -19,6 +19,6 @@ process ADD_CLASS_CODE {
   sed -i 1,3d "class_code.${gtf}"
 
   # Add semicolon at end of tx lines
-  sed -i '/transcript_id/s/class_code "[^"]*"$/&;/' "class_code.${gtf}"
+  sed -i '/\\ttranscript\\t/s/\$/;/' "class_code.${gtf}"
   """
 }

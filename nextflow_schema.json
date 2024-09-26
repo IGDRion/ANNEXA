@@ -14,11 +14,8 @@
                 "input": {
                     "type": "string",
                     "format": "file-path",
-                    "mimetype": "text/csv",
-                    "schema": "assets/schema_input.json",
                     "pattern": "^\\S+\\.(csv|tsv|yaml|json)$",
                     "description": "Path to file listing paths to bam files.",
-                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/testpipeline/usage#samplesheet-input).",
                     "fa_icon": "fas fa-file-csv"
                 },
                 "fa": {
@@ -41,24 +38,24 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define how the pipeline should be executed.",
             "properties": {
-                "test": {
+                "profile test": {
                     "type": "string",
                     "description": "Run annexa on toy dataset.",
                     "fa_icon": "fas fa-file-csv"
                 },
-                "slurm": {
+                "profile slurm": {
                     "type": "string",
                     "description": "Run annexa on slurm executor."
                 },
-                "singularity": {
+                "profile singularity": {
                     "type": "string",
                     "description": "Run annexa in singularity container."
                 },
-                "conda": {
+                "profile conda": {
                     "type": "string",
                     "description": "Run annexa in conda environment."
                 },
-                "docker": {
+                "profile docker": {
                     "type": "string",
                     "description": "Run annexa in docker container."
                 }
@@ -102,7 +99,7 @@
                 },
                 "prefilter_ndr": {
                     "type": "boolean",
-                    "description": "While using ANNEXA with bambu, prefilter before the filtering step. false by default.",
+                    "description": "When using ANNEXA with bambu, prefilter before the filtering step. false by default.",
                     "default": "false"
                 },
                 "bambu_threshold": {
