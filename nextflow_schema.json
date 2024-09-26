@@ -1,0 +1,200 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/IGDRion/ANNEXA/master/nextflow_schema.json",
+    "title": "IGDRion/ANNEXA pipeline parameters",
+    "description": "An all-in-one pipeline to analyze LR-RNAseq data,reconstruct and quantify known and novel genes and isoforms.",
+    "type": "object",
+    "defs": {
+        "required": {
+            "title": "Required options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "properties": {
+                "input": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "text/csv",
+                    "schema": "assets/schema_input.json",
+                    "pattern": "^\\S+\\.(csv|tsv|yaml|json)$",
+                    "description": "Path to file listing paths to bam files.",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/testpipeline/usage#samplesheet-input).",
+                    "fa_icon": "fas fa-file-csv"
+                },
+                "fa": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to reference genome.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "gtf": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to reference annotation.",
+                    "fa_icon": "fas fa-folder-open"
+                }
+            }
+        },
+        "profile_options": {
+            "title": "Profile options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define how the pipeline should be executed.",
+            "properties": {
+                "test": {
+                    "type": "string",
+                    "description": "Run annexa on toy dataset.",
+                    "fa_icon": "fas fa-file-csv"
+                },
+                "slurm": {
+                    "type": "string",
+                    "description": "Run annexa on slurm executor."
+                },
+                "singularity": {
+                    "type": "string",
+                    "description": "Run annexa in singularity container."
+                },
+                "conda": {
+                    "type": "string",
+                    "description": "Run annexa in conda environment."
+                },
+                "docker": {
+                    "type": "string",
+                    "description": "Run annexa in docker container."
+                }
+            }
+        },
+        "main_options": {
+            "title": "Main options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "General ANNEXA parameters.",
+            "properties": {
+                "tx_discovery": {
+                    "type": "string",
+                    "description": "Specify which transcriptome reconstruction tool to use.",
+                    "default": "bambu",
+                    "enum": ["bambu", "stringtie2"],
+                    "fa_icon": "fas fa-file-csv"
+                },
+                "filter": {
+                    "type": "boolean",
+                    "description": "Perform or not the filtering step.",
+                    "default": "true"
+                },
+                "withGeneCoverage": {
+                    "type": "boolean",
+                    "description": "Run RSeQC (can be long depending on annotation and bam sizes).",
+                    "default": "false"
+                }
+            }
+        },
+        "bzmbu_options": {
+            "title": "Bambu options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Parameters related to Bambu.",
+            "properties": {
+                "bambu_strand": {
+                    "type": "boolean",
+                    "description": "Run bambu with stranded data",
+                    "default": "true"
+                },
+                "prefilter_ndr": {
+                    "type": "boolean",
+                    "description": "While using ANNEXA with bambu, prefilter before the filtering step. false by default.",
+                    "default": "false"
+                },
+                "bambu_threshold": {
+                    "type": "integer",
+                    "description": "bambu NDR threshold below which new transcripts are retained.",
+                    "default": "0.2"
+                }
+            }
+        },
+        "filtering_options": {
+            "title": "Filtering options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Parameters related to filtering step.",
+            "properties": {
+                "tfkmers_tokenizer": {
+                    "type": "string",
+                    "description": "Path to TransforKmers tokenizer. Required if filter option is activated."
+                },
+                "tfkmers_model": {
+                    "type": "string",
+                    "description": "Path to TransforKmers model. Required if filter activated."
+                },
+                "tfkmers_threshold": {
+                    "type": "integer",
+                    "description": "TransforKmers prediction threshold below which new transcripts are retained.",
+                    "default": "0.2",
+                    "minimum": "0",
+                    "maximum": "1"
+                },
+                "operation": {
+                    "type": "string",
+                    "description": "Operation to retained novel transcripts. 'union' retain tx validated by either bambu or transforkmers, 'intersection' retain tx validated by both.",
+                    "enum": ["union", "intersection"],
+                    "default": "intersection"
+                }
+            }
+        },
+        "performance_options": {
+            "title": "Performance options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Parameters related to performance.",
+            "properties": {
+                "maxCpu": {
+                    "type": "integer",
+                    "description": "Max cpu threads used by ANNEXA.",
+                    "default": "8"
+                },
+                "maxMemory": {
+                    "type": "integer",
+                    "description": "Max memory (in GB) used by ANNEXA.",
+                    "default": "40"
+                }
+            }
+        },
+        "nextflow_options": {
+            "title": "Nextflow options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Parameters related to Nextflow.",
+            "properties": {
+                "resume": {
+                    "description": "Resume task from cached work (useful for recovering from errors when using singularity)."
+                },
+                "with-report": {
+                    "description": "Create an HTML execution report with metrics such as resource usage for each workflow process."
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/defs/required_options"
+        },
+        {
+            "$ref": "#/defs/profile_options"
+        },
+        {
+            "$ref": "#/defs/main_options"
+        },
+        {
+            "$ref": "#/defs/bambu_options"
+        },
+        {
+            "$ref": "#/defs/filtering_options"
+        },
+        {
+            "$ref": "#/defs/performance_options"
+        },
+        {
+            "$ref": "#/defs/nextflow_options"
+        }
+    ]
+}

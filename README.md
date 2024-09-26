@@ -59,27 +59,40 @@ Required:
 --gtf               : Path to reference annotation.
 
 
-Optional:
+Profile options:
 -profile test       : Run annexa on toy dataset.
 -profile slurm      : Run annexa on slurm executor.
 -profile singularity: Run annexa in singularity container.
 -profile conda      : Run annexa in conda environment.
 -profile docker     : Run annexa in docker container.
 
+
+Main options:
 --tx_discovery      : Specify which transcriptome reconstruction tool to use. Options: "bambu" (default) or "stringtie2".
 --filter            : Perform or not the filtering step. false by default.
+--withGeneCoverage  : Run RSeQC (can be long depending on annotation and bam sizes). False by default.
+
+
+Bambu options:
+--bambu_strand      : Run bambu with stranded data. true by default.
 --prefilter_ndr     : While using ANNEXA with bambu, prefilter before the filtering step. false by default.
+--bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
+
+
+Filtering options:
 --tfkmers_tokenizer : Path to TransforKmers tokenizer. Required if filter activated.
 --tfkmers_model     : Path to TransforKmers model. Required if filter activated.
---bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
 --tfkmers_threshold : TransforKmers prediction threshold below which new transcripts are retained.
 --operation         : Operation to retained novel transcripts. "union" retain tx validated by either bambu or transforkmers, "intersection" retain tx validated by both.
 
---withGeneCoverage  : Run RSeQC (can be long depending on annotation and bam sizes). False by default.
 
+Performance options:
 --maxCpu            : max cpu threads used by ANNEXA. 8 by default.
 --maxMemory         : max memory used by ANNEXA. 40GB by default.
 
+
+Nextflow options:
+-resume             : Resume task from cached work (useful for recovering from errors when using singularity).
 -with-report        : Create an HTML execution report with metrics such as resource usage for each workflow process.
 ```
 
