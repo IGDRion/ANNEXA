@@ -7,8 +7,8 @@ include { paramsHelp } from 'plugin/nf-schema'
 include { helpHeader           } from './modules/header.nf'
 if (params.help) {
   log.info helpHeader()
-    log.info paramsHelp("nextflow run IGDRion/ANNEXA -profile {test,docker,singularity,conda,slurm} --input samples.txt --gtf /path/to/ref.gtf --fa /path/to/ref.fa")
-    exit 0
+  log.info paramsHelp("nextflow run IGDRion/ANNEXA -profile {test,docker,singularity,conda,slurm} --input samples.txt --gtf /path/to/ref.gtf --fa /path/to/ref.fa")
+  exit 0
 }
 
 if (params.input) { input = file(params.input, checkIfExists: true) }
