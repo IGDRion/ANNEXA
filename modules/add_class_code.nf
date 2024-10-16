@@ -12,7 +12,7 @@ process ADD_CLASS_CODE {
   path "class_code.${gtf}"
 
   script:
-  """  
+  """
   class_code.R ${class_code_gtf} ${gtf} "class_code.${gtf}"
 
   # Remove header created by gtfsort
