@@ -53,6 +53,7 @@ include { INDEX_BAM                      } from './modules/index_bam.nf'
 include { BAMBU                          } from './modules/bambu/bambu.nf'
 include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
 include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
+include { RESTRAND_NOVEL_ISOFORMS        } from './modules/restrand_isoforms.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
@@ -84,11 +85,13 @@ workflow {
   if(params.tx_discovery == "bambu") {
     BAMBU(samples.collect(), VALIDATE_INPUT_GTF.out, ref_fa)
     GFFCOMPARE(VALIDATE_INPUT_GTF.out, ref_fa, BAMBU.out.bambu_gtf)
-    SPLIT_EXTENDED_ANNOTATION(BAMBU.out.bambu_gtf)
+    RESTRAND_NOVEL_ISOFORMS(BAMBU.out.bambu_gtf)
+    SPLIT_EXTENDED_ANNOTATION(RESTRAND_NOVEL_ISOFORMS.out)
   }
   else if (params.tx_discovery == "stringtie2") {
     STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
-    SPLIT_EXTENDED_ANNOTATION(STRINGTIE.out.stringtie_gtf)
+    RESTRAND_NOVEL_ISOFORMS(STRINGTIE.out.stringtie_gtf)
+    SPLIT_EXTENDED_ANNOTATION(RESTRAND_NOVEL_ISOFORMS.out)
   }
 
   ///////////////////////////////////////////////////////////////////////////
