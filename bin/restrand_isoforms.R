@@ -1,3 +1,5 @@
+#! /usr/bin/env Rscript
+
 library(rtracklayer)
 library(dplyr)
 library(stringr)
@@ -29,6 +31,13 @@ if (tx_tool == "stringtie") {
 }
 
 gtf <- rtracklayer::readGFF(gtf_file)
+
+# Check if gtf already has ref_gene_id feature (Stringtie), if not (Bambu), create it based on gene_id column
+if (!"ref_gene_id" %in% colnames(gtf)){
+  gtf$ref_gene_id <- ifelse(!grepl("Bambu|MSTRG", gtf$gene_id), 
+                                  gtf$gene_id, 
+                                  NA)
+}
 
 # Get strand of reference genes
 ref_strand <- unique(gtf %>% filter(!is.na(ref_gene_id)) %>% select(ref_gene_id, strand))
