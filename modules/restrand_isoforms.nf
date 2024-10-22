@@ -2,7 +2,6 @@ process RESTRAND_NOVEL_ISOFORMS {
   conda (params.enable_conda ? "$baseDir/environment.yml" : null)
   container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
   publishDir "$params.outdir/final", mode: 'copy', saveAs: {filename -> "${gtf}"}, overwrite: true
-  tag "$gtf"
 
   input:
   file gtf
@@ -13,5 +12,6 @@ process RESTRAND_NOVEL_ISOFORMS {
   script:
   """
   restrand_isoforms.R ${gtf} ${params.tx_discovery} "restranded.${gtf}"
+  sed -i 's/$/;/' "restranded.${gtf}"
   """
 }
