@@ -404,9 +404,6 @@ sub_cover_text <- paste(
   paste("ANNEXA version:", ANNEXA_version),
   sep = "\n")
 
-sub_cover_text <- paste(
-  print(Sys.Date()), 
-  paste("ANNEXA version:", ANNEXA_version), sep = "\n")
 sub_cover <- textGrob(sub_cover_text,
                   gp = gpar(fontsize = 20,
                             col = "black"))
