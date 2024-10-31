@@ -8,6 +8,7 @@ library(grid)
 library(gridExtra)
 library(viridis)
 library(ggpattern)
+library(stringr)
 
 brew = c("#008387", "#a0d3db", "#ad8500", "#d9cb98")
 palette = c("#00AFBB", "#FC4E07", "#E7B800")
@@ -394,6 +395,14 @@ pdf(paste0(prefix, ".annexa.qc.pdf"), width = 7, height = 7)
 cover <- textGrob("ANNEXA report",
                   gp = gpar(fontsize = 40,
                             col = "black"))
+
+sub_cover_text <- paste(
+  str_wrap(paste("Reference genome:", genome_ref), width = 40),
+  str_wrap(paste("Reference annotation:", gtf_ref), width = 40),
+  "\n",
+  print(Sys.Date()),
+  paste("ANNEXA version:", ANNEXA_version),
+  sep = "\n")
 
 sub_cover_text <- paste(
   print(Sys.Date()), 

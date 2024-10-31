@@ -14,6 +14,7 @@ process FEELNC_CODPOT {
   path "feelnc_codpot_out/new.lncRNA.gtf", emit: lncRNA
   path "feelnc_codpot_out/new.mRNA.gtf", emit: mRNA
 
+  script:
   """
   grep "protein_coding" ${ref} > known_mRNA.gtf
   grep -v "protein_coding" ${ref} > known_lncRNA.gtf

@@ -6,6 +6,7 @@ process PREPARE_RSEQC {
   output:
   path "*.rseqc.gtf"
 
+  script:
   """
   grep "protein_coding" ${novel} > novel_mRNA.rseqc.gtf
   grep "lncRNA" ${novel} > novel_lncRNA.rseqc.gtf
