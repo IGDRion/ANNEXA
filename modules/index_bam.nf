@@ -11,6 +11,7 @@ process INDEX_BAM {
   output:
   file("*.bai")
 
+  script:
   """
   samtools index $bam
   """

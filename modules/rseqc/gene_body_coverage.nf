@@ -15,6 +15,7 @@ process GENEBODY_COVERAGE {
   file "${prefix}.${bed.simpleName}.geneBodyCoverage.curves.pdf"
   file "${prefix}.${bed.simpleName}.geneBodyCoverage.txt"
 
+  script:
   """
   geneBody_coverage.py \
     -i ./ \

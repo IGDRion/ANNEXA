@@ -53,13 +53,14 @@ include { INDEX_BAM                      } from './modules/index_bam.nf'
 include { BAMBU                          } from './modules/bambu/bambu.nf'
 include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
 include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
-include { RESTRAND_NOVEL_ISOFORMS        } from './modules/restrand_isoforms.nf'
+include { RESTRAND_ISOFORMS              } from './modules/restrand_isoforms.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
 include { RESTORE_BIOTYPE                } from './modules/restore_biotypes.nf'
 include { MERGE_NOVEL                    } from './modules/merge_novel.nf'
 include { TRANSDECODER                   } from './modules/transdecoder/transdecoder_workflow.nf'
+include { RESTRAND_NOVEL                 } from './modules/restrand_novel.nf'
 include { TFKMERS                        } from './modules/transforkmers/workflow.nf'
 include { QC as QC_FULL; QC as QC_FILTER } from './modules/qc/workflow.nf'
 include { ADD_CLASS_CODE                 } from './modules/add_class_code.nf'
@@ -85,13 +86,13 @@ workflow {
   if(params.tx_discovery == "bambu") {
     BAMBU(samples.collect(), VALIDATE_INPUT_GTF.out, ref_fa)
     GFFCOMPARE(VALIDATE_INPUT_GTF.out, ref_fa, BAMBU.out.bambu_gtf)
-    RESTRAND_NOVEL_ISOFORMS(BAMBU.out.bambu_gtf)
-    SPLIT_EXTENDED_ANNOTATION(RESTRAND_NOVEL_ISOFORMS.out)
+    RESTRAND_ISOFORMS(BAMBU.out.bambu_gtf)
+    SPLIT_EXTENDED_ANNOTATION(RESTRAND_ISOFORMS.out)
   }
   else if (params.tx_discovery == "stringtie2") {
     STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
-    RESTRAND_NOVEL_ISOFORMS(STRINGTIE.out.stringtie_gtf)
-    SPLIT_EXTENDED_ANNOTATION(RESTRAND_NOVEL_ISOFORMS.out)
+    RESTRAND_ISOFORMS(STRINGTIE.out.stringtie_gtf)
+    SPLIT_EXTENDED_ANNOTATION(RESTRAND_ISOFORMS.out)
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -119,13 +120,13 @@ workflow {
   // PREDICT CDS ON NOVEL TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
   TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
-
+  RESTRAND_NOVEL(TRANSDECODER.out)
   ///////////////////////////////////////////////////////////////////////////
   // PERFORM QC ON FULL ANNOTATION
   ///////////////////////////////////////////////////////////////////////////
   QC_FULL(samples, 
           INDEX_BAM.out, 
-          TRANSDECODER.out, 
+          RESTRAND_NOVEL.out, 
           VALIDATE_INPUT_GTF.out, 
           ch_gene_counts,
           "full")
@@ -134,7 +135,7 @@ workflow {
   // FILTER NEW TRANSCRIPTS, AND QC ON FILTERED ANNOTATION
   ///////////////////////////////////////////////////////////////////////////
   if(params.filter) {
-    TFKMERS(TRANSDECODER.out, 
+    TFKMERS(RESTRAND_NOVEL.out, 
             ref_fa, 
             ch_ndr, 
             tokenizer, 
@@ -151,9 +152,9 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   // ADD GFFCOMPARE CLASS CODES TO FINAL GTFS
   ///////////////////////////////////////////////////////////////////////////
-  final_gtf = TRANSDECODER.out.gtf.mix(QC_FULL.out.gtf)
+  final_gtf = RESTRAND_NOVEL.out.mix(QC_FULL.out.gtf)
   if (params.filter){
-  final_gtf = TRANSDECODER.out.gtf.mix(QC_FULL.out.gtf,TFKMERS.out.gtf,QC_FILTER.out.gtf)
+  final_gtf = RESTRAND_NOVEL.out.mix(QC_FULL.out.gtf,TFKMERS.out.gtf,QC_FILTER.out.gtf)
   }
   ADD_CLASS_CODE(class_code, final_gtf)
 }

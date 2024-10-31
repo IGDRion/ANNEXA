@@ -10,6 +10,7 @@ process GTF_TO_GENEPRED {
   output:
   path "${gtf.simpleName}.genePred"
 
+  script:
   """
   gtfToGenePred -genePredExt ${gtf} ${gtf.simpleName}.genePred
   """

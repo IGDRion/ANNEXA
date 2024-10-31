@@ -18,7 +18,7 @@ process ADD_CLASS_CODE {
   # Remove header created by gtfsort
   sed -i 1,3d "class_code.${gtf}"
 
-  # Add semicolon at end of tx lines
-  sed -i '/\\ttranscript\\t/s/\$/;/' "class_code.${gtf}"
+  # Add semicolon if missing during rtracklayer export
+  sed -i 's/[^;]\$/&;/' "class_code.${gtf}"
   """
 }

@@ -16,6 +16,7 @@ process FILTER {
   path "counts_transcript.filter.txt"
   path "counts_transcript.full.txt"
 
+  script:
   """
   cp ${counts_tx} counts_transcript.full.txt
 

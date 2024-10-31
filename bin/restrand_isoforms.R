@@ -4,18 +4,6 @@ library(rtracklayer)
 library(dplyr)
 library(stringr)
 
-# This script reassigns the strand of novel isoforms identified by bambu or stringtie.
-# For novel isoforms of known reference genes, it assigns the strand of the reference gene \
-# to its novel isoform.
-# Example:
-# chr21	StringTie	transcript	8380666	8451371	1000	+	.	gene_id "ENSG00000280441.3"; transcript_id "ENST00000652379.1"; gene_name "ENSG00000280441"; ref_gene_id "ENSG00000280441.3"; 
-# chr21	StringTie	exon	8380666	8380972	1000	+	.	gene_id "ENSG00000280441.3"; transcript_id "ENST00000652379.1"; exon_number "1"; gene_name "ENSG00000280441"; ref_gene_id "ENSG00000280441.3"; 
-# chr21	StringTie	transcript	8396906	8397356	1000	.	.	gene_id "ENSG00000280441.3"; transcript_id "MSTRG.19526.1"; 
-# chr21	StringTie	exon	8396906	8397356	1000	.	.	gene_id "ENSG00000280441.3"; transcript_id "MSTRG.19526.1"; exon_number "1"; 
-# chr21	StringTie	transcript	8403347	8404298	1000	-	.	gene_id "ENSG00000280441.3"; transcript_id "MSTRG.19528.1"; 
-# chr21	StringTie	exon	8403347	8404298	1000	-	.	gene_id "ENSG00000280441.3"; transcript_id "MSTRG.19528.1"; exon_number "1"; 
-# The two novel transcripts (identified by MSTRG. or BambuTx) will be restranded to the + strand based on the strand of the ref_gene_id.
-
 #############################################
 # CLI Args
 args = commandArgs(trailingOnly=TRUE)
@@ -24,13 +12,15 @@ tx_tool = args[2]
 output = args[3]
 
 # Define prefix to identify novel transcripts
-if (tx_tool == "stringtie") {
+if (tx_tool == "stringtie2") {
   prefix = "MSTRG"
 } else{
     prefix = "Bambu"
 }
 
 gtf <- rtracklayer::readGFF(gtf_file)
+
+# Restrand isoforms of known genes ----------------------------------------
 
 # Check if gtf already has ref_gene_id feature (Stringtie), if not (Bambu), create it based on gene_id column
 if (!"ref_gene_id" %in% colnames(gtf)){
@@ -47,11 +37,36 @@ to_change <- gtf %>% filter(str_detect(transcript_id, prefix) & !str_detect(gene
 matches <- match(to_change$gene_id, ref_strand$ref_gene_id)
 to_change$strand <- ref_strand$strand[matches]
 
-# Change strand of novel isoforms in gtf dataframe and export as new gtf
+# Change strand of novel isoforms in gtf dataframe
 gtf <- gtf %>%
   mutate(strand = case_when(
     transcript_id %in% to_change$transcript_id ~ to_change$strand[match(transcript_id, to_change$transcript_id)],
     TRUE ~ strand
   ))
 
+# Restrand novel tx of novel genes ----------------------------------------
+
+# Look for novel tx of novel genes
+novel <- gtf %>% filter(str_detect(transcript_id, prefix) & str_detect(gene_id, prefix))
+
+# Restrand novel transcripts
+# If all isoforms are unstraded, keep unstranded
+# If some are stranded, use strand as new strand
+# If all three strands are there, use majority rule
+new_gene_strands <- novel %>%
+  group_by(gene_id) %>%
+  summarize(gene_strand = if(all(strand == "*")) "*" 
+            else {
+              strands <- table(strand[strand != "*"])
+              if(length(strands) > 1 && max(strands) == min(strands)) "*"
+              else names(which.max(strands))
+            })
+
+# Change strand in gtf
+gtf <- gtf %>%
+  left_join(new_gene_strands, by="gene_id") %>%
+  mutate(strand = coalesce(gene_strand, strand)) %>%
+  select(-gene_strand)
+
+# Export gtf to new restranded file
 export(gtf, output)

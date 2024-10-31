@@ -10,6 +10,7 @@ process GENEPRED_TO_BED {
   output:
   path "${genePred.simpleName}.bed12"
 
+  script:
   """
   genePredToBed ${genePred} ${genePred.simpleName}.bed12
   """

@@ -11,6 +11,7 @@ process FEELNC_FORMAT {
   output:
   path "novel.genes.gtf"
 
+  script:
   """
   merge_feelnc.py --lncRNA ${lncRNA} --mRNA ${mRNA} > novel.genes.gtf
   """
