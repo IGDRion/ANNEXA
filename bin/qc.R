@@ -35,9 +35,11 @@ theme_set(
 #############################################################################
 # CLI Args
 #############################################################################
-args <- commandArgs(trailingOnly = TRUE)
-prefix <- args[1]
-ANNEXA_version <- args[2]
+args = commandArgs(trailingOnly=TRUE)
+prefix = args[1]
+ANNEXA_version = args[2]
+genome_ref = basename(args[3])
+gtf_ref = basename(args[4])
 
 #############################################################################
 # GENE level
@@ -395,7 +397,7 @@ pdf(paste0(prefix, ".annexa.qc.pdf"), width = 7, height = 7)
 cover <- textGrob("ANNEXA report",
                   gp = gpar(fontsize = 40,
                             col = "black"))
-
+        
 sub_cover_text <- paste(
   str_wrap(paste("Reference genome:", genome_ref), width = 40),
   str_wrap(paste("Reference annotation:", gtf_ref), width = 40),
