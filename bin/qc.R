@@ -35,17 +35,15 @@ theme_set(
 #############################################################################
 # CLI Args
 #############################################################################
-args = commandArgs(trailingOnly=TRUE)
-prefix = args[1]
-ANNEXA_version = args[2]
-genome_ref = basename(args[3])
-gtf_ref = basename(args[4])
+args <- commandArgs(trailingOnly = TRUE)
+prefix <- args[1]
+ANNEXA_version <- args[2]
 
 #############################################################################
-# GENE
+# GENE level
 #############################################################################
-gene = read.csv(paste0(prefix,".gene.stats"), header = T)
-gene$gene_biotype[gene$gene_biotype == "protein_coding"] = "mRNA"
+gene <- read.csv(paste0(prefix,".gene.stats"), header = TRUE)
+gene$gene_biotype[gene$gene_biotype == "protein_coding"] <- "mRNA"
 
 # Length
 med_length = gene %>%
@@ -90,7 +88,7 @@ iso = gene %>%
   guides(fill = "none", pattern = guide_legend(title = "Isoforms")) +
   theme(axis.title.x = element_blank())
 
-# Nombre de gène chaque catégorie
+# Nb  of genes per biotype and statuts known/novel
 count = ggplot(data = gene, aes(x = gene_biotype, fill = paste(gene_biotype, discovery))) +
   ggtitle("Number of genes") +
   geom_bar(colour = "black",
@@ -135,7 +133,7 @@ gene_counts = gene %>%
 gene_validate = gene %>%
   filter(presents_in_sample > 0) %>%
   ggplot(aes(presents_in_sample, fill = paste(gene_biotype, discovery))) +
-  ggtitle("Number of genes according to his\nnumber of samples with more than 1 count") +
+  ggtitle("Number of genes according to his\nbreadth of expression (gene count >1)") +
   geom_bar(color = "black", position = position_dodge()) +
   facet_grid(gene_biotype ~ .) +
   scale_y_log10() +
@@ -223,15 +221,15 @@ gene_ext_dist = gene %>%
 #############################################################################
 # TRANSCRIPT
 #############################################################################
-transcript = read.csv(paste0(prefix,".transcript.stats"), header = T)
-lncRNA_biotypes = c("lncRNA",
+transcript <- read.csv(paste0(prefix, ".transcript.stats"), header = TRUE)
+lncRNA_biotypes <- c("lncRNA",
                     "antisense",
                     "non-coding",
                     "lnc_RNA",
                     "ncRNA")
-mRNA_biotypes = c("protein_coding", "mRNA")
+mRNA_biotypes <- c("protein_coding", "mRNA")
 
-transcript = transcript %>%
+transcript <- transcript %>%
   mutate(transcript_biotype = if_else(
     transcript_biotype %in% lncRNA_biotypes,
     "lncRNA",
@@ -245,7 +243,7 @@ transcript = transcript %>%
 
 dim(transcript)
 # Length distrib
-med_length_tx = transcript %>%
+med_length_tx <- transcript %>%
   group_by(tx_discovery, transcript_biotype) %>%
   summarize(median = median(length), transcript_biotype = transcript_biotype)
 
@@ -397,7 +395,7 @@ pdf(paste0(prefix, ".annexa.qc.pdf"), width = 7, height = 7)
 cover <- textGrob("ANNEXA report",
                   gp = gpar(fontsize = 40,
                             col = "black"))
-        
+
 sub_cover_text <- paste(
   str_wrap(paste("Reference genome:", genome_ref), width = 40),
   str_wrap(paste("Reference annotation:", gtf_ref), width = 40),
@@ -406,6 +404,9 @@ sub_cover_text <- paste(
   paste("ANNEXA version:", ANNEXA_version),
   sep = "\n")
 
+sub_cover_text <- paste(
+  print(Sys.Date()), 
+  paste("ANNEXA version:", ANNEXA_version), sep = "\n")
 sub_cover <- textGrob(sub_cover_text,
                   gp = gpar(fontsize = 20,
                             col = "black"))
@@ -443,7 +444,7 @@ grid.arrange(textGrob(
   gp = gpar(fontface = "italic", fontsize = 20),
   vjust = 0
 ))
-ex_len
 ex_count
+ex_len
 
 dev.off()
