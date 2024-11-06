@@ -54,9 +54,15 @@ if __name__ == "__main__":
         record["gene_biotype"] = g_biotype
 
         #######################################################
-        if not "transcript_biotype" in record:
+        if "transcript_biotype" in record:
+            t_biotype = record["transcript_biotype"]
+        elif "transcript_type" in record:
+            record.attributes["transcript_biotype"] = record.attributes["transcript_type"]
+            del record.attributes["transcript_type"]
+            t_biotype = record["transcript_biotype"]
+        else:
             record["transcript_biotype"] = g_biotype
-        t_biotype = record["transcript_biotype"]
+            t_biotype = record["transcript_biotype"]
 
         # Check for RefSeq transcript_biotype format
         if t_biotype == "mRNA":
