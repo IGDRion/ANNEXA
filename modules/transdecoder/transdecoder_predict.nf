@@ -4,8 +4,6 @@ process TRANSDECODER_PREDICT {
         'https://depot.galaxyproject.org/singularity/transdecoder:5.5.0--pl5262hdfd78af_4' :
         'quay.io/comp-bio-aging/transdecoder' }"
     publishDir "$params.outdir/transdecoder", mode: 'copy'
-    cpus params.maxCpu
-    memory params.maxMemory
     
     input:
     path novel_full_gtf

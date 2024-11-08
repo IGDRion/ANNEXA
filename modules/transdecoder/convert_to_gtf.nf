@@ -3,8 +3,6 @@ process AGAT_CONVERTSPGFF2GTF {
     container "${ workflow.containerEngine == 'singularity' ?
         'https://depot.galaxyproject.org/singularity/agat:1.4.0--pl5321hdfd78af_0' :
         'biocontainers/agat:1.4.0--pl5321hdfd78af_0' }"
-    cpus params.maxCpu
-    memory params.maxMemory
 
     input:
     path gff3

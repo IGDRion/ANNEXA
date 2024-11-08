@@ -5,8 +5,6 @@ process GTFSORT {
         'biocontainers/gtfsort:0.2.2--h4ac6f70_0' }"
     publishDir "$params.outdir/transdecoder", mode: 'copy', pattern: 'novel.full.gtf'
     publishDir "$params.outdir/final", mode: 'copy', pattern: 'novel.full.gtf', saveAs: {filename -> 'novel.full.gtf'}, overwrite: true
-    cpus params.maxCpu
-    memory params.maxMemory
 
     input:
     path fixed_novel
