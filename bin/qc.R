@@ -38,8 +38,7 @@ theme_set(
 args = commandArgs(trailingOnly=TRUE)
 prefix = args[1]
 ANNEXA_version = args[2]
-genome_ref = basename(args[3])
-gtf_ref = basename(args[4])
+command = args[3]
 
 #############################################################################
 # GENE level
@@ -399,9 +398,6 @@ cover <- textGrob("ANNEXA report",
                             col = "black"))
         
 sub_cover_text <- paste(
-  str_wrap(paste("Reference genome:", genome_ref), width = 40),
-  str_wrap(paste("Reference annotation:", gtf_ref), width = 40),
-  "\n",
   print(Sys.Date()),
   paste("ANNEXA version:", ANNEXA_version),
   sep = "\n")
@@ -411,6 +407,11 @@ sub_cover <- textGrob(sub_cover_text,
                             col = "black"))
 
 grid.arrange(cover, sub_cover)
+
+# Command line
+grid.arrange(textGrob(
+  paste(command)
+))
 
 # Gene
 grid.arrange(textGrob(

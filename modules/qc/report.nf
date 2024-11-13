@@ -23,6 +23,6 @@ process REPORT {
     -ref ${ref} \
     -prefix ${prefix} \
     -tx_discovery ${params.tx_discovery}
-  qc.R ${prefix} ${workflow.manifest.version} ${params.fa} ${params.gtf}
+  qc.R ${prefix} ${workflow.manifest.version} ${workflow.getCommandLine}
   """
 }
