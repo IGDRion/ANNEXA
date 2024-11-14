@@ -19,7 +19,6 @@ process GTFSORT {
 
     gtfsort \
         -i merged.gtf \
-        -o novel.full.gtf \
-        -t ${params.maxCpu}
+        -o novel.full.gtf
     """
 }
