@@ -409,8 +409,10 @@ sub_cover <- textGrob(sub_cover_text,
 grid.arrange(cover, sub_cover)
 
 # Command line
+formatted_command <- gsub("(^|\\s)(-{1,2}\\w+)", "\n\\1\\2", command)
+
 grid.arrange(textGrob(
-  paste(command)
+  paste(formatted_command)
 ))
 
 # Gene

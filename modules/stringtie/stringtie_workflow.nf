@@ -21,10 +21,6 @@ workflow STRINGTIE {
         STRINGTIE_ASSEMBLE.out.stringtie_assemble_gtf.collect(), 
         input_gtf)
 
-    STRINGTIE_QUANTIFY(
-        samples, 
-        STRINGTIE_MERGE.out.stringtie_merged_gtf)
-
     GFFCOMPARE(
         input_gtf, 
         ref_fa, 
@@ -34,13 +30,13 @@ workflow STRINGTIE {
         STRINGTIE_MERGE.out.stringtie_merged_gtf,
         GFFCOMPARE.out.tracking_file)
 
-    SUBREAD_FEATURECOUNTS(
-        samples, 
-        FORMAT_GFFCOMPARE.out.stringtie_gtf)
+    STRINGTIE_QUANTIFY(
+    samples, 
+    STRINGTIE_MERGE.out.stringtie_merged_gtf)
 
     MERGE_COUNTS(
-        SUBREAD_FEATURECOUNTS.out.gene_counts.collect(), 
-        SUBREAD_FEATURECOUNTS.out.tx_counts.collect())
+        STRINGTIE_QUANTIFY.out.counts_gene.collect(), 
+        STRINGTIE_QUANTIFY.out.counts_transcript.collect())
 
     emit:
     stringtie_gtf = FORMAT_GFFCOMPARE.out.stringtie_gtf
