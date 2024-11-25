@@ -31,8 +31,8 @@ workflow STRINGTIE {
         GFFCOMPARE.out.tracking_file)
 
     STRINGTIE_QUANTIFY(
-    samples, 
-    STRINGTIE_MERGE.out.stringtie_merged_gtf)
+        samples,
+        STRINGTIE_MERGE.out.stringtie_merged_gtf)
 
     MERGE_COUNTS(
         STRINGTIE_QUANTIFY.out.counts_gene.collect(), 

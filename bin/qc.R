@@ -411,9 +411,19 @@ grid.arrange(cover, sub_cover)
 # Command line
 formatted_command <- gsub("(^|\\s)(-{1,2}\\w+)", "\n\\1\\2", command)
 
-grid.arrange(textGrob(
-  paste(formatted_command)
-))
+grid.arrange(
+  textGrob("ANNEXA command line:", 
+            gp = gpar(fontsize = 14, fontface = "bold")),
+  textGrob(
+    paste(formatted_command),
+    just = "left",
+    x = 0,
+    hjust = 0,
+    gp = gpar(fontsize = 10)
+  ),
+  ncol = 1,
+  heights = c(0.1, 0.9)
+)
 
 # Gene
 grid.arrange(textGrob(
