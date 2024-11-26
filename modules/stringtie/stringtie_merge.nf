@@ -1,4 +1,4 @@
-process STRINGTIE_MERGE {
+process MERGE {
   conda (params.enable_conda ? "bioconda::stringtie" : null)
   container "${ workflow.containerEngine == 'Singularity' ? 
                 'https://depot.galaxyproject.org/singularity/stringtie%3A2.2.3--h43eeafb_0' :

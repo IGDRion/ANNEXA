@@ -1,9 +1,8 @@
-include { STRINGTIE_ASSEMBLE             } from './stringtie_assemble.nf'
-include { STRINGTIE_MERGE                } from './stringtie_merge.nf'
-include { STRINGTIE_QUANTIFY             } from './stringtie_quant.nf'
+include { ASSEMBLE                       } from './stringtie_assemble.nf'
+include { MERGE                          } from './stringtie_merge.nf'
+include { QUANTIFY                       } from './stringtie_quant.nf'
 include { GFFCOMPARE                     } from '../gffcompare/gffcompare.nf'
 include { FORMAT_GFFCOMPARE              } from './stringtie_format_gffcompare.nf'
-include { SUBREAD_FEATURECOUNTS          } from '../subread/subread_featurecounts.nf'
 include { MERGE_COUNTS                   } from './stringtie_merge_counts.nf'
 
 workflow STRINGTIE {
@@ -13,30 +12,30 @@ workflow STRINGTIE {
     ref_fa
 
     main:
-    STRINGTIE_ASSEMBLE(
+    ASSEMBLE(
         samples, 
         input_gtf)
 
-    STRINGTIE_MERGE(
-        STRINGTIE_ASSEMBLE.out.stringtie_assemble_gtf.collect(), 
+    MERGE(
+        ASSEMBLE.out.stringtie_assemble_gtf.collect(), 
         input_gtf)
 
     GFFCOMPARE(
         input_gtf, 
         ref_fa, 
-        STRINGTIE_MERGE.out.stringtie_merged_gtf)
+        MERGE.out.stringtie_merged_gtf)
 
     FORMAT_GFFCOMPARE(
-        STRINGTIE_MERGE.out.stringtie_merged_gtf,
+        MERGE.out.stringtie_merged_gtf,
         GFFCOMPARE.out.tracking_file)
 
-    STRINGTIE_QUANTIFY(
+    QUANTIFY(
         samples,
-        STRINGTIE_MERGE.out.stringtie_merged_gtf)
+        MERGE.out.stringtie_merged_gtf)
 
     MERGE_COUNTS(
-        STRINGTIE_QUANTIFY.out.counts_gene.collect(), 
-        STRINGTIE_QUANTIFY.out.counts_transcript.collect())
+        QUANTIFY.out.counts_gene.collect(), 
+        QUANTIFY.out.counts_transcript.collect())
 
     emit:
     stringtie_gtf = FORMAT_GFFCOMPARE.out.stringtie_gtf
