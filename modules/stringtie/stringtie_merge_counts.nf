@@ -1,7 +1,7 @@
 process MERGE_COUNTS {
   publishDir "$params.outdir/stringtie2", mode: 'copy', pattern: '*.txt'
   if (params.filter == false){
-    publishDir "$params.outdir/final", mode: 'copy', pattern: 'counts_transcript.txt', saveAs: {filename -> 'counts_transcript.full.gtf'}
+    publishDir "$params.outdir/final", mode: 'copy', pattern: 'counts_transcript.txt', saveAs: {filename -> 'counts_transcript.full.txt'}
   }
 
   input:
