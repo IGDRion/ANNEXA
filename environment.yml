@@ -17,10 +17,6 @@ dependencies:
   - conda-forge::r-ggpattern
   - bioconda::bioconductor-rtracklayer
 
-  - bioconda::bioconductor-bambu=3.4.0
-  - conda-forge::r-xgboost=1.7.6=cpu_r43had0c348_6
-  - bioconda::bioconductor-bsgenome
-
   - conda-forge::procps-ng
   - conda-forge::mkl<=2024.0
   
