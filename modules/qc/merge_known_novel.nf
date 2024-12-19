@@ -11,11 +11,10 @@ process MERGE_ANNOTATIONS {
   val origin
 
   output:
-  path "${params.prefilter_ndr ? 'prefilter.' : ''}extended_annotations.${origin}.gtf", emit: gtf
+  path "extended_annotations.${origin}.gtf", emit: gtf
 
   script:
-  def output_prefix = params.prefilter_ndr ? 'prefilter.' : ''
   """
-  cat ${novel} ${ref} | GTF.py format > ${output_prefix}extended_annotations.${origin}.gtf
+  cat ${novel} ${ref} | GTF.py format > extended_annotations.${origin}.gtf
   """
 }

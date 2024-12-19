@@ -15,12 +15,18 @@ genomeSequence <- Rsamtools::FaFile(genomeseq)
 Rsamtools::indexFa(genomeseq)
 annot_gtf      <- strsplit(grep('--annotation*', args, value = TRUE), split = '=')[[1]][[2]]
 bambu_strand   <- strsplit(grep('--bambu_strand*', args, value = TRUE), split = '=')[[1]][[2]]
+bambu_singleexon   <- strsplit(grep('--bambu_singleexon*', args, value = TRUE), split = '=')[[1]][[2]]
 if (bambu_strand=="true"){
   bambu_strand=TRUE
 } else {
   bambu_strand=FALSE
 }
-readlist       <- args[6:length(args)]
+if (bambu_singleexon=="true"){
+  bambu_singleexon=TRUE
+} else {
+  bambu_singleexon=FALSE
+}
+readlist       <- args[7:length(args)]
 
 print("BAMs:")
 readlist
@@ -29,6 +35,13 @@ readlist
 ## RUN BAMBU                                  ##
 ################################################
 grlist <- prepareAnnotations(annot_gtf)
+
+if (bambu_singleexon==TRUE) {
+  opt_discovery <- list(min.txScore.singleExon = 0)
+} else {
+  opt_discovery <- NULL
+}
+
 se     <- bambu(
   reads = readlist,
   annotations = grlist,
@@ -37,7 +50,7 @@ se     <- bambu(
   verbose = TRUE,
   NDR = 1,
   stranded = bambu_strand,
-  opt.discovery = list(min.txScore.singleExon = 0)
+  opt.discovery = opt_discovery
 )
 
 # Extract NDR

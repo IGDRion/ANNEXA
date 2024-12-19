@@ -86,7 +86,7 @@
                 }
             }
         },
-        "bzmbu_options": {
+        "bambu_options": {
             "title": "Bambu options",
             "type": "object",
             "fa_icon": "fas fa-terminal",
@@ -97,10 +97,10 @@
                     "description": "Run bambu with stranded data",
                     "default": "true"
                 },
-                "prefilter_ndr": {
+                "bambu_singleexon": {
                     "type": "boolean",
-                    "description": "When using ANNEXA with bambu, prefilter before the filtering step. false by default.",
-                    "default": "false"
+                    "description": "Include single exon transcripts in Bambu output or not. These are known to have a high frequency of false positives.",
+                    "default": "true"
                 },
                 "bambu_threshold": {
                     "type": "integer",

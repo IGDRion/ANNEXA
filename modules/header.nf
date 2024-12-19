@@ -20,11 +20,11 @@ Input Samplesheet     : ${params.input}
 ---
 Transcript discovery  : ${params.tx_discovery}
 Filtering             : ${params.filter}
-Prefilter Bambu       : ${params.prefilter_ndr}
 Tfkmers Model         : ${params.tfkmers_model}
 Tfkmers Tokenizer     : ${params.tfkmers_tokenizer}
 Tfkmers Threshold     : ${params.tfkmers_threshold}
 Bambu Threshold       : ${params.bambu_threshold}
+Bambu Single Exons    : ${params.bambu_singleexon}
 Filtering operation   : ${params.operation}
 Stranded              : ${params.bambu_strand}
 -${c_dim}-------------------------------------${c_reset}-

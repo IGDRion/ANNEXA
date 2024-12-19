@@ -75,7 +75,6 @@ Main options:
 
 Bambu options:
 --bambu_strand      : Run bambu with stranded data. true by default.
---prefilter_ndr     : When using ANNEXA with bambu, prefilter before the filtering step. false by default.
 --bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
 
 
@@ -115,5 +114,3 @@ To use them, extract the zip, and point `--tfkmers_model` and `--tfkmers_tokeniz
 The filtered annotation can be the `union` of these 2 tools, _i.e._ all the transcripts validated by one or both of these tools; or the `intersection`, _i.e._ the transcripts validated by both tools (the latter being the default).
 
 At the end, the QC steps are performed both on the full and filtered extended annotations.
-
-### Prefiltering
