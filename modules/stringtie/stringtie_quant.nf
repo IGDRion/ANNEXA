@@ -4,14 +4,14 @@ process QUANTIFY {
                 'https://depot.galaxyproject.org/singularity/stringtie%3A2.2.3--h43eeafb_0' :
                 'quay.io/biocontainers/stringtie:2.2.3--h43eeafb_0'}"
   cpus params.maxCpu
-  tag 'bam'
+  tag "$bam"
 
   input:
-  path bam
+  tuple path(bam), val(av_length)
   path merged_gtf
 
   output:
-  path "${bam.simpleName}.counts_transcript.txt", emit: counts_transcript
+  path "${bam.simpleName}.counts_transcripts.txt", emit: counts_transcript
   path "${bam.simpleName}.counts_gene.txt", emit: counts_gene
 
   script:
@@ -20,13 +20,18 @@ process QUANTIFY {
     -L \
     -eB \
     -G ${merged_gtf} \
-    -o stringtie_quant.gtf \
-    -A gene_abundance.tab \
+    -o ${bam.simpleName}_quant.gtf \
     -p ${params.maxCpu} \
     ${bam}
+  
+  # Extract raw counts from stringtie with prepDE
+  mkdir ${bam.simpleName}
+  mv ${bam.simpleName}_quant.gtf ${bam.simpleName}
 
-    # Extract tx and gene counts
-    awk -v bam="${bam.simpleName}" 'BEGIN {OFS="\t"; print "transcript_id", "gene_id", bam}  NR>1 {print \$6, \$9, \$11}' t_data.ctab > ${bam.simpleName}.counts_transcript.txt
-    awk -v bam="${bam.simpleName}" 'BEGIN {OFS="\t"; print "gene_id", bam}  NR>1 {print \$1, \$7}' gene_abundance.tab > ${bam.simpleName}.counts_gene.txt
+  prepDE.py \
+  -i . \
+  -g ${bam.simpleName}.counts_gene.txt \
+  -t ${bam.simpleName}.counts_transcripts.txt \
+  -l ${av_length}
   """
 }

@@ -19,7 +19,7 @@ process MERGE_COUNTS {
   gene_counts=$(echo !{gene_counts} | tr ' ' '\\n' | sort | xargs)
   tx_counts=$(echo !{tx_counts} | tr ' ' '\\n' | sort | xargs)
   
-  # Merge the individual outputs of featurecount of each .bam into a single file
+  # Merge the individual outputs of prepDE of each .bam into a single file
 
   paste \${gene_counts} \
   | awk '{printf("%s ",$1); for (i=2;i<=NF;i+=2){printf("%s ",$i)}print "\\n"}' \
