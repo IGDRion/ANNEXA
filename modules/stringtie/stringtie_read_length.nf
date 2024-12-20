@@ -1,4 +1,4 @@
-process INDEX_BAM {
+process READ_LENGTH {
   conda (params.enable_conda ? "bioconda::samtools=1.16.1" : null)
   container "${ workflow.containerEngine == 'singularity' ? 
                 'https://depot.galaxyproject.org/singularity/samtools%3A1.16.1--h6899075_0' : 
@@ -9,10 +9,10 @@ process INDEX_BAM {
   file bam
 
   output:
-  file("*.bai")
+  tuple path(bam), env(av_length), emit: bam_length
 
   script:
   """
-  samtools index $bam
+  av_length=\$(samtools stats ${bam} | grep "average length" | awk '{print \$4}')
   """
 }

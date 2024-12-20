@@ -10,8 +10,9 @@ process MERGE_NOVEL {
   file novel_isoforms
 
   output:
-  path "novel.full.gtf"
+  path "novel.full.gtf", emit: novel_full_gtf
 
+  script:
   """
   cat ${novel_genes} ${novel_isoforms} | GTF.py format > novel.full.gtf
   """

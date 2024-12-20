@@ -10,6 +10,7 @@ process VALIDATE_INPUT_GTF {
   output:
   file 'input.formatted.gtf'
 
+  script:
   """
   validate_gtf.py ${gtf} > input.formatted.gtf
   """

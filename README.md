@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**ANNEXA** is an all-in-one reproductible pipeline, written in the [Nextflow](https://nextflow.io), which allows users to analyze LR-RNAseq data (Long-Read RNASeq), and to reconstruct and quantify known and novel genes and isoforms.
+**ANNEXA** is an all-in-one reproductible pipeline, written using the [Nextflow](https://nextflow.io) workflow system, which allows users to analyze LR-RNAseq data (Long-Read RNASeq), and to reconstruct and quantify known and novel genes and isoforms.
 
 ## Pipeline summary
 
@@ -11,12 +11,13 @@
 ANNEXA works by using only three parameter files (a reference genome, a reference annotation and mapping files) and provides users with an extended annotation distinguishing between novel protein-coding (mRNA) versus long non-coding RNAs (lncRNA) genes. All known and novel gene/transcript models are further characterized through multiple features (length, number of spliced transcripts, normalized expression levels,...) available as graphical outputs.
 
 1. Check if the input annotation contains all the information needed.
-2. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu).
+2. Transcriptome reconstruction and quantification with [bambu](https://github.com/GoekeLab/bambu) or [StringTie](https://github.com/gpertea/stringtie).
 3. Novel classification with [FEELnc](https://github.com/tderrien/FEELnc).
 4. Retrieve information from input annotation and format final gtf with 3 level structure: gene -> transcript -> exon.
-5. Filter novel transcripts based on [bambu NDR (Novel Discovery Rates)](https://github.com/GoekeLab/bambu) and/or [TransforKmers TSS validation](https://github.com/IGDRion/transforkmers) to assess fulllength transcripts.
-6. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
-7. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
+5. Predict the CDS of novel protein-coding transcripts with [TransDecoder](https://github.com/TransDecoder/TransDecoder).
+6. Filter novel transcripts based on [bambu NDR (Novel Discovery Rates)](https://github.com/GoekeLab/bambu) and/or [TransforKmers TSS validation](https://github.com/IGDRion/transforkmers) to assess fulllength transcripts.
+7. Perform a quality control of both the full and filtered extended annotations (see [example](https://github.com/igdrion/ANNEXA/blob/master/examples/results/qc_gtf.pdf)).
+8. Optional: Check gene body coverage with [RSeQC](http://rseqc.sourceforge.net/#genebody-coverage-py).
 
 This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
 
@@ -58,24 +59,40 @@ Required:
 --gtf               : Path to reference annotation.
 
 
-Optional:
+Profile options:
 -profile test       : Run annexa on toy dataset.
 -profile slurm      : Run annexa on slurm executor.
 -profile singularity: Run annexa in singularity container.
 -profile conda      : Run annexa in conda environment.
 -profile docker     : Run annexa in docker container.
 
+
+Main options:
+--tx_discovery      : Specify which transcriptome reconstruction tool to use. Options: "bambu" (default) or "stringtie2".
 --filter            : Perform or not the filtering step. false by default.
+--withGeneCoverage  : Run RSeQC (can be long depending on annotation and bam sizes). False by default.
+
+
+Bambu options:
+--bambu_strand      : Run bambu with stranded data. true by default.
+--bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
+
+
+Filtering options:
 --tfkmers_tokenizer : Path to TransforKmers tokenizer. Required if filter activated.
 --tfkmers_model     : Path to TransforKmers model. Required if filter activated.
---bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
 --tfkmers_threshold : TransforKmers prediction threshold below which new transcripts are retained.
 --operation         : Operation to retained novel transcripts. "union" retain tx validated by either bambu or transforkmers, "intersection" retain tx validated by both.
 
---withGeneCoverage  : Run RSeQC (can be long depending on annotation and bam sizes). False by default.
 
+Performance options:
 --maxCpu            : max cpu threads used by ANNEXA. 8 by default.
 --maxMemory         : max memory used by ANNEXA. 40GB by default.
+
+
+Nextflow options:
+-resume             : Resume task from cached work (useful for recovering from errors when using singularity).
+-with-report        : Create an HTML execution report with metrics such as resource usage for each workflow process.
 ```
 
 > If the filter argument is set to `true`, TransforKmers model and tokenizer paths have to be given. They can be either downloaded from the [TransforKmers official repository](https://github.com/IGDRion/TransforKmers) or trained in advance by yourself on your own data.

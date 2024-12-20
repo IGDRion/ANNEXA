@@ -11,6 +11,7 @@ process EXTRACT_TSS_SEQUENCES {
   output:
   path "tss.fa", emit: tss_sequences
 
+  script:
   """
   bedtools getfasta -nameOnly -fi ${fa} -bed ${tss_regions} | tr a-z A-Z > tss.fa
   """

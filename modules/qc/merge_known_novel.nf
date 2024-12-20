@@ -11,8 +11,9 @@ process MERGE_ANNOTATIONS {
   val origin
 
   output:
-  path "extended_annotations.${origin}.gtf"
+  path "extended_annotations.${origin}.gtf", emit: gtf
 
+  script:
   """
   cat ${novel} ${ref} | GTF.py format > extended_annotations.${origin}.gtf
   """

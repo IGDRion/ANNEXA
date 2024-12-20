@@ -11,6 +11,7 @@ process RESTORE_BIOTYPE {
   output:
   path "novel.isoforms.gtf"
 
+  script:
   """
   restore_ref_attributes.py -gtf ${novel_isoforms} -ref $ref > novel.isoforms.gtf
   """

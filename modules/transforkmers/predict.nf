@@ -14,6 +14,7 @@ process PREDICT {
   output:
   path "output.csv", emit: tss_prob
 
+  script:
   """
   transforkmers predict \
     --model_path_or_name ${model} \

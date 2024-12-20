@@ -7,12 +7,14 @@ library(RColorBrewer)
 library(grid)
 library(gridExtra)
 library(viridis)
+library(ggpattern)
+library(stringr)
 
 brew = c("#008387", "#a0d3db", "#ad8500", "#d9cb98")
 palette = c("#00AFBB", "#FC4E07", "#E7B800")
 
 theme_set(
-  theme_pubr() +
+  theme_pubr(base_size = 15) +
     theme(
       panel.grid.major = element_blank(),
       axis.line.y = element_blank(),
@@ -35,12 +37,14 @@ theme_set(
 #############################################################################
 args = commandArgs(trailingOnly=TRUE)
 prefix = args[1]
+ANNEXA_version = args[2]
+command = args[3]
 
 #############################################################################
-# GENE
+# GENE level
 #############################################################################
-gene = read.csv(paste0(prefix,".gene.stats"), header = T)
-gene$gene_biotype[gene$gene_biotype == "protein_coding"] = "mRNA"
+gene <- read.csv(paste0(prefix,".gene.stats"), header = TRUE)
+gene$gene_biotype[gene$gene_biotype == "protein_coding"] <- "mRNA"
 
 # Length
 med_length = gene %>%
@@ -73,18 +77,19 @@ len = gene %>%
 # Nb isoformes
 iso = gene %>%
   mutate(isoformes = ifelse(nb_transcripts == 1, "1", "2+")) %>%
-  ggplot(aes(x = discovery, fill = isoformes)) +
+  ggplot(aes(x = discovery, fill = interaction(discovery,gene_biotype), pattern = isoformes)) +
   ggtitle("Proportion of mono versus multi-isoform genes") +
-  geom_bar(position = "fill",
+  geom_bar_pattern(position = "fill",
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
   facet_grid(~ gene_biotype) +
-  scale_fill_manual(values = palette) +
+  scale_fill_manual(values = brew) +
+  scale_pattern_manual(values = c("1" = "stripe", "2+" = "none")) +
+  guides(fill = "none", pattern = guide_legend(title = "Isoforms")) +
   theme(axis.title.x = element_blank())
 
-
-# Nombre de gène chaque catégorie
+# Nb  of genes per biotype and statuts known/novel
 count = ggplot(data = gene, aes(x = gene_biotype, fill = paste(gene_biotype, discovery))) +
   ggtitle("Number of genes") +
   geom_bar(colour = "black",
@@ -129,7 +134,7 @@ gene_counts = gene %>%
 gene_validate = gene %>%
   filter(presents_in_sample > 0) %>%
   ggplot(aes(presents_in_sample, fill = paste(gene_biotype, discovery))) +
-  ggtitle("Number of genes according to his\nnumber of samples with more than 1 count") +
+  ggtitle("Number of genes according to his\nbreadth of expression (gene count >1)") +
   geom_bar(color = "black", position = position_dodge()) +
   facet_grid(gene_biotype ~ .) +
   scale_y_log10() +
@@ -169,39 +174,27 @@ gene_counts_sample = gene %>%
                                                                  .x))
   )
 
-# Heatmap Nb_isoforms and samples
-gene_tx_samples = gene %>%
-  filter(discovery == "novel") %$%
-  as.data.frame(table(.$presents_in_sample, .$nb_transcripts)) %>%
-  ggplot(aes(
-    x = Var1,
-    y = Var2,
-    fill = log(Freq + 1)
-  )) +
-  guides(fill=FALSE) +
-  ggtitle("Number of novel genes (log) based on isoform\nnumber and number of samples with at least 1 count") +
-  geom_tile() +
-  labs(x = "Number of samples with at least 1 count", y = "Number of isoforms", fill =
-         "log(count)") +
-  scale_fill_viridis()
-
 # 5'-3' extensions count
 gene_ext = gene %>%
   filter(ext_5 > 0 | ext_3 > 0) %>%
   mutate(ext = ifelse(ext_5 > 0 & ext_3 > 0, "5'-3'",
                       ifelse(ext_5 > 0, "5'", "3'"))) %>%
-  ggplot(aes(x = gene_biotype, fill = ext)) +
+  ggplot(aes(x = gene_biotype, fill = gene_biotype, pattern = ext, pattern_angle = ext)) +
   ggtitle("Number of 5' and 3' gene extensions") +
-  geom_bar(colour = "black",
+  geom_bar_pattern(colour = "black",
            alpha = 0.8,
            position = position_dodge()) +
-  scale_fill_manual(values = palette) +
+  scale_fill_manual(values = brew[c(2,4)]) +
+  scale_pattern_manual(values = c("stripe","stripe","crosshatch")) +
+  scale_pattern_angle_manual(values = c(45, -45, 45)) +
   theme(legend.position = "top") +
   theme(axis.title.x = element_blank()) +
-  labs(fill = "Gene extension", y = "Count") +
+  labs(y = "Count") +
+  guides(fill = "none",
+         pattern = guide_legend(title = "Gene extension"),
+         pattern_angle = guide_legend(title = "Gene extension")) +
   scale_y_log10() +
   annotation_logticks(sides = "l")
-
 
 # 5'-3' extensions distribution
 labels = c("5'", "3'")
@@ -229,15 +222,15 @@ gene_ext_dist = gene %>%
 #############################################################################
 # TRANSCRIPT
 #############################################################################
-transcript = read.csv(paste0(prefix,".transcript.stats"), header = T)
-lncRNA_biotypes = c("lncRNA",
+transcript <- read.csv(paste0(prefix, ".transcript.stats"), header = TRUE)
+lncRNA_biotypes <- c("lncRNA",
                     "antisense",
                     "non-coding",
                     "lnc_RNA",
                     "ncRNA")
-mRNA_biotypes = c("protein_coding", "mRNA")
+mRNA_biotypes <- c("protein_coding", "mRNA")
 
-transcript = transcript %>%
+transcript <- transcript %>%
   mutate(transcript_biotype = if_else(
     transcript_biotype %in% lncRNA_biotypes,
     "lncRNA",
@@ -251,7 +244,7 @@ transcript = transcript %>%
 
 dim(transcript)
 # Length distrib
-med_length_tx = transcript %>%
+med_length_tx <- transcript %>%
   group_by(tx_discovery, transcript_biotype) %>%
   summarize(median = median(length), transcript_biotype = transcript_biotype)
 
@@ -284,14 +277,16 @@ tx_len = transcript %>%
 # Mono vs multiexonique
 tx_ex = transcript %>%
   mutate(exons = ifelse(nb_exons == 1, "1", "2+")) %>%
-  ggplot(aes(x = tx_discovery, fill = exons)) +
+  ggplot(aes(x = tx_discovery, fill = interaction(tx_discovery, transcript_biotype), pattern = exons)) +
   ggtitle("Proportion of mono versus multi exonic transcripts") +
-  geom_bar(position = "fill",
+  geom_bar_pattern(position = "fill",
            alpha = 0.8,
            colour = "black") +
   scale_y_continuous(labels = scales::percent) +
   facet_grid(~ transcript_biotype) +
-  scale_fill_manual(values = palette) +
+  scale_fill_manual(values = brew) +
+  scale_pattern_manual(values = c("1" = "stripe", "2+" = "none")) +
+  guides(fill = "none", pattern = guide_legend(title = "Exons")) +
   theme(axis.title.x = element_blank())
 
 # Count
@@ -398,11 +393,37 @@ ex_count = ggplot(data = exon, aes(x = exon_biotype, fill = paste(exon_biotype, 
 # PDF
 #############################################################################
 pdf(paste0(prefix, ".annexa.qc.pdf"), width = 7, height = 7)
-grid.newpage()
 cover <- textGrob("ANNEXA report",
                   gp = gpar(fontsize = 40,
                             col = "black"))
-grid.draw(cover)
+        
+sub_cover_text <- paste(
+  print(Sys.Date()),
+  paste("ANNEXA version:", ANNEXA_version),
+  sep = "\n")
+
+sub_cover <- textGrob(sub_cover_text,
+                  gp = gpar(fontsize = 20,
+                            col = "black"))
+
+grid.arrange(cover, sub_cover)
+
+# Command line
+formatted_command <- gsub("(^|\\s)(-{1,2}\\w+)", "\n\\1\\2", command)
+
+grid.arrange(
+  textGrob("ANNEXA command line:", 
+            gp = gpar(fontsize = 14, fontface = "bold")),
+  textGrob(
+    paste(formatted_command),
+    just = "left",
+    x = 0,
+    hjust = 0,
+    gp = gpar(fontsize = 10)
+  ),
+  ncol = 1,
+  heights = c(0.1, 0.9)
+)
 
 # Gene
 grid.arrange(textGrob(
@@ -416,7 +437,6 @@ iso
 gene_counts
 gene_validate
 gene_counts_sample
-gene_tx_samples
 gene_ext
 gene_ext_dist
 
@@ -436,7 +456,7 @@ grid.arrange(textGrob(
   gp = gpar(fontface = "italic", fontsize = 20),
   vjust = 0
 ))
-ex_len
 ex_count
+ex_len
 
 dev.off()

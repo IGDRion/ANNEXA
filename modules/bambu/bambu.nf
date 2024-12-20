@@ -1,8 +1,6 @@
 process BAMBU {
-  conda (params.enable_conda ? "bioconda::bioconductor-bambu=3.0.8" : null)
-  container "${ workflow.containerEngine == 'singularity' ? 
-                'https://depot.galaxyproject.org/singularity/bioconductor-bambu:3.0.8--r42hc247a5b_0' :
-                'quay.io/biocontainers/bioconductor-bambu:3.0.8--r42hc247a5b_0' }"
+  conda (params.enable_conda ? "$baseDir/environment.yml" : null)
+  container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
   publishDir "$params.outdir/bambu", mode: 'copy'
   cpus params.maxCpu
   memory params.maxMemory
@@ -19,6 +17,7 @@ process BAMBU {
   path 'counts_gene.txt', emit: gene_counts
   path 'bambu_ndr.csv', emit: ndr
 
+  script:
   """
   run_bambu.R \
     --tag=. \
@@ -26,6 +25,7 @@ process BAMBU {
     --annotation=${ref} \
     --fasta=${fa} \
     --bambu_strand=${params.bambu_strand} \
+    --bambu_singleexon=${params.bambu_singleexon} \
     *.bam
 
   sed -i 's/*/./g' extended_annotations.gtf
