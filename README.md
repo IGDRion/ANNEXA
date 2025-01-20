@@ -76,6 +76,7 @@ Main options:
 Bambu options:
 --bambu_strand      : Run bambu with stranded data. true by default.
 --bambu_threshold   : bambu NDR threshold below which new transcripts are retained.
+--bambu_singleexon  : Include single exon transcripts in Bambu. true by default.
 
 
 Filtering options:

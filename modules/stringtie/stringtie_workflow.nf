@@ -4,8 +4,7 @@ include { QUANTIFY                       } from './stringtie_quant.nf'
 include { GFFCOMPARE                     } from '../gffcompare/gffcompare.nf'
 include { FORMAT_GFFCOMPARE              } from './stringtie_format_gffcompare.nf'
 include { READ_LENGTH                    } from './stringtie_read_length.nf'
-include { FORMAT_QUANT                   } from './stringtie_format_quant.nf'
-include { MERGE_COUNTS                   } from './stringtie_merge_counts.nf'
+include { EXTRACT_QUANTS                 } from './stringtie_extract_counts.nf'
 
 workflow STRINGTIE {
     take:
@@ -34,23 +33,19 @@ workflow STRINGTIE {
     READ_LENGTH(samples)
 
     QUANTIFY(
-        READ_LENGTH.out,
+        READ_LENGTH.out.bam_length,
         MERGE.out.stringtie_merged_gtf)
-
-    FORMAT_QUANT(
-        QUANTIFY.out.counts_gene,
-        QUANTIFY.out.counts_transcript,
+    
+    EXTRACT_QUANTS(
+        READ_LENGTH.out.av_length.collect(),
+        QUANTIFY.out.collect(),
         MERGE.out.stringtie_merged_gtf
     )
-
-    MERGE_COUNTS(
-        FORMAT_QUANT.out.counts_gene.collect(), 
-        FORMAT_QUANT.out.counts_transcript.collect())
 
     emit:
     stringtie_gtf = FORMAT_GFFCOMPARE.out.stringtie_gtf
     class_code_gtf = GFFCOMPARE.out.class_code_gtf
-    gene_counts = MERGE_COUNTS.out.gene_counts
-    tx_counts = MERGE_COUNTS.out.tx_counts
-    ndr = MERGE_COUNTS.out.ndr
+    gene_counts = EXTRACT_QUANTS.out.gene_counts
+    tx_counts = EXTRACT_QUANTS.out.tx_counts
+    ndr = EXTRACT_QUANTS.out.ndr
 }
