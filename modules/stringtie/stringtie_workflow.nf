@@ -33,7 +33,7 @@ workflow STRINGTIE {
     READ_LENGTH(samples)
 
     QUANTIFY(
-        READ_LENGTH.out.bam_length,
+        samples,
         MERGE.out.stringtie_merged_gtf)
     
     EXTRACT_QUANTS(

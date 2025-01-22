@@ -9,7 +9,6 @@ process READ_LENGTH {
   file bam
 
   output:
-  tuple path(bam), env(av_length), emit: bam_length
   env(av_length), emit: av_length
   
   script:
