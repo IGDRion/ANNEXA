@@ -2,6 +2,7 @@
 suppressMessages(suppressWarnings(library(IsoformSwitchAnalyzeR)))
 suppressMessages(suppressWarnings(library(rtracklayer)))
 library(dplyr)
+library(tibble)
 
 # CLI Args
 args = commandArgs(trailingOnly=TRUE)
@@ -104,13 +105,43 @@ colnames(missing_df)[3:ncol(missing_df)] <- colnames(geneCountMatrix)[3:ncol(gen
 updated_geneCountMatrix <- rbind(geneCountMatrix, missing_df)
 updated_geneCountMatrix <- updated_geneCountMatrix[order(updated_geneCountMatrix$gene_id), ]
 rownames(updated_geneCountMatrix) <- NULL
+updated_geneCountMatrix <- updated_geneCountMatrix %>% select(gene_id, gene_name, sort(setdiff(names(.), c("gene_id", "gene_name"))))
 
 # -------------------------------------------------------------------------
-stringTieQuant$counts <- tibble::rownames_to_column(stringTieQuant$counts, var = "transcript_id")
-stringTieQuant$counts$gene_id <- with(ref, ifelse(!is.na(ref_gene_id), ref_gene_id, gene_id))[match(stringTieQuant$counts$transcript_id, ref$transcript_id)]
-stringTieQuant$counts <- stringTieQuant$counts %>% relocate(gene_id, .after = transcript_id)
+# Add gene_id to stringtieQuant$counts (transcript count)
+lookup <- as.data.frame(ref) %>%
+  filter(type == "transcript") %>%
+  select(transcript_id, gene_id, ref_gene_id) %>%
+  distinct() %>%
+  group_by(gene_id) %>%
+  mutate(
+    unique_ref_gene_id = n_distinct(ref_gene_id[!is.na(ref_gene_id)]) == 1,
+    common_ref_gene_id = if(unique_ref_gene_id[1] && any(!is.na(ref_gene_id))) 
+      ref_gene_id[!is.na(ref_gene_id)][1] 
+    else 
+      NA_character_
+  ) %>%
+  ungroup()
 
-write.table(stringTieQuant$counts, "counts_transcript.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+updated_stringTieQuant <- stringTieQuant$counts %>%
+  rownames_to_column("transcript_id") %>%
+  left_join(lookup, by = "transcript_id") %>%
+  mutate(
+    final_gene_id = case_when(
+      !is.na(common_ref_gene_id) ~ common_ref_gene_id,
+      !is.na(ref_gene_id) ~ ref_gene_id,
+      TRUE ~ gene_id
+    )
+  ) %>%
+  select(transcript_id, names(stringTieQuant$counts), final_gene_id) %>%
+  rename(gene_id = final_gene_id) %>%
+  column_to_rownames("transcript_id")
+updated_stringTieQuant <- tibble::rownames_to_column(updated_stringTieQuant, var = "transcript_id")
+updated_stringTieQuant <- updated_stringTieQuant %>% relocate(gene_id, .after = transcript_id)
+updated_stringTieQuant <- updated_stringTieQuant %>% select(transcript_id, gene_id, sort(setdiff(names(.), c("transcript_id", "gene_id"))))
+
+# -------------------------------------------------------------------------
+write.table(updated_stringTieQuant, "counts_transcript.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 write.table(updated_geneCountMatrix[,-2], "counts_gene.txt", sep = "\t", row.names = FALSE, quote = FALSE)
 
 message("Finished renaming process. Gene and transcripts counts are written in 'counts_gene.txt' and 'counts_transcript.txt'")
