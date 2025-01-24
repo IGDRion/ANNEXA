@@ -14,6 +14,8 @@ ${c_green}    ___    _   ___   _________  __ ___
                                        ${c_reset}
 -${c_dim}-------------------------------------${c_reset}-
 ${c_purple}github.com/igdrion/ANNEXA${c_reset}
+ANNEXA version        : ${workflow.manifest.version}
+---
 Reference Annotation  : ${params.gtf}
 Reference Genome      : ${params.fa}
 Input Samplesheet     : ${params.input}
@@ -47,5 +49,6 @@ ${c_green}    ___    _   ___   _________  __ ___
                                        ${c_reset}
 -${c_dim}-------------------------------------${c_reset}-
 ${c_purple}github.com/igdrion/ANNEXA${c_reset}
+ANNEXA version : ${workflow.manifest.version}
 """.stripIndent()
 }

@@ -9,8 +9,8 @@ process READ_LENGTH {
   file bam
 
   output:
-  tuple path(bam), env(av_length), emit: bam_length
-
+  env(av_length), emit: av_length
+  
   script:
   """
   av_length=\$(samtools stats ${bam} | grep "average length" | awk '{print \$4}')

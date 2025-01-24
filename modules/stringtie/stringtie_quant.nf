@@ -7,12 +7,11 @@ process QUANTIFY {
   tag "$bam"
 
   input:
-  tuple path(bam), val(av_length)
+  path(bam)
   path merged_gtf
 
   output:
-  path "${bam.simpleName}.counts_transcripts.txt", emit: counts_transcript
-  path "${bam.simpleName}.counts_gene.txt", emit: counts_gene
+  path "${bam.simpleName}.ctab", emit: ctab
 
   script:
   """
@@ -24,14 +23,6 @@ process QUANTIFY {
     -p ${params.maxCpu} \
     ${bam}
   
-  # Extract raw counts from stringtie with prepDE
-  mkdir ${bam.simpleName}
-  mv ${bam.simpleName}_quant.gtf ${bam.simpleName}
-
-  prepDE.py \
-  -i . \
-  -g ${bam.simpleName}.counts_gene.txt \
-  -t ${bam.simpleName}.counts_transcripts.txt \
-  -l ${av_length}
+  mv t_data.ctab ${bam.simpleName}.ctab
   """
 }
