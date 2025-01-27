@@ -1,8 +1,8 @@
 process MERGE {
-  conda (params.enable_conda ? "bioconda::stringtie" : null)
+  conda (params.enable_conda ? "bioconda::stringtie=3.0.0" : null)
   container "${ workflow.containerEngine == 'Singularity' ? 
-                'https://depot.galaxyproject.org/singularity/stringtie%3A2.2.3--h43eeafb_0' :
-                'quay.io/biocontainers/stringtie:2.2.3--h43eeafb_0'}"
+                'https://depot.galaxyproject.org/singularity/stringtie%3A3.0.0--h29c0135_0' :
+                'quay.io/biocontainers/stringtie:3.0.0--h29c0135_0'}"
   cpus params.maxCpu
 
   input:
