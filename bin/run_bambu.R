@@ -42,16 +42,25 @@ if (bambu_singleexon==TRUE) {
   opt_discovery <- NULL
 }
 
-se     <- bambu(
-  reads = readlist,
-  annotations = grlist,
-  genome = genomeSequence,
-  ncore = ncore,
-  verbose = TRUE,
-  NDR = 1,
-  stranded = bambu_strand,
-  opt.discovery = opt_discovery
+output <- capture.output(
+  se     <- bambu(
+    reads = readlist,
+    annotations = grlist,
+    genome = genomeSequence,
+    ncore = ncore,
+    verbose = TRUE,
+    NDR = 1,
+    stranded = bambu_strand,
+    opt.discovery = opt_discovery
+  )
 )
+
+cat(output, sep = "\n")
+
+# Extract recommended NDR
+ndr_line <- output[grepl("we recommend an NDR of", output)]
+ndr_value <- as.numeric(gsub(".*we recommend an NDR of ([0-9.]+).*", "\\1", ndr_line))
+write(ndr_value, file = "rec_ndr.txt")
 
 # Extract NDR
 tx_infos   <- se@rowRanges@elementMetadata

@@ -16,6 +16,7 @@ process BAMBU {
   path 'counts_transcript.txt', emit: tx_counts
   path 'counts_gene.txt', emit: gene_counts
   path 'bambu_ndr.csv', emit: ndr
+  path 'rec_ndr.txt', emit: rec_ndr
 
   script:
   """

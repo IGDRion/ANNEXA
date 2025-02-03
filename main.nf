@@ -107,12 +107,14 @@ workflow {
     ch_gene_counts = BAMBU.out.gene_counts
     ch_tx_counts = BAMBU.out.tx_counts
     ch_ndr = BAMBU.out.ndr
+    ch_rec_ndr = BAMBU.out.rec_ndr
     class_code = GFFCOMPARE.out.class_code_gtf
   }
   else if (params.tx_discovery == "stringtie2") {
     ch_gene_counts = STRINGTIE.out.gene_counts
     ch_tx_counts = STRINGTIE.out.tx_counts
     ch_ndr = STRINGTIE.out.ndr
+    ch_rec_ndr = STRINGTIE.out.rec_ndr
     class_code = STRINGTIE.out.class_code_gtf
   }
 
@@ -138,6 +140,7 @@ workflow {
     TFKMERS(RESTRAND_NOVEL.out, 
             ref_fa, 
             ch_ndr, 
+            ch_rec_ndr, 
             tokenizer, 
             model, 
             ch_tx_counts)

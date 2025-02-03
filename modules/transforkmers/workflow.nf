@@ -8,6 +8,7 @@ workflow TFKMERS {
     novel_gtf
     ref_fa
     bambu_ndr
+    rec_ndr
     tokenizer
     model
     counts_tx
@@ -32,7 +33,8 @@ workflow TFKMERS {
       novel_gtf,
       counts_tx,
       PREDICT.out,
-      bambu_ndr
+      bambu_ndr,
+      rec_ndr
     )
 
   emit:

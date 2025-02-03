@@ -43,7 +43,7 @@ geneCountMatrix <- extractGeneExpression(
 ref <- rtracklayer::import(ref)
 
 ## Rename missing MSTRG to ref_gene_id in geneCountMatrix when unambiguous
-## Ambiguous gene_ids are left as they are (with MSTRG id) and reference in a new list
+## Ambiguous gene_ids are left as they are (with MSTRG id) and referenced in a new list
 # Rename missing MSTRG to ref_gene_id in geneCountMatrix
 mstrg_mapping <- as.data.frame(ref[startsWith(ref$gene_id, "MSTRG") & !is.na(ref$ref_gene_id), c("gene_id", "ref_gene_id")])
 ambiguous_mappings <- mstrg_mapping %>%
