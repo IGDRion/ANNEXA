@@ -10,6 +10,7 @@ process FILTER {
   file counts_tx
   file tfkmers
   file bambu_ndr
+  file rec_ndr
 
   output:
   path "novel.filter.gtf", emit: gtf
@@ -20,13 +21,19 @@ process FILTER {
   """
   cp ${counts_tx} counts_transcript.full.txt
 
+  if [ "${params.bambu_rec_ndr}" == "true" ]; then
+    bambu_threshold=\$(cat ${rec_ndr})
+  else
+    bambu_threshold=${params.bambu_threshold}
+  fi
+
   filter_gtf_ndr.py \
     --gtf ${novel} \
     --counts_tx ${counts_tx} \
     --tfkmers ${tfkmers} \
     --bambu ${bambu_ndr} \
     --tfkmers-threshold ${params.tfkmers_threshold} \
-    --bambu-threshold ${params.bambu_threshold} \
+    --bambu-threshold \$bambu_threshold \
     --operation ${params.operation} \
     --tx_discovery ${params.tx_discovery}
 

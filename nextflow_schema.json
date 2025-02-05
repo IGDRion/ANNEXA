@@ -106,7 +106,13 @@
                     "type": "integer",
                     "description": "bambu NDR threshold below which new transcripts are retained.",
                     "default": "0.2"
+                },
+                "bambu_rec_ndr": {
+                    "type": "boolean",
+                    "description": "Use NDR threshold recommended by Bambu instead of preset threshold.",
+                    "default": "false"
                 }
+            }
             }
         },
         "filtering_options": {

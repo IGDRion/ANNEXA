@@ -48,4 +48,5 @@ workflow STRINGTIE {
     gene_counts = EXTRACT_QUANTS.out.gene_counts
     tx_counts = EXTRACT_QUANTS.out.tx_counts
     ndr = EXTRACT_QUANTS.out.ndr
+    rec_ndr = EXTRACT_QUANTS.out.rec_ndr
 }

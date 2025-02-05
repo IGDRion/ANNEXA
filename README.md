@@ -77,6 +77,7 @@ Bambu options
   --bambu_singleexon    [boolean] Include single exon transcripts in Bambu output or not. These are known to have a high frequency of false positives.
                                   [default: true]
   --bambu_threshold     [integer] bambu NDR threshold below which new transcripts are retained. [default: 0.2]
+  --bambu_rec_ndr       [boolean] Use NDR threshold recommended by Bambu instead of preset threshold. [default: false]
 
 Filtering options
   --tfkmers_tokenizer   [string]  Path to TransforKmers tokenizer. Required if filter option is activated.

@@ -15,6 +15,7 @@ process EXTRACT_QUANTS {
     path "counts_gene.txt", emit: gene_counts
     path "counts_transcript.txt", emit: tx_counts
     path "empty.ndr", emit: ndr
+    path "rec_ndr.txt", emit: rec_ndr
 
     script:
     def mean_length = bam_length.collect { it as double }.sum() / bam_length.size()
@@ -26,5 +27,6 @@ process EXTRACT_QUANTS {
 
     # Create empty NDR file for TFKMERS to have same workflow as bambu in filtering step (placeholder)
     touch empty.ndr
+    echo "1" > rec_ndr.txt
     """
 }
