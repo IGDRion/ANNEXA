@@ -16,7 +16,8 @@ process BAMBU {
   path 'counts_transcript.txt', emit: tx_counts
   path 'counts_gene.txt', emit: gene_counts
   path 'bambu_ndr.csv', emit: ndr
-  path 'rec_ndr.txt', emit: rec_ndr
+  path 'rec_ndr.txt', emit: rec_ndr, optional: true
+  path 'extended_annotations.NDR_filter.gtf', emit: ndr_filter_bambu_gtf, optional: true
 
   script:
   """
@@ -27,6 +28,7 @@ process BAMBU {
     --fasta=${fa} \
     --bambu_strand=${params.bambu_strand} \
     --bambu_singleexon=${params.bambu_singleexon} \
+    --bambu_rec_ndr=${params.bambu_rec_ndr} \
     *.bam
 
   sed -i 's/*/./g' extended_annotations.gtf
