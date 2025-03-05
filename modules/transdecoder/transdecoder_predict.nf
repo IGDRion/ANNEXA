@@ -11,11 +11,6 @@ process TRANSDECODER_PREDICT {
 
     output:
     path 'novel.fasta.transdecoder.genome.gff3', emit: gff3
-    path "novel.fasta.transdecoder.pep"
-    path "novel.fasta.transdecoder.cds"
-    path "novel.fasta.transdecoder.bed"
-    path "novel.fasta.transdecoder.gff3"
-    path 'novel.fasta.transdecoder_dir'
 
     script:
     """
