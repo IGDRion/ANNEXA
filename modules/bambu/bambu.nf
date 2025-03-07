@@ -33,7 +33,7 @@ process BAMBU {
 
   sed -i 's/*/./g' extended_annotations.gtf
 
-  if [ "${params.bambu_rec_ndr}" == "true" ]; then
+  if [ "${params.bambu_rec_ndr}" == "false" ]; then
     echo "1" > rec_ndr.txt
   fi
   """
