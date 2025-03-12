@@ -26,7 +26,6 @@ process EXTRACT_QUANTS {
     --ref ${stringtie_merged}
 
     # Create empty NDR file for TFKMERS to have same workflow as bambu in filtering step (placeholder)
-    touch empty.ndr
     echo "1" > rec_ndr.txt
     """
 }

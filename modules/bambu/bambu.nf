@@ -16,7 +16,7 @@ process BAMBU {
   path 'counts_transcript.txt', emit: tx_counts
   path 'counts_gene.txt', emit: gene_counts
   path 'bambu_ndr.csv', emit: ndr
-  path 'rec_ndr.txt', emit: rec_ndr, optional: true
+  path 'rec_ndr.txt', emit: rec_ndr
   path 'extended_annotations.NDR_filter.gtf', emit: ndr_filter_bambu_gtf, optional: true
 
   script:
@@ -32,5 +32,9 @@ process BAMBU {
     *.bam
 
   sed -i 's/*/./g' extended_annotations.gtf
+
+  if [ "${params.bambu_rec_ndr}" == "false" ]; then
+    echo "1" > rec_ndr.txt
+  fi
   """
 }
