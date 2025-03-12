@@ -113,6 +113,7 @@
                     "default": "false"
                 }
             }
+            }
         },
         "filtering_options": {
             "title": "Filtering options",
