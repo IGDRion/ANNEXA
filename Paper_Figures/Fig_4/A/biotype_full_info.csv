@@ -1,0 +1,4 @@
+File,Assembly,Annotation,Tool,Gene_coding,Gene_lncRNA,TX_Coding,TX_lncRNA,Full_vs_Filter
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf,canFam4,Ensembl,Ref,20533,6446,44438,8291,Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf,canFm4,Ensembl,Bambu,13239,3314,32975,3240,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf,canFam4,Ensembl,Stringtie,9930,2525,19649,2898,Filter

@@ -1,0 +1,7 @@
+File,Assembly,Annotation,Tool,Gene,Tx,Full_vs_Filter
+/projects/dog/nhoffmann/ANNEXA_test_data/annotation/chess/fixed_chess3.1.3.GRCh38.gtf,GRCh38,chess,Ref,63755,168451,Full
+/projects/dog/data/hg38_GRCh38/annotation/Gencode/gencode.v47.chr_patch_hapl_scaff.annotation.gtf,GRCh38,gencode,Ref,86402,412034,Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/chess/bambu/run_vanilla/results/bambu/correct_ref_filter.gtf,GRCh38,chess,Bambu,22854,64547,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/bambu/run_vanilla/results/bambu/correct_ref_filter.gtf,GRCh38,gencode,Bambu,27341,87249,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/chess/stringtie/run/results/final/expfilter_full_ref.gtf,GRCh38,chess,Stringtie,14827,31812,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/stringtie/run/results/final/expfilter_full_ref.gtf,GRCh38,gencode,Stringtie,18638,50255,Filter

@@ -1,0 +1,4 @@
+File,Assembly,Annotation,Tool,Gene_coding,Gene_lncRNA,TX_Coding,TX_lncRNA,Full_vs_Filter
+/projects/dog/data/hg38_GRCh38/annotation/Gencode/gencode.v47.chr_patch_hapl_scaff.annotation.gtf,GRCh38,Gencode,Ref,23258,36524,100025,195184,Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/bambu/run_vanilla/results/final/ref_expfilter.gtf,GRCh38,Gencode,Bambu,4903,5567,41339,20692,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/stringtie/run/results/final/expfilter_full_ref.gtf,GRCh38,Gencode,Stringtie,3565,2977,24422,7838,Filter
