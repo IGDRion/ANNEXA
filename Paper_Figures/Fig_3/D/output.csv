@@ -1,0 +1,9 @@
+File,Assembly,Annotation,Tool,Extended_vs_novel,Full_vs_Filter,Gene,Tx,group
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/chess/bambu/run_vanilla/results/bambu/true_novel.gtf,GRCh38,chess,Bambu,Novel,Full,1017,1781,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/bambu/run_vanilla/results/bambu/true_novel.gtf,GRCh38,gencode,Bambu,Novel,Full,631,1492,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/chess/bambu/run_vanilla/results/final/true_novel.gtf,GRCh38,chess,Bambu,Novel,Filter,663,1302,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/bambu/run_vanilla/results/final/true_novel.gtf,GRCh38,gencode,Bambu,Novel,Filter,221,836,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/chess/stringtie/run/results/final/true_novel_full.gtf,GRCh38,chess,Stringtie,Novel,Full,1774,7755,Stringtie_Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/stringtie/run/results/final/true_novel_full.gtf,GRCh38,gencode,Stringtie,Novel,Full,145,5832,Stringtie_Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/chess/stringtie/run/results/final/true_novel_filter.gtf,GRCh38,chess,Stringtie,Novel,Filter,818,5634,Stringtie_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/human/GRCh38.v47/gencode/stringtie/run/results/final/true_novel_filter.gtf,GRCh38,gencode,Stringtie,Novel,Filter,37,4578,Stringtie_Filter

@@ -1,0 +1,13 @@
+File,Assembly,Annotation,Tool,Extended_vs_novel,Full_vs_Filter,Gene,Tx,group
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/bambu/true_novel.gtf,canFam4,Ensembl,Bambu,Novel,Full,1248,3600,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/refseq/bambu/run_vanilla/results/bambu/true_novel.gtf,canFam4,refseq,Bambu,Novel,Full,527,2017,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/UU/bambu/run_vanilla/results/bambu/true_novel.gtf,canFam4,UU,Bambu,Novel,Full,389,1146,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/true_novel.gtf,canFam4,Ensembl,Bambu,Novel,Filter,749,2818,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/refseq/bambu/run_vanilla/results/final/true_novel.gtf,canFam4,refseq,Bambu,Novel,Filter,252,1534,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/UU/bambu/run_vanilla/results/final/true_novel.gtf,canFam4,UU,Bambu,Novel,Filter,157,825,Bambu_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.4/results/final/true_novel_full.gtf,canFam4,Ensembl,Stringtie,Novel,Full,3625,20184,Stringtie_Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/refseq/stringtie/run_3.2.2/results/final/true_novel_full.gtf,canFam4,refseq,Stringtie,Novel,Full,2350,14574,Stringtie_Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/UU/stringtie/run_3.2.2/results/final/true_novel_full.gtf,canFam4,UU,Stringtie,Novel,Full,1773,11904,Stringtie_Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.4/results/final/true_novel_filter.gtf,canFam4,Ensembl,Stringtie,Novel,Filter,791,10210,Stringtie_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/refseq/stringtie/run_3.2.2/results/final/true_novel_filter.gtf,canFam4,refseq,Stringtie,Novel,Filter,390,6773,Stringtie_Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/UU/stringtie/run_3.2.2/results/final/true_novel_filter.gtf,canFam4,UU,Stringtie,Novel,Filter,155,5437,Stringtie_Filter

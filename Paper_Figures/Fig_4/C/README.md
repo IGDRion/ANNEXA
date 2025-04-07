@@ -1,0 +1,1 @@
+Rscript CC_distrib.R --gtf extended_annotations.filter.lncRNA.gtf --counts counts_transcript.filter.txt --output canFam4_bambu_lncRNA.pdf

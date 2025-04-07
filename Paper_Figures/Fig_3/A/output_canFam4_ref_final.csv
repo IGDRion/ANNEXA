@@ -1,0 +1,10 @@
+File,Assembly,Annotation,Tool,Gene,Tx,Full_vs_Filter
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf,canFam4,Ensembl,Ref,30653,56403,Full
+/projects/dog/data/canFam4/annotation/refseq/refseq_with_chrY.dir/UU_Cfam_GSD_1.0_ROSY.refSeq.with_chr.CurGen.pseudo.gtf,canFam4,refseq,Ref,43427,103619,Full
+/projects/dog/data/canFam4/annotation/fromUppsala/UU_GSD_Genes_1.0.v2.clean_biotypes.gtf,canFam4,UU,Ref,29535,158561,Full
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/bambu/correct_ref_filter.gtf,canFam4,Ensembl,Bambu,19818,36911,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/refseq/bambu/run_vanilla/results/bambu/correct_ref_filter.gtf,canFam4,refseq,Bambu,26068,62978,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/UU/bambu/run_vanilla/results/bambu/correct_ref_filter.gtf,canFam4,UU,Bambu,21416,106379,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf,canFam4,Ensembl,Stringtie,16201,23644,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/refseq/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf,canFam4,refseq,Stringtie,19666,37483,Filter
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/UU/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf,canFam4,UU,Stringtie,15163,59422,Filter
