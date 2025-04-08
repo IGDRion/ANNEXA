@@ -1,0 +1,25 @@
+File;Assembly;Annotation;Full_vs_Filter;feat_level;Ref;Tool;count
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;mRNA Gene;20533;Bambu;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;mRNA Gene;20533;Stringtie;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;lncRNA Gene;6446;Bambu;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;lncRNA Gene;6446;Stringtie;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;mRNA Tx;44438;Bambu;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;mRNA Tx;44438;Stringtie;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;lncRNA Tx;8291;Bambu;NA
+/projects/dog/data/canFam4/annotation/ensembl/Canis_lupus_familiarisgsd.UU_Cfam_GSD_1.0.113.chr.gtf;canFam4;Ensembl;Full;lncRNA Tx;8291;Stringtie;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;mRNA Gene;NA;Bambu;13239
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;mRNA Gene;NA;Stringtie;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;lncRNA Gene;NA;Bambu;3314
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;lncRNA Gene;NA;Stringtie;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;mRNA Tx;NA;Bambu;32975
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;mRNA Tx;NA;Stringtie;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;lncRNA Tx;NA;Bambu;3240
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/bambu/run_vanilla/results/final/ref_expfilter.gtf;canFm4;Ensembl;Filter;lncRNA Tx;NA;Stringtie;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;mRNA Gene;NA;Bambu;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;mRNA Gene;NA;Stringtie;9930
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;lncRNA Gene;NA;Bambu;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;lncRNA Gene;NA;Stringtie;2525
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;mRNA Tx;NA;Bambu;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;mRNA Tx;NA;Stringtie;19649
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;lncRNA Tx;NA;Bambu;NA
+/projects/dog/nhoffmann/ANNEXA_BB_vs_STR/dog/canFam4/Ensembl/stringtie/run_3.2.2/results/final/expfilter_full_ref.gtf;canFam4;Ensembl;Filter;lncRNA Tx;NA;Stringtie;2898
