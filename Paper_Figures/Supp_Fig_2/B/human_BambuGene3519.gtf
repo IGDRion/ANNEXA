@@ -1,0 +1,15 @@
+chr10	FEELnc	transcript	118932092	118937063	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2228"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "i";
+chr10	FEELnc	exon	118932092	118932270	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2228"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+chr10	FEELnc	exon	118937028	118937063	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2228"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
+chr10	FEELnc	transcript	118932092	118950427	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2229"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "i";
+chr10	FEELnc	exon	118932092	118932328	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2229"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+chr10	FEELnc	exon	118950339	118950427	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2229"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
+chr10	FEELnc	transcript	118932092	118950407	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2230"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "i";
+chr10	FEELnc	exon	118932092	118932309	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2230"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+chr10	FEELnc	exon	118950386	118950407	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2230"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
+chr10	FEELnc	transcript	118932092	118950427	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2231"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "i";
+chr10	FEELnc	exon	118932092	118932270	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2231"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+chr10	FEELnc	exon	118950339	118950427	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2231"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
+chr10	FEELnc	transcript	118932092	118950427	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2232"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "i";
+chr10	FEELnc	exon	118932092	118932359	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2232"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+chr10	FEELnc	exon	118950339	118950427	.	+	.	gene_id "BambuGene3519"; transcript_id "BambuTx2232"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
