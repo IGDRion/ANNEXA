@@ -1,0 +1,6 @@
+17	FEELnc	transcript	42888308	42888800	.	+	.	gene_id "BambuGene12928"; transcript_id "BambuTx14630"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "u";
+17	FEELnc	exon	42888308	42888459	.	+	.	gene_id "BambuGene12928"; transcript_id "BambuTx14630"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+17	FEELnc	exon	42888531	42888800	.	+	.	gene_id "BambuGene12928"; transcript_id "BambuTx14630"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
+17	FEELnc	transcript	42888310	42888800	.	+	.	gene_id "BambuGene12928"; transcript_id "BambuTx14629"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; class_code "u";
+17	FEELnc	exon	42888310	42888459	.	+	.	gene_id "BambuGene12928"; transcript_id "BambuTx14629"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "1";
+17	FEELnc	exon	42888515	42888800	.	+	.	gene_id "BambuGene12928"; transcript_id "BambuTx14629"; gene_biotype "lncRNA"; transcript_biotype "lncRNA"; exon_number "2";
