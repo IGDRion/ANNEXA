@@ -23,11 +23,23 @@ ANNEXA works by using only three parameter files (a reference genome, a referenc
 
 This pipeline has been tested with reference annotation from Ensembl and NCBI-RefSeq.
 
+## System requirements
+ANNEXA requires 0.5GB of disk space for installation, and requires at least 16 GB of RAM and 2 CPU threads to run the test example.
+By default, it requires. 40 GB of RAM and 8 CPU threads. This can be changed in the options (see Performance options).
+
 ## Usage
 
 1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation)
+(Optional) If you are using Linux, we recommend installing [Apptainer](https://apptainer.org/docs/user/main/quick_start.html) (formerly Singularity) to handle tools used by ANNEXA.
 
 2. Test the pipeline on a small dataset
+
+```sh
+nextflow run IGDRion/ANNEXA \
+    -profile test
+```
+
+Or, if you have installed Apptainer: 
 
 ```sh
 nextflow run IGDRion/ANNEXA \
