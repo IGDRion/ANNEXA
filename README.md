@@ -5,6 +5,8 @@
 
 **ANNEXA** is an all-in-one reproductible pipeline, written using the [Nextflow](https://nextflow.io) workflow system, which allows users to analyze LR-RNAseq data (Long-Read RNASeq), and to reconstruct and quantify known and novel genes and transcript isoforms.
 
+You can read more about ANNEXA in our publication [here](https://www.biorxiv.org/content/10.1101/2025.04.16.648718v2)!
+
 ## Pipeline summary
 
 ![Metro map](./assets/metro_map.png)
