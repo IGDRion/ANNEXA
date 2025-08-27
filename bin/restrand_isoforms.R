@@ -13,9 +13,12 @@ output = args[3]
 
 # Define prefix to identify novel transcripts
 if (tx_tool == "stringtie2") {
-  prefix = "MSTRG"
-} else{
-    prefix = "Bambu"
+  prefix <- "MSTRG"
+} else if (tx_tool == "bambu"){
+    prefix <- "Bambu"
+} else if (tx_tool == "both"){
+  prefix <- c("MSTRG","Bambu")
+  prefix <- paste(prefix, collapse="|")
 }
 
 gtf <- rtracklayer::readGFF(gtf_file)

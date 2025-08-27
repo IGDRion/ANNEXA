@@ -2,6 +2,7 @@
 from GTF import GTF
 import warnings
 
+
 def parse_gene_counts(file):
     """
     Parse gene_counts from bambu in a dict, ex for line:
@@ -25,7 +26,7 @@ def parse_gene_counts(file):
         # Number of samples which has counts != 0
         validates = len([sample for sample in int_line if sample != 0])
 
-        # Store in dic both value
+        # Store in dict both values
         genes[line[0]] = {"validates": validates, "counts": sum_counts}
     return genes
 
@@ -43,9 +44,12 @@ def qc_gtf(gtf, gene_counts, ref, tx_discovery):
     missing_genes = []
 
     if tx_discovery == "bambu":
-        gene_prefix,tx_prefix = "BambuGene","BambuTx"
-    else:
-        gene_prefix,tx_prefix = "MSTRG.","MSTRG."
+        gene_prefix, tx_prefix = ("BambuGene",), ("BambuTx",)
+    elif tx_discovery == "stringtie2":
+        gene_prefix, tx_prefix = ("MSTRG.",), ("MSTRG.",)
+    elif tx_discovery == "both":
+        gene_prefix = ("MSTRG.", "BambuGene")
+        tx_prefix = ("MSTRG.", "BambuTx")
 
     # CSV headers
     gene_str = f"gene_id,gene_biotype,nb_transcripts,length,ext_5,ext_3,discovery,validate_by,presents_in_sample\n"
@@ -62,14 +66,14 @@ def qc_gtf(gtf, gene_counts, ref, tx_discovery):
         # Some genes (probably duplicates) can be omitted by Stringtie
         if g_id not in gene_counts:
             missing_genes.append(gene.get_attributes())
-            warnings.warn("Missing gene: "+g_id, stacklevel=3)
+            warnings.warn("Missing gene: " + g_id, stacklevel=3)
             continue
 
         g_biotype = gene["gene_biotype"]
         if gene["gene_biotype"] not in biotypes:
             continue
 
-        g_status = "novel" if g_id.startswith((gene_prefix,'unstranded.Gene')) else "known"
+        g_status = "novel" if g_id.startswith(gene_prefix + ('unstranded.Gene',)) else "known"
         g_count = gene_counts[g_id]["counts"]  # Counts in all samples
         g_samples = gene_counts[g_id]["validates"]  # Found in x samples
         g_nb_tx = len(gene.transcripts)  # Number of isoforms
@@ -77,7 +81,7 @@ def qc_gtf(gtf, gene_counts, ref, tx_discovery):
         # Compute genomic extension with start/end in ref
         ext_5 = 0
         ext_3 = 0
-        if not g_id.startswith((gene_prefix,'unstranded.Gene')):
+        if not g_id.startswith(gene_prefix + ('unstranded.Gene',)):
             if gene.strand == "+":
                 ext_5 = ref_start_end[gene["gene_id"]]["start"] - gene.start
                 ext_3 = gene.end - ref_start_end[gene["gene_id"]]["end"]
@@ -85,7 +89,7 @@ def qc_gtf(gtf, gene_counts, ref, tx_discovery):
                 ext_3 = ref_start_end[gene["gene_id"]]["start"] - gene.start
                 ext_5 = gene.end - ref_start_end[gene["gene_id"]]["end"]
 
-        # Gene length = longest transcript e.g with longest sum of exon length
+        # Gene length = longest transcript e.g. with longest sum of exon length
         length = max(
             [sum([len(exon) for exon in transcript.exons]) for transcript in gene.transcripts]
         )
@@ -111,13 +115,13 @@ def qc_gtf(gtf, gene_counts, ref, tx_discovery):
 
     # Record missing genes
     if len(missing_genes) > 0:
-        warnings.warn(str(len(missing_genes))+" gene(s) skipped. Please see missing_genes.txt", stacklevel=3)
+        warnings.warn(str(len(missing_genes)) + " gene(s) skipped. Please see missing_genes.txt", stacklevel=3)
         with open('missing_genes.txt', 'w') as f:
-            f.write("# Some genes were missing in the final output. These are likely to be duplicated" + "\n" + \
-                    "# genes in the reference annotations and were omitted by Stringtie."+ "\n" \
-                    + "# These genes are recorded here." + "\n")
+            f.write("# Some genes were missing in the final output. These are likely to be duplicated\n" +
+                    "# genes in the reference annotations and were omitted by Stringtie.\n" +
+                    "# These genes are recorded here.\n")
             for gene in missing_genes:
-                f.write(str(gene)+'\n')
+                f.write(str(gene) + '\n')
 
     # Each csv is stored in string, return 3 strings as tuple
     return gene_str, transcript_str, exon_str
@@ -153,9 +157,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-tx_discovery",
-        help="Quantification method. Choices: bambu, stringtie2",
+        help="Quantification method. Choices: bambu, stringtie2, both",
         type=str,
-        choices=["bambu", "stringtie2"],
+        choices=["bambu", "stringtie2", "both"],
         required=True,
     )
     args = parser.parse_args()

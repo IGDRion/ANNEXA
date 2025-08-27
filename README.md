@@ -80,7 +80,7 @@ Profile options
   --profile docker      [string]  Run annexa in docker container.
 
 Main options
-  --tx_discovery        [string]  Specify which transcriptome reconstruction tool to use. (accepted: bambu, stringtie2) [default: bambu]
+  --tx_discovery        [string]  Specify which transcriptome reconstruction tool to use. (accepted: bambu, stringtie2, both) [default: bambu]
   --filter              [boolean] Perform or not the filtering step. [default: true]
   --withGeneCoverage    [boolean] Run RSeQC (can be long depending on annotation and bam sizes). [default: false]
 

@@ -19,4 +19,10 @@ process SPLIT_EXTENDED_ANNOTATION {
     grep -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_genes.gtf
     grep -v -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
     '''
+  else if (params.tx_discovery == "both")
+    '''
+    grep -e "BambuTx" -e 'transcript_id "MSTRG' !{extended_annotation} | awk '$3=="exon"' > novel.gtf
+    grep -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_genes.gtf
+    grep -v -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
+    '''
 }
