@@ -58,6 +58,7 @@ include { RESTRAND_ISOFORMS as RESTRAND_ISOFORMS_BAMBU } from './modules/restran
 include { RESTRAND_ISOFORMS as RESTRAND_ISOFORMS_STRINGTIE } from './modules/restrand_isoforms.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
 include { MERGE_TOOLS                    } from './modules/merge_tools.nf'
+include { REFORMAT_MERGED_TOOLS          } from './modules/reformat_merged_tools.nf'
 include { MERGE_COUNTS                   } from './modules/merge_counts.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
@@ -105,8 +106,9 @@ workflow {
       RESTRAND_ISOFORMS_BAMBU(BAMBU.out.bambu_gtf)
       RESTRAND_ISOFORMS_STRINGTIE(STRINGTIE.out.stringtie_gtf)
       MERGE_TOOLS(RESTRAND_ISOFORMS_BAMBU.out, RESTRAND_ISOFORMS_STRINGTIE.out)
+      REFORMAT_MERGED_TOOLS(MERGE_TOOLS.out.merged_tools, MERGE_TOOLS.out.tracking)
       MERGE_COUNTS(BAMBU.out.gene_counts, STRINGTIE.out.gene_counts, BAMBU.out.tx_counts, STRINGTIE.out.tx_counts, GFFCOMPARE.out.class_code_gtf, STRINGTIE.out.class_code_gtf)
-      SPLIT_EXTENDED_ANNOTATION(MERGE_TOOLS.out)
+      SPLIT_EXTENDED_ANNOTATION(REFORMAT_MERGED_TOOLS.out)
   }
   
   ///////////////////////////////////////////////////////////////////////////
