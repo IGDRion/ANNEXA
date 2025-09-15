@@ -9,10 +9,14 @@ process RESTORE_BIOTYPE {
   file novel_isoforms
 
   output:
-  path "novel.isoforms.gtf"
+  path "restored.gtf"
 
   script:
   """
-  restore_ref_attributes.py -gtf ${novel_isoforms} -ref $ref > novel.isoforms.gtf
+  grep -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" ${novel_isoforms} > novel_genes.gtf
+  grep -v -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" ${novel_isoforms} > novel_isoforms.gtf
+  restore_ref_attributes.py -gtf novel_isoforms.gtf -ref ${ref} > restored.isoforms.gtf
+
+  cat novel_genes.gtf restored.isoforms.gtf > restored.gtf
   """
 }

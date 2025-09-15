@@ -32,20 +32,33 @@ with open(tracking_file) as tf:
             if len(parts1) >= 2:
                 gene_id, tx_id = parts1[0], parts1[1]
 
+            validate_tag = None
+
             if q2 and q2 != "q2:-":
                 parts2 = q2.split(":", 1)[1].split("|")
                 if len(parts2) >= 2:
                     gene2, tx2 = parts2[0], parts2[1]
                     if not (gene2 == gene_id and tx2 == tx_id):
-                        # Different → keep q1 but note q2
                         extras.append('validated "both"')
                         extras.append(f'alt_transcript "{tx2}"')
+                else:
+                    tx2 = None
+                # No validate tag if q2 present, only validated "both" if differ
+            else:
+                # Only q1: decide validate tag based on transcript prefix
+                if tx_id.startswith("BambuTx"):
+                    validate_tag = 'validate "bambu"'
+                elif tx_id.startswith("MSTRG."):
+                    validate_tag = 'validate "stringtie"'
+
+            if validate_tag:
+                extras.append(validate_tag)
 
         elif q2 and q2 != "q2:-":
-            # fallback: use q2 (NO validated="q2")
             parts2 = q2.split(":", 1)[1].split("|")
             if len(parts2) >= 2:
                 gene_id, tx_id = parts2[0], parts2[1]
+                # q2 alone: no validate tag (per your request)
 
         if gene_id and tx_id:
             t_map[tcons] = tx_id
@@ -88,20 +101,19 @@ with open(gtf_file) as gf, open(output_file, "w") as out:
                 a.startswith("tss_id ") or 
                 a.startswith("num_samples ") or 
                 a.startswith("contained_in ") or
-                a.startswith("validated \"q2\"")):
+                a == 'validated "q2"'):  # remove validated "q2"
                 continue
             new_attrs.append(a)
 
         attrs = "; ".join(new_attrs)
 
-        # Add extras if needed
+        # Add extras if needed (key off original TCONS/XLOC)
         t_id = None
         g_id = None
         if 'transcript_id "' in line:
             t_id = line.split('transcript_id "')[1].split('"')[0]
         if 'gene_id "' in line:
             g_id = line.split('gene_id "')[1].split('"')[0]
-
         if t_id and g_id and (t_id, g_id) in extra_map:
             attrs = attrs + "; " + extra_map[(t_id, g_id)]
 
@@ -115,5 +127,4 @@ with open(gtf_file) as gf, open(output_file, "w") as out:
         ordered.extend(attr_list)
 
         fields[8] = "; ".join(ordered) + ";"
-
         out.write("\t".join(fields) + "\n")

@@ -9,10 +9,10 @@ process FEELNC_FORMAT {
   file lncRNA
 
   output:
-  path "novel.genes.gtf"
+  path "merged.full.gtf"
 
   script:
   """
-  merge_feelnc.py --lncRNA ${lncRNA} --mRNA ${mRNA} > novel.genes.gtf
+  merge_feelnc.py --lncRNA ${lncRNA} --mRNA ${mRNA} > merged.full.gtf
   """
 }

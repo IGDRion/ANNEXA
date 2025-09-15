@@ -5,6 +5,7 @@ process SPLIT_EXTENDED_ANNOTATION {
   output:
   path 'novel_genes.gtf', emit: novel_genes
   path 'novel_isoforms.gtf', emit: novel_isoforms
+  path 'novel.gtf', emit: novel
 
   shell:
   if (params.tx_discovery == "bambu")

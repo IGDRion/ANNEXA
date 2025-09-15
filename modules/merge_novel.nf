@@ -6,14 +6,13 @@ process MERGE_NOVEL {
   publishDir "$params.outdir/final", mode: 'copy'
 
   input:
-  file novel_genes
-  file novel_isoforms
+  file novel
 
   output:
   path "novel.full.gtf", emit: novel_full_gtf
 
   script:
   """
-  cat ${novel_genes} ${novel_isoforms} | GTF.py format > novel.full.gtf
+  cat ${novel} | GTF.py format > novel.full.gtf
   """
 }

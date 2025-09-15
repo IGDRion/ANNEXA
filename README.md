@@ -25,7 +25,7 @@ This pipeline has been tested with reference annotation from Ensembl and NCBI-Re
 
 ## System requirements
 ANNEXA requires 0.5GB of disk space for installation, and requires at least 16 GB of RAM and 2 CPU threads to run the test example.
-By default, it requires. 40 GB of RAM and 8 CPU threads. This can be changed in the options (see Performance options).
+By default, it requires 40 GB of RAM and 8 CPU threads. This can be changed in the options (see Performance options).
 
 ## Usage
 

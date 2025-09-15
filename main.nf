@@ -114,10 +114,10 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   // EXTRACT AND CLASSIFY NEW TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
-  FEELNC_CODPOT(VALIDATE_INPUT_GTF.out, ref_fa, SPLIT_EXTENDED_ANNOTATION.out.novel_genes)
+  FEELNC_CODPOT(VALIDATE_INPUT_GTF.out, ref_fa, SPLIT_EXTENDED_ANNOTATION.out.novel)
   FEELNC_FORMAT(FEELNC_CODPOT.out.mRNA, FEELNC_CODPOT.out.lncRNA)
-  RESTORE_BIOTYPE(VALIDATE_INPUT_GTF.out, SPLIT_EXTENDED_ANNOTATION.out.novel_isoforms)
-  MERGE_NOVEL(FEELNC_FORMAT.out, RESTORE_BIOTYPE.out)
+  RESTORE_BIOTYPE(VALIDATE_INPUT_GTF.out, FEELNC_FORMAT.out)
+  MERGE_NOVEL(RESTORE_BIOTYPE.out)
 
   if(params.tx_discovery == "bambu") {
     ch_gene_counts = BAMBU.out.gene_counts
@@ -144,7 +144,7 @@ workflow {
   ///////////////////////////////////////////////////////////////////////////
   // PREDICT CDS ON NOVEL TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
-  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
+  TRANSDECODER(MERGE_NOVEL.out, ref_fa)
   RESTRAND_NOVEL(TRANSDECODER.out)
   ///////////////////////////////////////////////////////////////////////////
   // PERFORM QC ON FULL ANNOTATION
