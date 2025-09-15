@@ -5,7 +5,7 @@
     "description": "An all-in-one pipeline to analyze LR-RNAseq data,reconstruct and quantify known and novel genes and isoforms.",
     "type": "object",
     "defs": {
-        "required": {
+        "required_options": {
             "title": "Required options",
             "type": "object",
             "fa_icon": "fas fa-terminal",
@@ -77,12 +77,12 @@
                 "filter": {
                     "type": "boolean",
                     "description": "Perform or not the filtering step.",
-                    "default": "true"
+                    "default": true
                 },
                 "withGeneCoverage": {
                     "type": "boolean",
                     "description": "Run RSeQC (can be long depending on annotation and bam sizes).",
-                    "default": "false"
+                    "default": false
                 }
             }
         },
@@ -95,24 +95,43 @@
                 "bambu_strand": {
                     "type": "boolean",
                     "description": "Run bambu with stranded data",
-                    "default": "true"
+                    "default": true
                 },
                 "bambu_singleexon": {
                     "type": "boolean",
                     "description": "Include single exon transcripts in Bambu output or not. These are known to have a high frequency of false positives.",
-                    "default": "true"
+                    "default": true
                 },
                 "bambu_threshold": {
                     "type": "integer",
                     "description": "bambu NDR threshold below which new transcripts are retained.",
-                    "default": "0.2"
+                    "default": 0.2
                 },
                 "bambu_rec_ndr": {
                     "type": "boolean",
                     "description": "Use NDR threshold recommended by Bambu instead of preset threshold.",
-                    "default": "false"
+                    "default": false
                 }
             }
+        },
+        "feelnc_options": {
+            "title": "FEELnc options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Parameters related to FEELnc",
+            "properties": {
+                "feelnc_mRNA": {
+                    "type": "integer",
+                    "description": "Number of mRNAs from annotation use for training (minimum 100).",
+                    "default": 3000,
+                    "minimum": 100
+                },
+                "feelnc_lncRNA": {
+                    "type": "integer",
+                    "description": "Number of lncRNAs from annotation use for training (minimum 100).",
+                    "default": 3000,
+                    "minimum": 100
+                }
             }
         },
         "filtering_options": {
@@ -132,9 +151,9 @@
                 "tfkmers_threshold": {
                     "type": "integer",
                     "description": "TransforKmers prediction threshold below which new transcripts are retained.",
-                    "default": "0.2",
-                    "minimum": "0",
-                    "maximum": "1"
+                    "default": 0.2,
+                    "minimum": 0,
+                    "maximum": 1
                 },
                 "operation": {
                     "type": "string",
@@ -153,12 +172,12 @@
                 "maxCpu": {
                     "type": "integer",
                     "description": "Max cpu threads used by ANNEXA.",
-                    "default": "8"
+                    "default": 8
                 },
                 "maxMemory": {
                     "type": "integer",
                     "description": "Max memory (in GB) used by ANNEXA.",
-                    "default": "40"
+                    "default": 40
                 }
             }
         },
@@ -178,26 +197,13 @@
         }
     },
     "allOf": [
-        {
-            "$ref": "#/defs/required_options"
-        },
-        {
-            "$ref": "#/defs/profile_options"
-        },
-        {
-            "$ref": "#/defs/main_options"
-        },
-        {
-            "$ref": "#/defs/bambu_options"
-        },
-        {
-            "$ref": "#/defs/filtering_options"
-        },
-        {
-            "$ref": "#/defs/performance_options"
-        },
-        {
-            "$ref": "#/defs/nextflow_options"
-        }
+        { "$ref": "#/defs/required_options" },
+        { "$ref": "#/defs/profile_options" },
+        { "$ref": "#/defs/main_options" },
+        { "$ref": "#/defs/bambu_options" },
+        { "$ref": "#/defs/feelnc_options" },
+        { "$ref": "#/defs/filtering_options" },
+        { "$ref": "#/defs/performance_options" },
+        { "$ref": "#/defs/nextflow_options" }
     ]
 }
