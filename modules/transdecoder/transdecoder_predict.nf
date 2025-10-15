@@ -1,8 +1,8 @@
 process TRANSDECODER_PREDICT {
     conda (params.enable_conda ? "bioconda::transdecoder=5.5.0" : null)
     container "${ workflow.containerEngine == 'singularity' ?
-        'https://depot.galaxyproject.org/singularity/transdecoder:5.5.0--pl5262hdfd78af_4' :
-        'quay.io/comp-bio-aging/transdecoder' }"
+        'https://depot.galaxyproject.org/singularity/transdecoder%3A5.5.0--pl5262hdfd78af_4' :
+        'quay.io/biocontainers/transdecoder:5.5.0--pl5262hdfd78af_4' }"
     publishDir "$params.outdir/transdecoder", mode: 'copy'
     
     input:
