@@ -27,7 +27,7 @@ def parse_tfkmers(line: list) -> Tuple[TranscriptProb, str]:
     Example: BAMBUGENE1::BAMBUTX382::+,0.9773745,0.022625463
     """
     gene_id, tx_id, strand = line[0].split("::")
-    ndr = float(line[1])  # third CSV column is NDR
+    ndr = float(line[1])  # NDR is val1 (0)
     return TranscriptProb(gene_id, tx_id.lower(), ndr), strand
 
 

@@ -92,8 +92,8 @@ Bambu options
   --bambu_rec_ndr       [boolean] Use NDR threshold recommended by Bambu instead of preset threshold. [default: false]
 
 FEELnc options
-  --feelnc_mRNA        [integer] Number of mRNAs from annotation use for training. [default: 3000, minimum: 100]
-  --feelnc_lncRNA      [integer]Number of lncRNAs from annotation use for training. [default: 3000, minimum: 100]
+  --feelnc_mRNA        [integer] Number of mRNAs from annotation to use for training. [default: 3000, minimum: 100]
+  --feelnc_lncRNA      [integer] Number of lncRNAs from annotation to use for training. [default: 3000, minimum: 100]
 
 Filtering options
   --tfkmers_tokenizer   [string]  Path to TransforKmers tokenizer. Required if filter option is activated.

@@ -7,23 +7,17 @@ process SPLIT_EXTENDED_ANNOTATION {
   path 'novel_isoforms.gtf', emit: novel_isoforms
   path 'novel.gtf', emit: novel
 
-  shell:
-  if (params.tx_discovery == "bambu")
-    '''
-    grep "BambuTx" !{extended_annotation} | awk '$3=="exon"' > novel.gtf
-    grep -e "BambuGene" -e "unstranded.Gene" novel.gtf > novel_genes.gtf
-    grep -v -e "BambuGene" -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
-    '''
-  else if (params.tx_discovery == "stringtie2")
-    '''
-    grep 'transcript_id "MSTRG' !{extended_annotation} | awk '$3=="exon"' > novel.gtf
-    grep -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_genes.gtf
-    grep -v -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
-    '''
-  else if (params.tx_discovery == "both")
-    '''
-    grep -e "BambuTx" -e 'transcript_id "MSTRG' !{extended_annotation} | awk '$3=="exon"' > novel.gtf
-    grep -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_genes.gtf
-    grep -v -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
-    '''
+  script:
+  """
+  grep -e "BambuTx" -e 'transcript_id "MSTRG' ${extended_annotation} | awk '\$3=="exon"' > novel.gtf
+  
+  # Check if novel.gtf is empty
+  if [ ! -s novel.gtf ]; then
+    echo "novel.gtf is empty. No novel transcripts detected, halting pipeline."
+    exit 1
+  fi
+
+  grep -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_genes.gtf
+  grep -v -e "BambuGene" -e 'gene_id "MSTRG' -e "unstranded.Gene" novel.gtf > novel_isoforms.gtf
+  """
 }

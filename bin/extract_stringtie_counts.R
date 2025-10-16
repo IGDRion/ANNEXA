@@ -19,6 +19,12 @@ stringTieQuant <- importIsoformExpression(
   addIsofomIdAsColumn = FALSE
 )
 
+# Duplicate column if only one input file, otherwise creates issue with importRdata
+if (length(ctabs) == 1){
+  stringTieQuant$counts$fake <- stringTieQuant$counts[,1]
+  stringTieQuant$abundance$fake <- stringTieQuant$abundance[,1]
+}
+
 myDesign <- data.frame(
   sampleID = colnames(stringTieQuant$abundance),
   condition = gsub('_.*', '', colnames(stringTieQuant$abundance))
@@ -35,6 +41,12 @@ geneCountMatrix <- extractGeneExpression(
   switchAnalyzeRlist,
   extractCounts = TRUE
 )
+
+if (length(ctabs) == 1){
+  geneCountMatrix <- geneCountMatrix %>% select(-fake)
+  stringTieQuant$counts <- stringTieQuant$counts %>% select(-fake)
+  stringTieQuant$abundance <- stringTieQuant$abundance %>% select(-fake)
+}
 
 # -------------------------------------------------------------------------
 # Renaming Stringtie MSTRG gene_id to original reference gene_id, if possible, and
