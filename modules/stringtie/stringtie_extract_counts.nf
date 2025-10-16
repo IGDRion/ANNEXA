@@ -2,7 +2,7 @@ process EXTRACT_QUANTS {
     conda (params.enable_conda ? "$baseDir/environment.yml" : null)
     container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
     publishDir "$params.outdir/stringtie2", mode: 'copy', pattern: '*.txt'
-    if (params.filter == false){
+    if (params.filter == false && params.tx_discovery == "stringtie2"){
         publishDir "$params.outdir/final", mode: 'copy', pattern: 'counts_transcript.txt', saveAs: {filename -> 'counts_transcript.full.txt'}
   }
 

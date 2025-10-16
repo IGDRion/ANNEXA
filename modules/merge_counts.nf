@@ -1,7 +1,10 @@
 process MERGE_COUNTS {
   conda (params.enable_conda ? "$baseDir/environment.yml" : null)
   container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
-
+  if (params.filter == false){
+    publishDir "$params.outdir/final", mode: 'copy', pattern: 'combined_tx.txt', saveAs: {filename -> 'counts_transcript.full.txt'}
+  }
+  
   input:
   path bambu_gene,      stageAs: 'bambu_gene.txt'
   path stringtie_gene,  stageAs: 'stringtie_gene.txt'
