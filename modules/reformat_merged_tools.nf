@@ -1,8 +1,6 @@
 process REFORMAT_MERGED_TOOLS {
-  conda (params.enable_conda ? "conda-forge::python=3.10.4" : null)
-  container "${ workflow.containerEngine == 'singularity' ? 
-                'https://depot.galaxyproject.org/singularity/python:3.10.4' : 
-                'quay.io/biocontainers/python:3.10.4' }"
+  conda (params.enable_conda ? "$baseDir/environment.yml" : null)
+  container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
 
   input:
   file merged_tools
@@ -11,8 +9,9 @@ process REFORMAT_MERGED_TOOLS {
   output:
   path "reformated.gtf", emit: reformated_merged_gtf
 
-  script:
-  """
-  reformat_merge.py
-  """
+  shell:
+  '''
+  reformat_merge.R
+  sed -i '/;\s*$/!s/\s*$/;/' reformated.gtf
+  '''
 }
