@@ -9,11 +9,12 @@ process SPLIT_EXTENDED_ANNOTATION {
 
   script:
   """
-  grep -e "BambuTx" -e 'transcript_id "MSTRG' ${extended_annotation} | awk '\$3=="exon"' > novel.gtf
+  grep -e "BambuTx" -e 'transcript_id "MSTRG' ${extended_annotation} | awk '\$3=="exon"' > novel.gtf || true
   
   # Check if novel.gtf is empty
   if [ ! -s novel.gtf ]; then
-    echo "novel.gtf is empty. No novel transcripts detected, halting pipeline."
+    echo "No novel transcripts detected. Halting pipeline."
+    echo "Please verify your input files."
     exit 1
   fi
 
