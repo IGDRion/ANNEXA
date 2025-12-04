@@ -30,20 +30,17 @@ By default, it requires 40 GB of RAM and 8 CPU threads. This can be changed in t
 ## Usage
 
 1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation)
-(Optional) If you are using Linux, we recommend installing [Apptainer](https://apptainer.org/docs/user/main/quick_start.html) (formerly Singularity) to handle tools used by ANNEXA.
 
-2. Test the pipeline on a small dataset
+2. ANNEXA relies on many tools and environments. For best usage, we recommend installing these tools for software management:
+- [Apptainer](https://apptainer.org/docs/user/main/quick_start.html) (formerly Singularity) to run on Linux (best for HPC).
+- [Docker](https://docs.docker.com/engine/install/) to run on Linux, macOS or Windows.
+- [conda](https://www.anaconda.com/docs/getting-started/miniconda/main) if you cannot use Apptainer or Docker.
 
-```sh
-nextflow run IGDRion/ANNEXA \
-    -profile test
-```
-
-Or, if you have installed Apptainer: 
+2. Test the pipeline on a small dataset:
 
 ```sh
 nextflow run IGDRion/ANNEXA \
-    -profile test,singularity
+    -profile test,{docker,singularity,conda}
 ```
 
 3. Run ANNEXA on your own data (change input, gtf, fa with path of your files).
@@ -51,12 +48,12 @@ nextflow run IGDRion/ANNEXA \
 ```sh
 nextflow run IGDRion/ANNEXA \
     -profile {test,docker,singularity,conda,slurm} \
-    --input samples.txt \
+    --input /path/to/samples.txt \
     --gtf /path/to/ref.gtf \
     --fa /path/to/ref.fa
 ```
 
-The input parameter takes a file listing the `bam` path files to analyze (see example below)
+The `--input` parameter (samples.txt) takes a file listing the `bam` path files to analyze (see example below)
 
 ```
 /path/to/1.bam
@@ -73,11 +70,11 @@ Required options
   --gtf                 [string]  Path to reference annotation.
 
 Profile options
-  --profile test        [string]  Run annexa on toy dataset.
-  --profile slurm       [string]  Run annexa on slurm executor.
-  --profile singularity [string]  Run annexa in singularity container.
-  --profile conda       [string]  Run annexa in conda environment.
-  --profile docker      [string]  Run annexa in docker container.
+  -profile test        [string]  Run annexa on toy dataset.
+  -profile slurm       [string]  Run annexa on slurm executor.
+  -profile singularity [string]  Run annexa in singularity container.
+  -profile conda       [string]  Run annexa in conda environment.
+  -profile docker      [string]  Run annexa in docker container.
 
 Main options
   --tx_discovery        [string]  Specify which transcriptome reconstruction tool to use. (accepted: bambu, stringtie2, both) [default: bambu]
