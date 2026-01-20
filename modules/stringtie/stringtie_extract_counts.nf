@@ -5,6 +5,7 @@ process EXTRACT_QUANTS {
     if (params.filter == false && params.tx_discovery == "stringtie2"){
         publishDir "$params.outdir/final", mode: 'copy', pattern: 'counts_transcript.txt', saveAs: {filename -> 'counts_transcript.full.txt'}
   }
+    memory params.maxMemory
 
     input:
     val bam_length
