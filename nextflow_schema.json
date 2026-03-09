@@ -71,7 +71,7 @@
                     "type": "string",
                     "description": "Specify which transcriptome reconstruction tool to use.",
                     "default": "bambu",
-                    "enum": ["bambu", "stringtie2"],
+                    "enum": ["bambu", "stringtie2", "both"],
                     "fa_icon": "fas fa-file-csv"
                 },
                 "filter": {

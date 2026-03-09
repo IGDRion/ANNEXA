@@ -78,7 +78,7 @@ Profile options
 
 Main options
   --tx_discovery        [string]  Specify which transcriptome reconstruction tool to use. (accepted: bambu, stringtie2, both) [default: bambu]
-  --filter              [boolean] Perform or not the filtering step. [default: true]
+  --filter              [boolean] Perform or not the filtering step. [default: false]
   --withGeneCoverage    [boolean] Run RSeQC (can be long depending on annotation and bam sizes). [default: false]
 
 Bambu options
