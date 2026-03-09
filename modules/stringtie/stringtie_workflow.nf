@@ -34,12 +34,12 @@ workflow STRINGTIE {
 
     QUANTIFY(
         samples,
-        MERGE.out.stringtie_merged_gtf)
+        FORMAT_GFFCOMPARE.out.stringtie_gtf)
     
     EXTRACT_QUANTS(
         READ_LENGTH.out.av_length.collect(),
         QUANTIFY.out.collect(),
-        MERGE.out.stringtie_merged_gtf
+        FORMAT_GFFCOMPARE.out.stringtie_gtf
     )
 
     emit:

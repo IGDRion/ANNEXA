@@ -2,7 +2,7 @@ process AGAT_CONVERTSPGFF2GTF {
     conda (params.enable_conda ? "bioconda::agat=1.4.0" : null)
     container "${ workflow.containerEngine == 'singularity' ?
         'https://depot.galaxyproject.org/singularity/agat:1.4.0--pl5321hdfd78af_0' :
-        'biocontainers/agat:1.4.0--pl5321hdfd78af_0' }"
+        'quay.io/biocontainers/agat:1.4.0--pl5321hdfd78af_0' }"
 
     input:
     path gff3

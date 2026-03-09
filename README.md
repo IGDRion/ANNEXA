@@ -27,25 +27,22 @@ This pipeline has been tested with reference annotation from Ensembl and NCBI-Re
 
 ## System requirements
 ANNEXA requires 0.5GB of disk space for installation, and requires at least 16 GB of RAM and 2 CPU threads to run the test example.
-By default, it requires. 40 GB of RAM and 8 CPU threads. This can be changed in the options (see Performance options).
+By default, it requires 40 GB of RAM and 8 CPU threads. This can be changed in the options (see Performance options).
 
 ## Usage
 
 1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation)
-(Optional) If you are using Linux, we recommend installing [Apptainer](https://apptainer.org/docs/user/main/quick_start.html) (formerly Singularity) to handle tools used by ANNEXA.
 
-2. Test the pipeline on a small dataset
+2. ANNEXA relies on many tools and environments. For best usage, we recommend installing these tools for software management:
+- [Apptainer](https://apptainer.org/docs/user/main/quick_start.html) (formerly Singularity) to run on Linux (best for HPC).
+- [Docker](https://docs.docker.com/engine/install/) to run on Linux, macOS or Windows.
+- [conda](https://www.anaconda.com/docs/getting-started/miniconda/main) if you cannot use Apptainer or Docker.
 
-```sh
-nextflow run IGDRion/ANNEXA \
-    -profile test
-```
-
-Or, if you have installed Apptainer: 
+2. Test the pipeline on a small dataset:
 
 ```sh
 nextflow run IGDRion/ANNEXA \
-    -profile test,singularity
+    -profile test,{docker,singularity,conda}
 ```
 
 3. Run ANNEXA on your own data (change input, gtf, fa with path of your files).
@@ -53,12 +50,12 @@ nextflow run IGDRion/ANNEXA \
 ```sh
 nextflow run IGDRion/ANNEXA \
     -profile {test,docker,singularity,conda,slurm} \
-    --input samples.txt \
+    --input /path/to/samples.txt \
     --gtf /path/to/ref.gtf \
     --fa /path/to/ref.fa
 ```
 
-The input parameter takes a file listing the `bam` path files to analyze (see example below)
+The `--input` parameter (samples.txt) takes a file listing the `bam` path files to analyze (see example below)
 
 ```
 /path/to/1.bam
@@ -75,15 +72,15 @@ Required options
   --gtf                 [string]  Path to reference annotation.
 
 Profile options
-  --profile test        [string]  Run annexa on toy dataset.
-  --profile slurm       [string]  Run annexa on slurm executor.
-  --profile singularity [string]  Run annexa in singularity container.
-  --profile conda       [string]  Run annexa in conda environment.
-  --profile docker      [string]  Run annexa in docker container.
+  -profile test        [string]  Run annexa on toy dataset.
+  -profile slurm       [string]  Run annexa on slurm executor.
+  -profile singularity [string]  Run annexa in singularity container.
+  -profile conda       [string]  Run annexa in conda environment.
+  -profile docker      [string]  Run annexa in docker container.
 
 Main options
-  --tx_discovery        [string]  Specify which transcriptome reconstruction tool to use. (accepted: bambu, stringtie2) [default: bambu]
-  --filter              [boolean] Perform or not the filtering step. [default: true]
+  --tx_discovery        [string]  Specify which transcriptome reconstruction tool to use. (accepted: bambu, stringtie2, both) [default: bambu]
+  --filter              [boolean] Perform or not the filtering step. [default: false]
   --withGeneCoverage    [boolean] Run RSeQC (can be long depending on annotation and bam sizes). [default: false]
 
 Bambu options
@@ -92,6 +89,10 @@ Bambu options
                                   [default: true]
   --bambu_threshold     [integer] bambu NDR threshold below which new transcripts are retained. [default: 0.2]
   --bambu_rec_ndr       [boolean] Use NDR threshold recommended by Bambu instead of preset threshold. [default: false]
+
+FEELnc options
+  --feelnc_mRNA        [integer] Number of mRNAs from annotation to use for training. [default: 3000, minimum: 100]
+  --feelnc_lncRNA      [integer] Number of lncRNAs from annotation to use for training. [default: 3000, minimum: 100]
 
 Filtering options
   --tfkmers_tokenizer   [string]  Path to TransforKmers tokenizer. Required if filter option is activated.
@@ -124,6 +125,6 @@ By activating the filtering step (`--filter`), ANNEXA proposes to filter the gen
 
 To use them, extract the zip, and point `--tfkmers_model` and `--tfkmers_tokenizer` to the subdirectories.
 
-The filtered annotation can be the `union` of these 2 tools, _i.e._ all the transcripts validated by one or both of these tools; or the `intersection`, _i.e._ the transcripts validated by both tools (the latter being the default). Please, feee free to see the [dedicated wiki page](https://github.com/IGDRion/ANNEXA/wiki/ANNEXA-wiki#fitlering-operations).
+The filtered annotation can be the `union` of these 2 tools, _i.e._ all the transcripts validated by one or both of these tools; or the `intersection`, _i.e._ the transcripts validated by both tools (the latter being the default). Please, feel free to see the [dedicated wiki page](https://github.com/IGDRion/ANNEXA/wiki/ANNEXA-wiki#fitlering-operations).
 
 At the end, the QC steps are performed both on the full and filtered extended annotations.

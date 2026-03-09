@@ -25,7 +25,7 @@ for record in GTF.parse_by_line(args.ref):
         continue
 
     attributes = {}
-    attributes["transcript_biotype"] = record["gene_biotype"]
+    #attributes["transcript_biotype"] = record["gene_biotype"]
     for k, v in record.attributes.items():
         if "gene" in k:
             attributes[k] = v

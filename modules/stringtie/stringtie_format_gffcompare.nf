@@ -1,4 +1,6 @@
 process FORMAT_GFFCOMPARE {
+  conda (params.enable_conda ? "$baseDir/environment.yml" : null)
+  container "ghcr.io/igdrion/annexa:${workflow.revision? workflow.revision: "main"}"
   publishDir "$params.outdir/stringtie2", pattern: 'extended_annotations.gtf', mode: 'copy'
 
   input:

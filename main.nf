@@ -20,8 +20,8 @@ else { exit 1, "Reference annotation file not specified!" }
 if (params.fa) { ref_fa = file(params.fa, checkIfExists: true) }
 else { exit 1, "Reference genome file not specified!" }
 
-if (params.tx_discovery != 'bambu' && params.tx_discovery != 'stringtie2') {
-  exit 1, "Please specify a valid quantification method ('bambu' (default) or 'stringtie2')."
+if (!['bambu', 'stringtie2', 'both'].contains(params.tx_discovery)) {
+    exit 1, "Please specify a valid quantification method ('bambu', 'stringtie2', or 'both')."
 }
 
 if (params.filter) {
@@ -54,7 +54,12 @@ include { BAMBU                          } from './modules/bambu/bambu.nf'
 include { STRINGTIE                      } from './modules/stringtie/stringtie_workflow.nf'
 include { GFFCOMPARE                     } from './modules/gffcompare/gffcompare.nf'
 include { RESTRAND_ISOFORMS              } from './modules/restrand_isoforms.nf'
+include { RESTRAND_ISOFORMS as RESTRAND_ISOFORMS_BAMBU } from './modules/restrand_isoforms.nf'
+include { RESTRAND_ISOFORMS as RESTRAND_ISOFORMS_STRINGTIE } from './modules/restrand_isoforms.nf'
 include { SPLIT_EXTENDED_ANNOTATION      } from './modules/split_extended_annotation.nf'
+include { MERGE_TOOLS                    } from './modules/merge_tools.nf'
+include { REFORMAT_MERGED_TOOLS          } from './modules/reformat_merged_tools.nf'
+include { MERGE_COUNTS                   } from './modules/merge_counts.nf'
 include { FEELNC_CODPOT                  } from './modules/feelnc/codpot.nf'
 include { FEELNC_FORMAT                  } from './modules/feelnc/format.nf'
 include { RESTORE_BIOTYPE                } from './modules/restore_biotypes.nf'
@@ -94,14 +99,25 @@ workflow {
     RESTRAND_ISOFORMS(STRINGTIE.out.stringtie_gtf)
     SPLIT_EXTENDED_ANNOTATION(RESTRAND_ISOFORMS.out)
   }
-
+  else if (params.tx_discovery == "both") {
+      BAMBU(samples.collect(), VALIDATE_INPUT_GTF.out, ref_fa)
+      GFFCOMPARE(VALIDATE_INPUT_GTF.out, ref_fa, BAMBU.out.bambu_gtf)
+      STRINGTIE(samples, VALIDATE_INPUT_GTF.out, ref_fa)
+      RESTRAND_ISOFORMS_BAMBU(BAMBU.out.bambu_gtf)
+      RESTRAND_ISOFORMS_STRINGTIE(STRINGTIE.out.stringtie_gtf)
+      MERGE_TOOLS(RESTRAND_ISOFORMS_BAMBU.out, RESTRAND_ISOFORMS_STRINGTIE.out)
+      REFORMAT_MERGED_TOOLS(MERGE_TOOLS.out.merged_tools, MERGE_TOOLS.out.tracking)
+      MERGE_COUNTS(BAMBU.out.gene_counts, STRINGTIE.out.gene_counts, BAMBU.out.tx_counts, STRINGTIE.out.tx_counts, GFFCOMPARE.out.class_code_gtf, STRINGTIE.out.class_code_gtf)
+      SPLIT_EXTENDED_ANNOTATION(REFORMAT_MERGED_TOOLS.out)
+  }
+  
   ///////////////////////////////////////////////////////////////////////////
   // EXTRACT AND CLASSIFY NEW TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
-  FEELNC_CODPOT(VALIDATE_INPUT_GTF.out, ref_fa, SPLIT_EXTENDED_ANNOTATION.out.novel_genes)
+  FEELNC_CODPOT(VALIDATE_INPUT_GTF.out, ref_fa, SPLIT_EXTENDED_ANNOTATION.out.novel)
   FEELNC_FORMAT(FEELNC_CODPOT.out.mRNA, FEELNC_CODPOT.out.lncRNA)
-  RESTORE_BIOTYPE(VALIDATE_INPUT_GTF.out, SPLIT_EXTENDED_ANNOTATION.out.novel_isoforms)
-  MERGE_NOVEL(FEELNC_FORMAT.out, RESTORE_BIOTYPE.out)
+  RESTORE_BIOTYPE(VALIDATE_INPUT_GTF.out, FEELNC_FORMAT.out)
+  MERGE_NOVEL(RESTORE_BIOTYPE.out)
 
   if(params.tx_discovery == "bambu") {
     ch_gene_counts = BAMBU.out.gene_counts
@@ -117,11 +133,18 @@ workflow {
     ch_rec_ndr = STRINGTIE.out.rec_ndr
     class_code = STRINGTIE.out.class_code_gtf
   }
+  else if (params.tx_discovery == "both") {
+    ch_gene_counts = MERGE_COUNTS.out.gene_counts
+    ch_tx_counts = MERGE_COUNTS.out.tx_counts
+    ch_ndr = BAMBU.out.ndr
+    ch_rec_ndr = BAMBU.out.rec_ndr
+    class_code = MERGE_COUNTS.out.class_code_gtf
+  }
 
   ///////////////////////////////////////////////////////////////////////////
   // PREDICT CDS ON NOVEL TRANSCRIPTS
   ///////////////////////////////////////////////////////////////////////////
-  TRANSDECODER(MERGE_NOVEL.out.novel_full_gtf, ref_fa)
+  TRANSDECODER(MERGE_NOVEL.out, ref_fa)
   RESTRAND_NOVEL(TRANSDECODER.out)
   ///////////////////////////////////////////////////////////////////////////
   // PERFORM QC ON FULL ANNOTATION

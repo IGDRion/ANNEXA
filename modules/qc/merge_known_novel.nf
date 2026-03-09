@@ -4,6 +4,8 @@ process MERGE_ANNOTATIONS {
                 'https://depot.galaxyproject.org/singularity/python:3.10.4' : 
                 'quay.io/biocontainers/python:3.10.4' }"
   publishDir "$params.outdir/final", mode: 'copy'
+  cpus params.maxCpu
+  memory params.maxMemory
 
   input:
   file novel

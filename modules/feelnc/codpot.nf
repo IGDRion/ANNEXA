@@ -29,7 +29,7 @@ process FEELNC_CODPOT {
       -g ${fa} \
       -a known_mRNA.gtf \
       -l known_lncRNA.gtf \
-      --numtx=3000,3000 \
+      --numtx=${params.feelnc_mRNA},${params.feelnc_lncRNA} \
       -o new
   
   # consider new noORF transcripts as new lncRNA
