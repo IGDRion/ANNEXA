@@ -27,7 +27,7 @@ if (length(ctabs) == 1){
 
 myDesign <- data.frame(
   sampleID = colnames(stringTieQuant$abundance),
-  condition = gsub('_.*', '', colnames(stringTieQuant$abundance))
+  condition = colnames(stringTieQuant$abundance)
 )
 
 switchAnalyzeRlist <- importRdata(
