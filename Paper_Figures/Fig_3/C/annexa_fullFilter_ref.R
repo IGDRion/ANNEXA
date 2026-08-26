@@ -34,7 +34,7 @@ p <- dat %>%
   scale_y_continuous(labels = label_number(scale = 1e-3, suffix = "k")) +
   theme_minimal(base_size = 16) +
   xlab("canFam4") +
-  ylab("Number of elements (in thousands)") +
+  ylab("Number of elements") +
   guides(fill = "none") +
   theme(
     # remove the vertical grid lines

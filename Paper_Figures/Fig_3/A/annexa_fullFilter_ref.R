@@ -46,7 +46,7 @@ p <- dat %>%
   scale_x_discrete(limits = c("Ref", "Bambu", "Stringtie")) +
   theme_minimal(base_size = 16) +
   xlab("canFam4") +
-  ylab("Number of elements (in thousands)") +
+  ylab("Number of elements") +
   guides(fill = "none", color = "none",
          alpha = guide_legend(override.aes = list(label = ""))) +
   theme(

@@ -54,7 +54,7 @@ p <- ggplot(dat_reshaped, aes(x = Tool, y = count)) +
                      limits = c(0, NA)) +
   theme_minimal(base_size = 16) +
   xlab("canFam4 - Ensembl") +
-  ylab("Number of elements (in thousands)") +
+  ylab("Number of elements") +
   theme(
     panel.grid.major.x = element_blank(),
     panel.grid.major.y = element_line(linewidth = 0.1, color = "black"),
