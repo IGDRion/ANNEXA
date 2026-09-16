@@ -28,7 +28,8 @@ theme_set(
         size = 18,
         face = "bold",
         hjust = 0.5
-      )
+      ),
+      legend.text = element_text(size = 11)
     )
 )
 
@@ -87,6 +88,7 @@ iso = gene %>%
   scale_fill_manual(values = brew) +
   scale_pattern_manual(values = c("1" = "stripe", "2+" = "none")) +
   guides(fill = "none", pattern = guide_legend(title = "Isoforms")) +
+  labs(y = "Percentage") +
   theme(axis.title.x = element_blank())
 
 # Nb  of genes per biotype and statuts known/novel
@@ -103,14 +105,14 @@ count = ggplot(data = gene, aes(x = gene_biotype, fill = paste(gene_biotype, dis
     vjust = -0.2,
     position = position_dodge(width = 0.9)
   ) +
-  ylab("Number of gene") +
+  ylab("Number of genes") +
   theme(axis.title.x = element_blank())
 
 # Distribution of gene counts in ridge plot
 gene_counts = gene %>%
   filter(validate_by >= 5) %>%
   ggplot() +
-  ggtitle("Distribution of gene counts") +
+  ggtitle("Distribution of gene read counts") +
   geom_density_ridges2(aes(
     x = validate_by,
     y = discovery,
@@ -121,7 +123,7 @@ gene_counts = gene %>%
   scale_fill_manual(values = brew) +
   guides(fill = guide_legend("Source")) +
   scale_x_log10() +
-  xlab("Gene counts") +
+  xlab("Gene read counts") +
   theme(axis.title.y = element_blank()) +
   scale_x_log10(
     breaks = scales::trans_breaks("log10", function(x)
@@ -287,6 +289,7 @@ tx_ex = transcript %>%
   scale_fill_manual(values = brew) +
   scale_pattern_manual(values = c("1" = "stripe", "2+" = "none")) +
   guides(fill = "none", pattern = guide_legend(title = "Exons")) +
+  labs(y = "Percentage") +
   theme(axis.title.x = element_blank())
 
 # Count
